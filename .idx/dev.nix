@@ -8,6 +8,8 @@
     pkgs.php82
     pkgs.php82Packages.composer
     pkgs.nodejs_22
+    pkgs.mysql80 
+     pkgs.sudo
   ];
   # Sets environment variables in the workspace
   env = {};
