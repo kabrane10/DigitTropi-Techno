@@ -82,7 +82,8 @@
         "preferred-install": "dist",
         "sort-packages": true,
         "platform": {
-            "ext-gd": "2.0"
+            "ext-gd": "2.0",
+            "ext-zip": "1.0" 
         },
         "allow-plugins": {
             "composer/package-versions-deprecated": true,
