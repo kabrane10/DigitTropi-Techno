@@ -18,10 +18,11 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
-    public function boot(): void
-{
-    // if (config('env') !== 'local') {
-    //     URL::forceScheme('https');
-    // }
-}
+
+    public function boot()
+    {
+        if (config('app.env') === 'production' || env('RAILWAY_ENVIRONMENT')) {
+            URL::forceScheme('https');
+        }
+    }
 }
