@@ -10,14 +10,18 @@ class RoleSeeder extends Seeder
     public function run(): void
     {
         $roles = [
-            ['nom' => 'Super Administrateur', 'slug' => 'super_admin'],
-            ['nom' => 'Rédacteur', 'slug' => 'redacteur'],
-            ['nom' => 'Manager', 'slug' => 'manager'],
-            ['nom' => 'Agent Terrain', 'slug' => 'agent_terrain'],
+            ['nom' => 'Administrateur', 'slug' => 'admin'],
+            ['nom' => 'Animateur', 'slug' => 'animateur'],
+            ['nom' => 'Contrôleur', 'slug' => 'controleur'],
+            ['nom' => 'Agent de Terrain', 'slug' => 'agent_terrain'],
         ];
         
         foreach ($roles as $role) {
-            Role::create($role);
+            // firstOrCreate évite les erreurs de doublons si vous relancez le seeder
+            Role::firstOrCreate(
+                ['slug' => $role['slug']], // On cherche par le slug
+                ['nom' => $role['nom']]    // On crée avec le nom s'il n'existe pas
+            );
         }
     }
 }

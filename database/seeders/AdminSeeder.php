@@ -11,22 +11,24 @@ class AdminSeeder extends Seeder
 {
     public function run(): void
     {
-        // Vérifier que le rôle existe
-        $role = Role::where('slug', 'super_admin')->first();
+        // 1. Récupérer le rôle Administrateur créé par le RoleSeeder
+        // On utilise 'admin' car c'est le slug défini dans notre RoleSeeder
+        $role = Role::where('slug', 'admin')->first();
         
+        // Sécurité au cas où le RoleSeeder n'aurait pas été lancé
         if (!$role) {
             $role = Role::create([
-                'nom' => 'Super Administrateur',
-                'slug' => 'super_admin'
+                'nom' => 'Administrateur',
+                'slug' => 'admin'
             ]);
         }
         
-        // Créer l'admin principal
+        // 2. Créer ou mettre à jour l'admin principal
         Admin::updateOrCreate(
-            ['email' => 'admin@tropitechno.com'],
+            ['email' => 'admin1@tropitechno.com'], // On cherche par l'email
             [
                 'nom' => 'Administrateur',
-                'password' => Hash::make('admin123'),
+                'password' => Hash::make('@dmin1234@'), // Pensez à changer ce mot de passe plus tard
                 'role_id' => $role->id,
                 'est_actif' => true,
             ]
