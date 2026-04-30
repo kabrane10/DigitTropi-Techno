@@ -677,7 +677,7 @@
         </div>
 
         <!-- Innovation détaillée - Carte complète -->
-        <div class="bg-gradient-to-r from-dark to-primary-dark rounded-2xl overflow-hidden shadow-2xl">
+        <div class="bg-gradient-to-b from-primary to-secondary rounded-2xl overflow-hidden shadow-2xl">
             <div class="grid grid-cols-1 lg:grid-cols-3">
                 <div class="lg:col-span-2 p-8 lg:p-12">
                     <div class="flex items-center mb-6">
