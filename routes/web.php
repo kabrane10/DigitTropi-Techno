@@ -64,32 +64,6 @@ Route::get('/administration', function() {
     return view('auth.role-selection');
 })->name('role.selection');
 
-//test pour la connecction db
-Route::get('/db-test', function() {
-    try {
-        $connection = DB::connection()->getPdo();
-        $databaseName = DB::connection()->getDatabaseName();
-        
-        return response()->json([
-            'status' => 'success',
-            'driver' => DB::connection()->getDriverName(),
-            'database' => $databaseName,
-            'host' => config('database.connections.mysql.host'),
-            'tables' => DB::select('SHOW TABLES')
-        ]);
-    } catch (\Exception $e) {
-        return response()->json([
-            'status' => 'error',
-            'message' => $e->getMessage(),
-            'config' => [
-                'driver' => config('database.default'),
-                'host' => config('database.connections.mysql.host'),
-                'database' => config('database.connections.mysql.database'),
-            ]
-        ]);
-    }
-}); // Temporaire pour tester
-
 // ========== ESPACE ADMIN ==========
 // Route::get('/test-simple', function() {
 //     return 'Route test fonctionne';
