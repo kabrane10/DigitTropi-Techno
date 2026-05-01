@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Http;
+namespace App\Console;
 
-use Illuminate\Foundation\Http\Kernel as HttpKernel;
-use Spatie\Backup\Commands\BackupCommand;
+use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
-class Kernel extends HttpKernel
+class Kernel extends ConsoleKernel
 {
     /**
      * The application's global HTTP middleware stack.
