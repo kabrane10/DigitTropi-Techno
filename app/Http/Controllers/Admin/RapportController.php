@@ -288,21 +288,36 @@ class RapportController extends Controller
         return $total_credits > 0 ? ($total_rembourse / $total_credits) * 100 : 0;
     }
 
-    /**
-     * Collectes par mois
-     */
-    private function getCollectesParMois()
-    {
+   /**
+ * Collectes par mois
+ */
+private function getCollectesParMois()
+{
+    $driver = DB::connection()->getDriverName();
+    
+    if ($driver === 'mysql') {
         return Collecte::select(
-            DB::raw($this->getDateFormatFunction('%Y-%m', 'date_collecte') . ' as mois'),
-                DB::raw('SUM(quantite_nette) as total_quantite'),
-                DB::raw('SUM(montant_total) as total_montant')
-            )
-            ->groupBy('mois')
-            ->orderBy('mois', 'desc')
-            ->limit(12)
-            ->get();
+            DB::raw("DATE_FORMAT(date_collecte, '%Y-%m') as mois"),
+            DB::raw('SUM(quantite_nette) as total_quantite'),
+            DB::raw('SUM(montant_total) as total_montant')
+        )
+        ->groupBy('mois')
+        ->orderBy('mois', 'desc')
+        ->limit(12)
+        ->get();
     }
+    
+    // SQLite
+    return Collecte::select(
+        DB::raw("strftime('%Y-%m', date_collecte) as mois"),
+        DB::raw('SUM(quantite_nette) as total_quantite'),
+        DB::raw('SUM(montant_total) as total_montant')
+    )
+    ->groupBy('mois')
+    ->orderBy('mois', 'desc')
+    ->limit(12)
+    ->get();
+}
 
     /**
      * Exporter en PDF
