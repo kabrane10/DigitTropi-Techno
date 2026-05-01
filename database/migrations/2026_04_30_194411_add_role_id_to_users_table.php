@@ -17,7 +17,7 @@ return new class extends Migration
            $table->foreignId('role_id')->after('id')->default(1)->constrained('roles');
         });
     }
-nj
+
     /**
      * Reverse the migrations.
      */

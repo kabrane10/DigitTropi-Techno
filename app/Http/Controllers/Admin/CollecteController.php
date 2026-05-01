@@ -7,11 +7,13 @@ use App\Models\Collecte;
 use App\Models\Producteur;
 use App\Models\CreditAgricole;
 use App\Models\Stock;
+use App\Traits\DatabaseCompatibility;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class CollecteController extends Controller
 {
+    use DatabaseCompatibility;
     /**
      * Afficher la liste des collectes
      */
@@ -118,7 +120,7 @@ class CollecteController extends Controller
             }
         });
 
-        return redirect()->route('collectes.index')
+        return redirect()->route('admin.collectes.index')
             ->with('success', 'Collecte enregistrée avec succès');
     }
 
@@ -182,15 +184,16 @@ public function dashboard()
         ->limit(10)
         ->get();
         
-    $collectes_par_mois = Collecte::select(
-            \DB::raw('strftime("%Y-%m", date_collecte) as mois'),
-            \DB::raw('SUM(quantite_nette) as total')
-        )
-        ->groupBy('mois')
-        ->orderBy('mois', 'desc')
-        ->limit(6)
-        ->get();
-        
+     // 🔴 CORRECTION: Utiliser DATE_FORMAT pour MySQL
+     $collectes_par_mois = Collecte::select(
+        DB::raw($this->getDateFormatFunction('date_collecte', '%Y-%m') . ' as mois'),
+        DB::raw('SUM(quantite_nette) as total')
+    )
+    ->groupBy('mois')
+    ->orderBy('mois', 'desc')
+    ->limit(6)
+    ->get();
+    
     return view('admin.collectes.dashboard', compact('stats', 'collectes_par_produit', 'collectes_recentes', 'collectes_par_mois'));
 }
 }

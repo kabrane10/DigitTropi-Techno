@@ -7,11 +7,13 @@ use App\Models\Achat;
 use App\Models\Collecte;
 use App\Exports\achatsExport;
 use App\Models\Producteur;
+use App\Traits\DatabaseCompatibility;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class AchatController extends Controller
 {
+    use DatabaseCompatibility;
     /**
      * Liste des achats
      */
