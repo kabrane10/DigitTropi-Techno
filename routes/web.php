@@ -88,7 +88,7 @@ Route::get('/db-test', function() {
             ]
         ]);
     }
-})->withoutMiddleware(); // Temporaire pour tester
+}); // Temporaire pour tester
 
 // ========== ESPACE ADMIN ==========
 // Route::get('/test-simple', function() {
