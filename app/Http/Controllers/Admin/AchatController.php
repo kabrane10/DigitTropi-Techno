@@ -109,8 +109,9 @@ public function dashboard()
         ->limit(10)
         ->get();
     
-    $evolution = Achat::select(
-            DB::raw('strftime("%Y-%m", date_achat) as mois'),
+      // Utiliser la méthode compatible
+        $evolution = Achat::select(
+            DB::raw($this->getDateFormatFunction('date_achat', '%Y-%m') . ' as mois'),
             DB::raw('SUM(quantite) as total_quantite'),
             DB::raw('SUM(montant_total) as total_montant')
         )
@@ -119,7 +120,7 @@ public function dashboard()
         ->limit(6)
         ->get()
         ->reverse();
-    
+
     return view('admin.achats.dashboard', compact('stats', 'achats_par_produit', 'achats_par_paiement', 'achats_recents', 'evolution'));
 }
 
