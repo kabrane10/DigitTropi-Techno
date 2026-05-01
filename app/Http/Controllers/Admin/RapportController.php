@@ -76,7 +76,7 @@ class RapportController extends Controller
                 $date_debut = now()->subDays(30);
                 $date_fin = now();
         }
-
+    
         // Crédits accordés sur la période
         $credits_accordes = CreditAgricole::whereBetween('date_octroi', [$date_debut, $date_fin])
             ->sum('montant_total');
@@ -95,7 +95,8 @@ class RapportController extends Controller
             ->orderBy('collectes_sum_montant_total', 'desc')
             ->limit(10)
             ->get();
-
+    
+        // 🔴 CORRECTION: Création du tableau $rapport
         $rapport = [
             'periode' => $periode,
             'date_debut' => $date_debut,
@@ -106,11 +107,13 @@ class RapportController extends Controller
             'collectes_quantite' => $collectes_quantite,
             'taux_recouvrement' => $credits_accordes > 0 ? ($remboursements_periode / $credits_accordes) * 100 : 0,
         ];
-
+    
+        // 🔴 CORRECTION: Passer $rapport et $top_producteurs à la vue
         if ($request->export == 'pdf') {
-            return $this->exportPDF('admin.rapports.exports.financier-pdf', $rapport, 'rapport-financier-' . date('Y-m-d') . '.pdf');
+            $pdf = PDF::loadView('admin.rapports.exports.financier-pdf', compact('rapport', 'top_producteurs'));
+            return $pdf->download('rapport-financier-' . date('Y-m-d') . '.pdf');
         }
-
+    
         return view('admin.rapports.financier', compact('rapport', 'top_producteurs'));
     }
 
@@ -291,7 +294,7 @@ class RapportController extends Controller
     private function getCollectesParMois()
     {
         return Collecte::select(
-                DB::raw('strftime("%Y-%m", date_collecte) as mois'),
+            DB::raw($this->getDateFormatFunction('%Y-%m', 'date_collecte') . ' as mois'),
                 DB::raw('SUM(quantite_nette) as total_quantite'),
                 DB::raw('SUM(montant_total) as total_montant')
             )
