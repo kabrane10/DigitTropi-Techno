@@ -36,7 +36,7 @@
     </div>
 
     <!-- Mobile Menu -->
-    <div id="mobile-menu" class="hidden md:hidden bg-white border-t">
+    <div id="mobile-menu" class="hidden md:hidden bg-white border-t relative z-50">
         <div class="px-2 pt-2 pb-3 space-y-1">
             <a href="{{ route('welcome') }}" class="block px-3 py-2 text-dark hover:text-primary font-medium">Accueil</a>
             <a href="{{ route('actualites') }}" class="block px-3 py-2 text-dark hover:text-primary font-medium">Actualités</a>
@@ -60,7 +60,6 @@
     
     if (mobileMenuButton && mobileMenu) {
         mobileMenuButton.addEventListener('click', function() {
-            console.log("Le bouton a été cliqué !"); // Ajoutez ceci
             const isHidden = mobileMenu.classList.contains('hidden');
             
             // Toggle menu
