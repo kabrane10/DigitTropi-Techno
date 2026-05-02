@@ -54,14 +54,14 @@ class BackupController extends Controller
             
             if ($exitCode === 0) {
                 return redirect()->route('admin.backup.index')
-                    ->with('success', '✅ Sauvegarde effectuée avec succès');
+                    ->with('success', 'Sauvegarde effectuée avec succès');
             } else {
                 return redirect()->route('admin.backup.index')
-                    ->with('error', '❌ Erreur lors de la sauvegarde: ' . $output);
+                    ->with('error', 'Erreur lors de la sauvegarde: ' . $output);
             }
         } catch (\Exception $e) {
             return redirect()->route('admin.backup.index')
-                ->with('error', '❌ Erreur: ' . $e->getMessage());
+                ->with('error', 'Erreur: ' . $e->getMessage());
         }
     }
     
@@ -79,7 +79,7 @@ class BackupController extends Controller
         }
         
         return redirect()->route('admin.backup.index')
-            ->with('error', '❌ Fichier non trouvé');
+            ->with('error', 'Fichier non trouvé');
     }
     
     /**
@@ -92,11 +92,11 @@ class BackupController extends Controller
         if (file_exists($filePath)) {
             unlink($filePath);
             return redirect()->route('admin.backup.index')
-                ->with('success', '✅ Sauvegarde supprimée avec succès');
+                ->with('success', 'Sauvegarde supprimée avec succès');
         }
         
         return redirect()->route('admin.backup.index')
-            ->with('error', '❌ Fichier non trouvé');
+            ->with('error', 'Fichier non trouvé');
     }
     
     /**

@@ -3,97 +3,84 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Mail;
 
 class AdvancedBackup extends Command
 {
     protected $signature = 'backup:advanced';
-    protected $description = 'Sauvegarde avancée avec destinations multiples';
+    protected $description = 'Sauvegarde de la base de données';
 
     public function handle()
     {
-        $databasePath = database_path('database.sqlite');
-        $filename = 'backup-' . date('Y-m-d_H-i-s') . '.sqlite';
-        $localPath = storage_path('app/backups/' . $filename);
+        $filename = 'backup-' . date('Y-m-d_H-i-s') . '.sql';
+        $backupPath = storage_path('app/backups/' . $filename);
         
-        // 1. Copie locale
-        copy($databasePath, $localPath);
-        $this->info('✅ Sauvegarde locale: ' . $filename);
-        
-        // 2. Compression
-        $zipPath = storage_path('app/backups/' . str_replace('.sqlite', '.zip', $filename));
-        $this->createZip($localPath, $zipPath);
-        $this->info('✅ Compression effectuée');
-        
-        // 3. Chiffrement (optionnel)
-        $encryptedPath = $this->encryptBackup($zipPath);
-        if ($encryptedPath) {
-            $this->info('✅ Sauvegarde chiffrée');
+        // Créer le dossier
+        if (!is_dir(storage_path('app/backups'))) {
+            mkdir(storage_path('app/backups'), 0777, true);
         }
         
-        // 4. Envoi par email (optionnel)
-        $this->sendBackupByEmail($encryptedPath ?? $zipPath);
-        
-        // 5. Nettoyage des anciennes sauvegardes
-        $this->cleanOldBackups();
-        
-        // 6. Notification
-        $this->sendNotification();
-        
-        return 0;
-    }
-    
-    private function createZip($source, $destination)
-    {
-        $zip = new \ZipArchive();
-        if ($zip->open($destination, \ZipArchive::CREATE) === TRUE) {
-            $zip->addFile($source, basename($source));
-            $zip->close();
+        try {
+            // Récupérer toutes les tables
+            $tables = DB::select('SHOW TABLES');
+            $sql = '';
+            
+            foreach ($tables as $table) {
+                $tableName = reset($table);
+                
+                // Structure de la table
+                $createTable = DB::select("SHOW CREATE TABLE {$tableName}");
+                $sql .= "-- Structure de la table {$tableName}\n";
+                $sql .= $createTable[0]->{'Create Table'} . ";\n\n";
+                
+                // Données de la table
+                $rows = DB::table($tableName)->get();
+                if (count($rows) > 0) {
+                    $sql .= "-- Données de la table {$tableName}\n";
+                    foreach ($rows as $row) {
+                        $columns = array_keys((array)$row);
+                        $values = array_map(function($value) {
+                            return is_null($value) ? 'NULL' : "'" . addslashes($value) . "'";
+                        }, (array)$row);
+                        $sql .= "INSERT INTO {$tableName} (" . implode(',', $columns) . ") VALUES (" . implode(',', $values) . ");\n";
+                    }
+                    $sql .= "\n";
+                }
+            }
+            
+            // Écrire le fichier
+            file_put_contents($backupPath, $sql);
+            
+            $this->info('✅ Sauvegarde effectuée: ' . $filename);
+            $this->info('📊 Taille: ' . number_format(filesize($backupPath) / 1024, 2) . ' KB');
+            
+            // Nettoyer les anciennes sauvegardes
+            $this->cleanOldBackups();
+            
+            return 0;
+            
+        } catch (\Exception $e) {
+            $this->error('❌ Erreur: ' . $e->getMessage());
+            return 1;
         }
-    }
-    
-    private function encryptBackup($filePath)
-    {
-        // À implémenter avec OpenSSL
-        $encryptedPath = $filePath . '.enc';
-        $key = env('BACKUP_ENCRYPTION_KEY', 'default-key-32-chars-long-string!');
-        
-        $content = file_get_contents($filePath);
-        $iv = random_bytes(16);
-        $encrypted = openssl_encrypt($content, 'AES-256-CBC', $key, 0, $iv);
-        
-        file_put_contents($encryptedPath, $iv . $encrypted);
-        return $encryptedPath;
-    }
-    
-    private function sendBackupByEmail($filePath)
-    {
-        $adminEmail = env('BACKUP_EMAIL', 'admin@tropitechno.com');
-        
-        Mail::raw('Sauvegarde automatique de Tropi-Techno', function($message) use ($filePath, $adminEmail) {
-            $message->to($adminEmail)
-                    ->subject('Sauvegarde Tropi-Techno - ' . date('d/m/Y'))
-                    ->attach($filePath);
-        });
     }
     
     private function cleanOldBackups()
     {
         $files = Storage::disk('local')->files('backups');
-        $keepDays = config('backup.keep_days', 30);
+        $keepDays = 30;
+        $deleted = 0;
         
         foreach ($files as $file) {
             if (Storage::lastModified($file) < now()->subDays($keepDays)->timestamp) {
                 Storage::delete($file);
-                $this->info("🗑️ Ancienne sauvegarde supprimée: " . basename($file));
+                $deleted++;
             }
         }
-    }
-    
-    private function sendNotification()
-    {
-        // Envoyer une notification Slack ou Telegram
-        // À implémenter selon les besoins
+        
+        if ($deleted > 0) {
+            $this->info("🗑️ $deleted ancienne(s) sauvegarde(s) supprimée(s)");
+        }
     }
 }
