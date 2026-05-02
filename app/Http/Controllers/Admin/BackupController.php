@@ -22,7 +22,7 @@ class BackupController extends Controller
         }
         
         // Récupérer tous les fichiers .sqlite dans le dossier
-        $files = glob(storage_path('app/backups/*.sqlite'));
+        $files = glob(storage_path('app/backups/*.sql'));
         
         foreach ($files as $file) {
             $filename = basename($file);
