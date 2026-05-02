@@ -53,15 +53,15 @@
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
     <!-- Évolution des collectes -->
     <div class="bg-white rounded-xl shadow-sm p-4 sm:p-6">
-        <h3 class="text-lg font-semibold mb-4">📈 Évolution des collectes (6 mois)</h3>
+        <h3 class="text-lg font-semibold mb-4">Évolution des collectes (6 mois)</h3>
         <canvas id="collectesChart" height="200"></canvas>
     </div>
     
     <!-- Dernières collectes -->
     <div class="bg-white rounded-xl shadow-sm p-4 sm:p-6">
-        <h3 class="text-lg font-semibold mb-4">📦 Dernières collectes</h3>
+        <h3 class="text-lg font-semibold mb-4">Dernières collectes</h3>
         <div class="space-y-3">
-            @forelse($dernieresCollectes as $collecte)
+            @forelse($dernieres_collectes as $collecte)
             <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg hover:shadow-md transition">
                 <div class="flex-1">
                     <p class="font-medium">{{ $collecte->producteur->nom_complet }}</p>
@@ -82,7 +82,7 @@
 <!-- Liste des producteurs récents -->
 <div class="bg-white rounded-xl shadow-sm p-4 sm:p-6 mt-6">
     <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
-        <h3 class="text-lg font-semibold">👨‍🌾 Producteurs récents</h3>
+        <h3 class="text-lg font-semibold">Producteurs récents</h3>
         <a href="{{ route('agent.producteurs.index') }}" class="text-primary hover:underline text-sm">
             Voir tous <i class="fas fa-arrow-right ml-1"></i>
         </a>
