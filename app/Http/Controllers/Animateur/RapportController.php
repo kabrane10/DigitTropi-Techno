@@ -26,12 +26,23 @@ class RapportController extends Controller
             'total_superficie' => Producteur::whereIn('agent_terrain_id', $agentsIds)->sum('superficie_totale'),
         ];
         
-        $collectesParMois = Collecte::whereIn('producteur_id', $producteursIds)
-            ->select(DB::raw('strftime("%Y-%m", date_collecte) as mois'), DB::raw('SUM(quantite_nette) as total'))
-            ->groupBy('mois')
-            ->orderBy('mois', 'desc')
-            ->limit(6)
-            ->get();
+        $driver = DB::connection()->getDriverName();
+        
+        if ($driver === 'mysql') {
+            $collectesParMois = Collecte::whereIn('producteur_id', $producteursIds)
+                ->select(DB::raw("DATE_FORMAT(date_collecte, '%Y-%m') as mois"), DB::raw('SUM(quantite_nette) as total'))
+                ->groupBy('mois')
+                ->orderBy('mois', 'desc')
+                ->limit(6)
+                ->get();
+        } else {
+            $collectesParMois = Collecte::whereIn('producteur_id', $producteursIds)
+                ->select(DB::raw("strftime('%Y-%m', date_collecte) as mois"), DB::raw('SUM(quantite_nette) as total'))
+                ->groupBy('mois')
+                ->orderBy('mois', 'desc')
+                ->limit(6)
+                ->get();
+        }
         
         $topProducteurs = Producteur::whereIn('agent_terrain_id', $agentsIds)
             ->withSum('collectes', 'quantite_nette')

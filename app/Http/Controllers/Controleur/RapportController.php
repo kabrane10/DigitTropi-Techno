@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Producteur;
 use App\Models\CreditAgricole;
 use App\Models\Collecte;
-use Illuminate\Http\Request;  // AJOUTER CETTE LIGNE
+use Illuminate\Http\Request;  
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -23,14 +23,27 @@ class RapportController extends Controller
             'taux_remboursement' => $this->calculerTauxRemboursement(),
         ];
         
-        $collectesParMois = Collecte::select(
-                DB::raw('strftime("%Y-%m", date_collecte) as mois'),
-                DB::raw('SUM(quantite_nette) as total')
-            )
-            ->groupBy('mois')
-            ->orderBy('mois', 'desc')
-            ->limit(6)
-            ->get();
+       $driver = DB::connection()->getDriverName();
+        
+        if ($driver === 'mysql') {
+            $collectesParMois = Collecte::select(
+                    DB::raw("DATE_FORMAT(date_collecte, '%Y-%m') as mois"),
+                    DB::raw('SUM(quantite_nette) as total')
+                )
+                ->groupBy('mois')
+                ->orderBy('mois', 'desc')
+                ->limit(6)
+                ->get();
+        } else {
+            $collectesParMois = Collecte::select(
+                    DB::raw("strftime('%Y-%m', date_collecte) as mois"),
+                    DB::raw('SUM(quantite_nette) as total')
+                )
+                ->groupBy('mois')
+                ->orderBy('mois', 'desc')
+                ->limit(6)
+                ->get();
+        }
         
         $creditsParStatut = CreditAgricole::select('statut', DB::raw('count(*) as total'))
             ->groupBy('statut')
