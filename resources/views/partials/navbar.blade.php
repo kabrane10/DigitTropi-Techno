@@ -34,117 +34,31 @@
         </div>
     </div>
 
-    <!-- Mobile Menu - Version corrigée -->
-    <div id="mobile-menu" class="hidden md:hidden bg-white shadow-lg border-t border-gray-100" style="position: absolute; left: 0; right: 0; top: 80px;">
-        <div class="px-4 py-4 space-y-2">
-            <a href="{{ route('welcome') }}" class="block px-4 py-3 text-dark hover:bg-primary hover:text-white rounded-lg transition-all duration-300 font-medium">Accueil</a>
-            <a href="{{ route('actualites') }}" class="block px-4 py-3 text-dark hover:bg-primary hover:text-white rounded-lg transition-all duration-300 font-medium">Actualités</a>
-            <a href="#about" class="block px-4 py-3 text-dark hover:bg-primary hover:text-white rounded-lg transition-all duration-300 font-medium">À Propos</a>
-            <a href="{{ route('galerie') }}" class="block px-4 py-3 text-dark hover:bg-primary hover:text-white rounded-lg transition-all duration-300 font-medium">Galerie</a>
-            <a href="{{ route('contact') }}" class="block px-4 py-3 text-dark hover:bg-primary hover:text-white rounded-lg transition-all duration-300 font-medium">Contact</a>
-            <div class="pt-3 mt-2 border-t border-gray-100">
-                <a href="{{ route('contact') }}" class="block text-center bg-primary text-white px-4 py-3 rounded-lg hover:bg-secondary transition-all duration-300">
-                    Nous Contacter
-                </a>
-            </div>
-        </div>
+    <!-- Mobile Menu - Version ultra simple -->
+<div id="mobile-menu" style="display: none; position: absolute; top: 80px; left: 0; right: 0; background: white; z-index: 1000; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <div class="p-4 space-y-2">
+        <a href="{{ route('welcome') }}" class="block p-3 text-dark hover:bg-primary hover:text-white rounded-lg">Accueil</a>
+        <a href="{{ route('actualites') }}" class="block p-3 text-dark hover:bg-primary hover:text-white rounded-lg">Actualités</a>
+        <a href="#about" class="block p-3 text-dark hover:bg-primary hover:text-white rounded-lg">À Propos</a>
+        <a href="{{ route('galerie') }}" class="block p-3 text-dark hover:bg-primary hover:text-white rounded-lg">Galerie</a>
+        <a href="{{ route('contact') }}" class="block p-3 text-dark hover:bg-primary hover:text-white rounded-lg">Contact</a>
     </div>
-</nav>
+</div>
 
 <script>
-    // Menu mobile toggle - Version améliorée
-    document.addEventListener('DOMContentLoaded', function() {
-        const mobileMenuButton = document.getElementById('mobile-menu-button');
-        const mobileMenu = document.getElementById('mobile-menu');
-        const mobileMenuIcon = document.getElementById('mobile-menu-icon');
-        
-        if (mobileMenuButton && mobileMenu) {
-            // Afficher/masquer le menu
-            mobileMenuButton.addEventListener('click', function(event) {
-                event.stopPropagation();
-                
-                if (mobileMenu.classList.contains('hidden')) {
-                    mobileMenu.classList.remove('hidden');
-                    if (mobileMenuIcon) {
-                        mobileMenuIcon.classList.remove('fa-bars');
-                        mobileMenuIcon.classList.add('fa-times');
-                    }
-                    // Empêcher le scroll du body
-                    document.body.style.overflow = 'hidden';
-                } else {
-                    mobileMenu.classList.add('hidden');
-                    if (mobileMenuIcon) {
-                        mobileMenuIcon.classList.remove('fa-times');
-                        mobileMenuIcon.classList.add('fa-bars');
-                    }
-                    document.body.style.overflow = '';
-                }
-            });
-            
-            // Fermer le menu au clic sur un lien
-            const mobileLinks = mobileMenu.querySelectorAll('a');
-            mobileLinks.forEach(link => {
-                link.addEventListener('click', function() {
-                    mobileMenu.classList.add('hidden');
-                    if (mobileMenuIcon) {
-                        mobileMenuIcon.classList.remove('fa-times');
-                        mobileMenuIcon.classList.add('fa-bars');
-                    }
-                    document.body.style.overflow = '';
-                });
-            });
-            
-            // Fermer le menu en cliquant en dehors
-            document.addEventListener('click', function(event) {
-                if (!mobileMenuButton.contains(event.target) && !mobileMenu.contains(event.target)) {
-                    if (!mobileMenu.classList.contains('hidden')) {
-                        mobileMenu.classList.add('hidden');
-                        if (mobileMenuIcon) {
-                            mobileMenuIcon.classList.remove('fa-times');
-                            mobileMenuIcon.classList.add('fa-bars');
-                        }
-                        document.body.style.overflow = '';
-                    }
-                }
-            });
+    const btn = document.getElementById('mobile-menu-button');
+    const menu = document.getElementById('mobile-menu');
+    const icon = document.getElementById('mobile-menu-icon');
+    
+    btn.addEventListener('click', function() {
+        if (menu.style.display === 'none' || menu.style.display === '') {
+            menu.style.display = 'block';
+            icon.classList.remove('fa-bars');
+            icon.classList.add('fa-times');
+        } else {
+            menu.style.display = 'none';
+            icon.classList.remove('fa-times');
+            icon.classList.add('fa-bars');
         }
     });
 </script>
-
-<style>
-    /* Styles pour le menu mobile */
-    #mobile-menu {
-        transition: all 0.3s ease-in-out;
-        max-height: calc(100vh - 80px);
-        overflow-y: auto;
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    }
-    
-    #mobile-menu.hidden {
-        display: none;
-    }
-    
-    #mobile-menu a {
-        transition: all 0.2s ease;
-    }
-    
-    #mobile-menu-button:active {
-        transform: scale(0.95);
-    }
-    
-    /* Animation d'entrée */
-    @keyframes slideDown {
-        from {
-            opacity: 0;
-            transform: translateY(-10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-    
-    #mobile-menu:not(.hidden) {
-        animation: slideDown 0.3s ease-out;
-    }
-</style>
