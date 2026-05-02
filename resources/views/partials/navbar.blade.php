@@ -29,7 +29,7 @@
             <!-- Mobile menu button -->
             <div class="md:hidden">
                 <button id="mobile-menu-button" class="text-dark focus:outline-none">
-                    <i class="fas fa-bars text-2xl"></i>
+                    <i id="mobile-menu-icon" class="fas fa-bars text-2xl"></i>
                 </button>
             </div>
         </div>
@@ -54,35 +54,39 @@
 <script>
     // Menu mobile toggle
     document.addEventListener('DOMContentLoaded', function() {
-        const mobileMenuButton = document.getElementById('mobile-menu-button');
-        const mobileMenu = document.getElementById('mobile-menu');
-        const mobileMenuIcon = document.getElementById('mobile-menu-icon');
-        
-        if (mobileMenuButton && mobileMenu) {
-            mobileMenuButton.addEventListener('click', function() {
-                // Toggle menu
-                if (mobileMenu.classList.contains('hidden')) {
-                    mobileMenu.classList.remove('hidden');
-                    mobileMenuIcon.classList.remove('fa-bars');
-                    mobileMenuIcon.classList.add('fa-times');
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const mobileMenuIcon = document.getElementById('mobile-menu-icon');
+    
+    if (mobileMenuButton && mobileMenu) {
+        mobileMenuButton.addEventListener('click', function() {
+            const isHidden = mobileMenu.classList.contains('hidden');
+            
+            // Toggle menu
+            mobileMenu.classList.toggle('hidden');
+            
+            // Toggle icône (seulement si elle existe)
+            if (mobileMenuIcon) {
+                if (isHidden) {
+                    mobileMenuIcon.classList.replace('fa-bars', 'fa-times');
                 } else {
-                    mobileMenu.classList.add('hidden');
-                    mobileMenuIcon.classList.remove('fa-times');
-                    mobileMenuIcon.classList.add('fa-bars');
+                    mobileMenuIcon.classList.replace('fa-times', 'fa-bars');
+                }
+            }
+        });
+        
+        // Fermer le menu au clic sur un lien
+        const mobileLinks = mobileMenu.querySelectorAll('a');
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                mobileMenu.classList.add('hidden');
+                if (mobileMenuIcon) {
+                    mobileMenuIcon.classList.replace('fa-times', 'fa-bars');
                 }
             });
-            
-            // Fermer le menu quand on clique sur un lien
-            const mobileLinks = mobileMenu.querySelectorAll('a');
-            mobileLinks.forEach(link => {
-                link.addEventListener('click', function() {
-                    mobileMenu.classList.add('hidden');
-                    mobileMenuIcon.classList.remove('fa-times');
-                    mobileMenuIcon.classList.add('fa-bars');
-                });
-            });
-        }
-    });
+        });
+    }
+});
 </script>
 
 <style>

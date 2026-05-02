@@ -43,7 +43,7 @@
                 <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" style="background-image: url('{{ asset('images/img4.png') }}');">
                     <div class="absolute inset-0 bg-gradient-to-r from-dark/55 to-primary/55"></div>
                 </div>
-                <div class="relative z-10 flex flex-col items-center justify-center h-full text-center text-white px-4">
+                <div class="relative z-10 flex flex-col items-center justify-center h-full text-center text-white px-4 pt-20">
                     <div class="max-w-4xl mx-auto animate-fade-in-up">
                         <div class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
                             <i class="fas fa-seedling text-accent text-sm"></i>
@@ -84,13 +84,13 @@
                 <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" style="background-image: url('{{ asset('images/img5.png') }}');">
                     <div class="absolute inset-0 bg-gradient-to-r from-secondary/75 to-primary/75"></div>
                 </div>
-                <div class="relative z-10 flex flex-col items-center justify-center h-full text-center text-white px-4">
+                <div class="relative z-10 flex flex-col items-center justify-center h-full text-center text-white px-4 pt-20">
                     <div class="max-w-4xl mx-auto animate-fade-in-up">
                         <div class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
                             <i class="fas fa-graduation-cap text-accent text-sm"></i>
                             <span class="text-sm font-medium">Formation & Certification</span>
                         </div>
-                        <h1 class="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-6 leading-tight">
+                        <h1 class="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-6  leading-tight">
                             Accompagnement expert<br>pour votre <span class="text-accent">certification bio</span>
                         </h1>
                         <p class="text-xl md:text-2xl mb-8 text-white/90 max-w-3xl mx-auto">
@@ -1043,10 +1043,10 @@
     
     /* Animation des dots actifs */
     .dot.active {
-        background-color: #ffb703;
+        background-color:rgb(8, 197, 8);
         width: 12px;
         height: 12px;
-        box-shadow: 0 0 10px rgba(255, 183, 3, 0.5);
+        box-shadow: 0 0 10px rgba(8, 138, 26, 0.5);
     }
     
     /* Transition douce des slides */
