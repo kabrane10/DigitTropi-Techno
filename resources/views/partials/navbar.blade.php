@@ -60,6 +60,7 @@
     
     if (mobileMenuButton && mobileMenu) {
         mobileMenuButton.addEventListener('click', function() {
+            console.log("Le bouton a été cliqué !"); // Ajoutez ceci
             const isHidden = mobileMenu.classList.contains('hidden');
             
             // Toggle menu
