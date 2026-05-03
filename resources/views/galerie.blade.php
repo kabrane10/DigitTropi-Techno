@@ -180,6 +180,10 @@
                 grid.classList.remove('hidden');
             });
     }
+
+    function openAlbum(albumId) {
+        window.location.href = '/albums/' + albumId;
+    }
     
     function loadPhotos(page = 1) {
         const loading = document.getElementById('photosLoading');
