@@ -11,11 +11,22 @@ use Illuminate\Support\Str;
 
 class AlbumAdminController extends Controller
 {
-    public function index()
-    {
-        $albums = Album::withCount('images')->orderBy('created_at', 'desc')->paginate(10);
-        return view('admin.albums.index', compact('albums'));
+    public function index(Request $request)
+{
+    $query = Album::withCount('images');
+    
+    if ($request->filled('categorie')) {
+        $query->where('categorie', $request->categorie);
     }
+    
+    if ($request->filled('statut')) {
+        $query->where('est_publie', $request->statut == 'publie');
+    }
+    
+    $albums = $query->orderBy('created_at', 'desc')->paginate(12);
+    
+    return view('admin.albums.index', compact('albums'));
+}
 
     public function create()
     {
@@ -172,23 +183,6 @@ class AlbumAdminController extends Controller
     
     return redirect()->route('admin.albums.show', $album)
         ->with('success', count($request->file('new_images')) . ' photo(s) ajoutée(s)');
-}
-
-public function index(Request $request)
-{
-    $query = Album::withCount('images');
-    
-    if ($request->filled('categorie')) {
-        $query->where('categorie', $request->categorie);
-    }
-    
-    if ($request->filled('statut')) {
-        $query->where('est_publie', $request->statut == 'publie');
-    }
-    
-    $albums = $query->orderBy('created_at', 'desc')->paginate(12);
-    
-    return view('admin.albums.index', compact('albums'));
 }
 
 }
