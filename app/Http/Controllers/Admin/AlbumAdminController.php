@@ -91,7 +91,7 @@ class AlbumAdminController extends Controller
             Log::error("Erreur de création d'album: " . $e->getMessage());
 
             return redirect()->back()
-                ->with('error', "Une erreur est survenue lors de la création de l\'album. Veuillez vérifier vos informations et les logs pour plus de détails.");
+                ->with('error', "Erreur lors de la création : " . $e->getMessage());
         }
     }
 
