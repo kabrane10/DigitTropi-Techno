@@ -39,7 +39,11 @@ class ActualiteAdminController extends Controller
 
         if ($request->hasFile('image_couverture')) {
             $result = Cloudinary::upload($request->file('image_couverture')->getRealPath(), [
-                'folder' => 'actualites'
+                'folder' => 'actualites',
+                'transformation' => [
+                'quality' => 'auto',
+                'fetch_format' => 'auto'
+             ]
             ]);
 
             $validated['image_couverture'] = $result->getSecurePath();
