@@ -4,7 +4,7 @@
 @section('description', $album->description)
 
 @section('content')
-<div class="container px-4 py-12 mx-auto">
+<div class="container px-4 pt-32 pb-12 mx-auto">
     <div class="max-w-4xl mx-auto text-center mb-12">
         <h1 class="text-4xl md:text-5xl font-bold text-dark mb-4">{{ $album->titre }}</h1>
         <p class="text-xl text-gray-600 max-w-3xl mx-auto">{{ $album->description }}</p>

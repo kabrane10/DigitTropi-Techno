@@ -199,7 +199,12 @@
             .then(data => {
                 if (data.photos && data.photos.data.length > 0) {
                     grid.innerHTML = data.photos.data.map(photo => `
-                        <div class="photo-card bg-white rounded-2xl overflow-hidden shadow-lg cursor-pointer group" onclick="openImageModal('${photo.image}', '${escapeHtml(photo.titre)}', '${escapeHtml(photo.description || '')}', '${photo.lieu || 'Non spécifié'}', '${new Date(photo.date_prise).toLocaleDateString('fr-FR')}')">
+                        <div class="photo-card bg-white rounded-2xl overflow-hidden shadow-lg cursor-pointer group" 
+                            data-image="${photo.image}" 
+                            data-titre="${escapeHtml(photo.titre)}" 
+                            data-description="${escapeHtml(photo.description || '')}" 
+                            data-lieu="${escapeHtml(photo.lieu || 'Non spécifié')}" 
+                            data-date="${new Date(photo.date_prise).toLocaleDateString('fr-FR')}">
                             <div class="relative h-56 overflow-hidden">
                                 <!-- J'ai modifié la ligne ci-dessous pour afficher l'image depuis Cloudinary. -->
                                 <img src="${photo.image}" alt="${escapeHtml(photo.titre)}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
@@ -261,6 +266,19 @@
         div.textContent = text;
         return div.innerHTML;
     }
+    
+    // Event Listener pour les photos
+    document.getElementById('photosGrid').addEventListener('click', function(event) {
+        const card = event.target.closest('.photo-card');
+        if (card) {
+            const image = card.dataset.image;
+            const titre = card.dataset.titre;
+            const description = card.dataset.description;
+            const lieu = card.dataset.lieu;
+            const date = card.dataset.date;
+            openImageModal(image, titre, description, lieu, date);
+        }
+    });
     
     // Chargement initial
     loadAlbums();
