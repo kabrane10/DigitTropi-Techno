@@ -1,10 +1,10 @@
-<nav class="bg-white shadow-lg fixed w-full z-50 top-0">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<nav class="bg-white shadow-lg fixed w-full z-[100] top-0">
+    <!-- Barre principale (Toujours au premier plan) -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 bg-white relative z-[101]">
         <div class="flex justify-between items-center h-20">
             <!-- Logo -->
             <div class="flex-shrink-0">
                 <a href="/" class="flex items-center space-x-2">
-                    <!-- <i class="fas fa-leaf text-primary text-3xl animate-pulse-slow"></i> -->
                     <img src="{{ asset('images/img6.png') }}" class="h-8 sm:h-10 md:h-16 rounded-full w-auto object-contain">
                     <span class="font-poppins font-bold text-xl text-dark">Tropi-Techno</span>
                 </a>
@@ -16,10 +16,10 @@
                 <a href="{{ route('actualites') }}" class="text-dark hover:bg-primary px-3 py-1 hover:text-white rounded-full transition-colors duration-300 font-medium">Actualités</a>
                 <a href="#about" class="text-dark hover:bg-primary px-3 py-1 hover:text-white rounded-full transition-colors duration-300 font-medium">À Propos</a>
                 <a href="{{ route('galerie') }}" class="text-dark hover:bg-primary px-3 py-1 hover:text-white rounded-full transition-colors duration-300 font-medium">Galerie</a>
-                <a href="{{ route('contact') }}"  class="text-dark hover:bg-primary px-3 py-1 hover:text-white rounded-full transition-colors duration-300 font-medium">Contact</a>
+                <a href="{{ route('contact') }}" class="text-dark hover:bg-primary px-3 py-1 hover:text-white rounded-full transition-colors duration-300 font-medium">Contact</a>
             </div>
             
-            <!-- CTA Button -->
+            <!-- CTA Button Desktop -->
             <div class="hidden md:block">
                 <a href="#contact" class="bg-primary text-white px-6 py-2 rounded-full hover:bg-secondary transition-all duration-300 transform hover:scale-105">
                     Nous Contacter
@@ -27,24 +27,25 @@
             </div>
             
             <!-- Mobile menu button -->
-            <div class="md:hidden">
-                <button id="mobile-menu-button" class="text-dark focus:outline-none">
-                    <i id=menu-mobile-icon class="fas fa-bars text-2xl"></i>
+            <div class="md:hidden flex items-center">
+                <button id="mobile-menu-button" class="text-dark focus:outline-none p-2 cursor-pointer">
+                    <i id="mobile-menu-icon" class="fas fa-bars text-3xl"></i>
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Mobile Menu -->
-    <div id="mobile-menu" class="hidden md:hidden bg-white border-t">
-        <div class="px-2 pt-2 pb-3 space-y-1">
-            <a href="{{ route('welcome') }}" class="block px-3 py-2 text-dark hover:text-primary font-medium">Accueil</a>
-            <a href="{{ route('actualites') }}" class="block px-3 py-2 text-dark hover:text-primary font-medium">Actualités</a>
-            <a href="#about" class="block px-3 py-2 text-dark hover:text-primary font-medium">À Propos</a>
-            <a href="{{ route('galerie') }}" class="block px-3 py-2 text-dark hover:text-primary font-medium">Galerie</a>
-            <a href="{{ route('contact') }}"  class="block px-3 py-2 text-dark hover:text-primary font-medium">Contact</a>
-            <div class="pt-2">
-                <a href="{{ route('contact') }}" class="block text-center bg-primary text-white px-4 py-3 rounded-lg hover:bg-secondary transition">
+    <!-- Mobile Menu (Positionné de force en dessous) -->
+    <div id="mobile-menu" class="absolute left-0 w-full bg-white border-t border-gray-200 shadow-2xl z-[99]" style="display: none; top: 100%;">
+        <div class="px-4 py-4 space-y-2 pb-8">
+            <a href="{{ route('welcome') }}" class="block px-4 py-3 text-lg font-bold text-gray-900 hover:bg-gray-100 rounded-lg">Accueil</a>
+            <a href="{{ route('actualites') }}" class="block px-4 py-3 text-lg font-bold text-gray-900 hover:bg-gray-100 rounded-lg">Actualités</a>
+            <a href="#about" class="block px-4 py-3 text-lg font-bold text-gray-900 hover:bg-gray-100 rounded-lg">À Propos</a>
+            <a href="{{ route('galerie') }}" class="block px-4 py-3 text-lg font-bold text-gray-900 hover:bg-gray-100 rounded-lg">Galerie</a>
+            <a href="{{ route('contact') }}" class="block px-4 py-3 text-lg font-bold text-gray-900 hover:bg-gray-100 rounded-lg">Contact</a>
+            
+            <div class="pt-4 mt-2 border-t border-gray-200">
+                <a href="{{ route('contact') }}" class="block text-center bg-primary text-white px-4 py-3 rounded-lg font-bold text-lg">
                     Nous Contacter
                 </a>
             </div>
@@ -52,47 +53,44 @@
     </div>
 </nav>
 <script>
-    // Menu mobile toggle
     document.addEventListener('DOMContentLoaded', function() {
-    const btn = document.querySelector('#mobile-menu-button');
-    const menu = document.querySelector('#mobile-menu');
-    const icon = document.querySelector('#mobile-menu-icon') || btn.querySelector('i');
+        const btn = document.getElementById('mobile-menu-button');
+        const menu = document.getElementById('mobile-menu');
+        const icon = document.getElementById('mobile-menu-icon');
 
-    if (btn && menu) {
-        btn.addEventListener('click', () => {
-            const isHidden = menu.classList.toggle('hidden');
-            
-            if (icon) {
-                if (isHidden) {
-                    icon.classList.add('fa-bars');
-                    icon.classList.remove('fa-times');
+        if (btn && menu) {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault(); // Empêche le saut de page
+                
+                // Utilisation de style.display pour bypasser les conflits de production
+                if (menu.style.display === 'none' || menu.style.display === '') {
+                    // Ouvrir
+                    menu.style.display = 'block';
+                    if (icon) {
+                        icon.classList.remove('fa-bars');
+                        icon.classList.add('fa-times');
+                    }
                 } else {
-                    icon.classList.add('fa-times');
-                    icon.classList.remove('fa-bars');
+                    // Fermer
+                    menu.style.display = 'none';
+                    if (icon) {
+                        icon.classList.remove('fa-times');
+                        icon.classList.add('fa-bars');
+                    }
                 }
-            }
-        });
-    }
-});
-</script>
+            });
 
-<style>
-    /* Animation pour le menu mobile */
-    #mobile-menu {
-        transition: all 0.3s ease;
-        max-height: 80vh;
-        overflow-y: auto;
-    }
-    
-    #mobile-menu a {
-        transition: all 0.2s ease;
-    }
-    
-    #mobile-menu-button {
-        transition: all 0.2s ease;
-    }
-    
-    #mobile-menu-button:active {
-        transform: scale(0.95);
-    }
-</style>
+            // Fermer le menu lors du clic sur un lien
+            const links = menu.querySelectorAll('a');
+            links.forEach(link => {
+                link.addEventListener('click', function() {
+                    menu.style.display = 'none';
+                    if (icon) {
+                        icon.classList.remove('fa-times');
+                        icon.classList.add('fa-bars');
+                    }
+                });
+            });
+        }
+    });
+</script>
