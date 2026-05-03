@@ -33,6 +33,7 @@ use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\DashboardAdminController;
 use App\Http\Controllers\Admin\ActualiteAdminController;
 use App\Http\Controllers\Admin\GalerieAdminController;
+use App\Http\Controllers\Admin\AlbumAdminController;
 use App\Http\Controllers\Admin\ProducteurController;
 use App\Http\Controllers\Admin\CooperativeController;
 use App\Http\Controllers\Admin\DistributionSemenceController;
@@ -72,7 +73,12 @@ Route::get('/administration', function() {
 
 // ========== ROUTES API POUR LE CHARGEMENT AJAX ==========
 Route::get('/actualites/api/data', [ActualiteController::class, 'apiData'])->name('actualites.api');
+Route::get('/galerie/api/photos', [GalerieController::class, 'getPhotos'])->name('galerie.api.photos');
 Route::get('/galerie/api/data', [GalerieController::class, 'apiData'])->name('galerie.api');
+
+// API pour la galerie publique
+Route::get('/galerie/api/albums', [GalerieController::class, 'getAlbums']);
+Route::get('/galerie/api/albums/{id}', [GalerieController::class, 'getAlbumImages']);
 
 Route::prefix('admin')->name('admin.')->group(function () {
     
@@ -104,6 +110,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('galerie', GalerieAdminController::class);
         Route::post('/galerie/reorder', [GalerieAdminController::class, 'reorder'])->name('galerie.reorder');
         
+        // Admin - Albums
+        Route::resource('albums', AlbumAdminController::class);
+        Route::post('/albums/{album}/add-images', [AlbumAdminController::class, 'addImages'])->name('albums.add-images');
+
         // Animateurs
         Route::resource('animateurs', AnimateurController::class);
         Route::post('/animateurs/{id}/reset-password', [AnimateurController::class, 'resetPassword'])->name('animateurs.reset-password');

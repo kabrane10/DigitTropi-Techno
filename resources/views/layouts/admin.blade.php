@@ -276,6 +276,10 @@
                         <i class="fas fa-images w-5"></i>
                         <span>Galerie</span>
                     </a>
+                    <a href="{{ route('admin.albums.index') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg transition {{ request()->routeIs('admin.galerie.*') ? 'bg-primary text-white' : 'text-white/80 hover:bg-white/10' }}">
+                        <i class="fas fa-images w-5"></i>
+                        <span>Album</span>
+                    </a>
                 </div>
 
                 <!-- ========== SYSTÈME ========== -->

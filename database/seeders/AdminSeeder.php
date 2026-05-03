@@ -23,6 +23,7 @@ class AdminSeeder extends Seeder
             ]);
         }
         
+        
         // 2. Créer ou mettre à jour l'admin principal
         Admin::updateOrCreate(
             ['email' => 'admin1@tropitechno.com'], // On cherche par l'email

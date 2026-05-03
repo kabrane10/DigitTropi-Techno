@@ -11,7 +11,7 @@ class Galerie extends Model
 
     protected $fillable = [
         'titre', 'image', 'description', 'categorie', 
-        'lieu', 'date_prise', 'est_publie', 'ordre'
+        'lieu', 'date_prise', 'est_publie', 'ordre', 'album_id'
     ];
 
     protected $casts = [
@@ -19,13 +19,19 @@ class Galerie extends Model
         'est_publie' => 'boolean'
     ];
 
-    public function scopePublie($query)
+    public function album()
     {
-        return $query->where('est_publie', true);
+        return $this->belongsTo(Album::class);
     }
 
     public function getImageUrlAttribute()
     {
         return asset('storage/' . $this->image);
     }
+
+    public function scopePublie($query)
+    {
+        return $query->where('est_publie', true);
+    }
+
 }
