@@ -272,13 +272,29 @@
                         <i class="fas fa-newspaper w-5"></i>
                         <span>Actualités</span>
                     </a>
+                </div>
+                <!-- ========== GALERIE ========== -->
+                <div class="pt-4">
+                    <p class="text-white/50 text-xs uppercase px-4 mb-2">Galerie</p>
+    
+                    <!-- Option 1: Photos individuelles (ancien système) -->
                     <a href="{{ route('admin.galerie.index') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg transition {{ request()->routeIs('admin.galerie.*') ? 'bg-primary text-white' : 'text-white/80 hover:bg-white/10' }}">
-                        <i class="fas fa-images w-5"></i>
-                        <span>Galerie</span>
+                        <i class="fas fa-image w-5"></i>
+                        <span>Photos individuelles</span>
                     </a>
-                    <a href="{{ route('admin.albums.index') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg transition {{ request()->routeIs('admin.galerie.*') ? 'bg-primary text-white' : 'text-white/80 hover:bg-white/10' }}">
+                    <a href="{{ route('admin.galerie.create') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg transition text-white/80 hover:bg-white/10">
+                        <i class="fas fa-plus-circle w-5"></i>
+                        <span>Ajouter une photo</span>
+                    </a>
+    
+                    <!-- Option 2: Albums photos (nouveau système) -->
+                    <a href="{{ route('admin.albums.index') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg transition {{ request()->routeIs('admin.albums.*') ? 'bg-primary text-white' : 'text-white/80 hover:bg-white/10' }}">
                         <i class="fas fa-images w-5"></i>
-                        <span>Album</span>
+                        <span>Albums photos</span>
+                    </a>
+                    <a href="{{ route('admin.albums.create') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg transition text-white/80 hover:bg-white/10">
+                        <i class="fas fa-plus-circle w-5"></i>
+                        <span>Créer un album</span>
                     </a>
                 </div>
 
