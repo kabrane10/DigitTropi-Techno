@@ -11,7 +11,7 @@ class Actualite extends Model
     use HasFactory;
 
     protected $fillable = [
-        'titre', 'slug', 'contenu', 'image_couverture', 'categorie',
+        'titre', 'slug', 'contenu', 'image_couverture', 'image_couverture_public_id', 'categorie',
         'date_publication', 'date_fin', 'lieu', 'est_en_avant', 'est_publie'
     ];
 
@@ -44,6 +44,6 @@ class Actualite extends Model
 
     public function getImageUrlAttribute()
     {
-        return $this->image_couverture ? asset('storage/' . $this->image_couverture) : null;
+        return $this->image_couverture;
     }
 }

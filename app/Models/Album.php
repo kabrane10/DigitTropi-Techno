@@ -12,7 +12,7 @@ class Album extends Model
 
     protected $fillable = [
         'titre', 'slug', 'categorie', 'lieu', 'date_evenement',
-        'description', 'couverture', 'est_publie'
+        'description', 'couverture', 'couverture_public_id', 'est_publie'
     ];
 
     protected $casts = [

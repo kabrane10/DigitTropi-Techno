@@ -26,7 +26,8 @@ class Galerie extends Model
 
     public function getImageUrlAttribute()
     {
-        return asset('storage/' . $this->image);
+        // return asset('storage/' . $this->image);
+        return $this->image;
     }
 
     public function scopePublie($query)

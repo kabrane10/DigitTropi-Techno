@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Actualite;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Storage;
 
 class ActualiteAdminController extends Controller
 {
@@ -38,8 +38,12 @@ class ActualiteAdminController extends Controller
         $validated['est_publie'] = true;
 
         if ($request->hasFile('image_couverture')) {
-            $path = $request->file('image_couverture')->store('actualites', 'public');
-            $validated['image_couverture'] = $path;
+            $result = Cloudinary::upload($request->file('image_couverture')->getRealPath(), [
+                'folder' => 'actualites'
+            ]);
+
+            $validated['image_couverture'] = $result->getSecurePath();
+            $validated['image_couverture_public_id'] = $result->getPublicId();
         }
 
         Actualite::create($validated);
@@ -54,37 +58,47 @@ class ActualiteAdminController extends Controller
     }
 
     public function update(Request $request, Actualite $actualite)
-{
-    $validated = $request->validate([
-        'titre' => 'required|string|max:255',
-        'contenu' => 'required|string',
-        'categorie' => 'required|in:campagne,evenement,formation,annonce',
-        'date_publication' => 'required|date',
-        'date_fin' => 'nullable|date|after:date_publication',
-        'lieu' => 'nullable|string',
-        'est_en_avant' => 'boolean',
-        'est_publie' => 'boolean',
-        'image_couverture' => 'nullable|image|max:2048'
-    ]);
+    {
+        $validated = $request->validate([
+            'titre' => 'required|string|max:255',
+            'contenu' => 'required|string',
+            'categorie' => 'required|in:campagne,evenement,formation,annonce',
+            'date_publication' => 'required|date',
+            'date_fin' => 'nullable|date|after:date_publication',
+            'lieu' => 'nullable|string',
+            'est_en_avant' => 'boolean',
+            'est_publie' => 'boolean',
+            'image_couverture' => 'nullable|image|max:2048'
+        ]);
 
-    // Gérer les valeurs booléennes
-    $validated['est_en_avant'] = $request->has('est_en_avant');
-    $validated['est_publie'] = $request->has('est_publie');
+        $validated['est_en_avant'] = $request->has('est_en_avant');
+        $validated['est_publie'] = $request->has('est_publie');
 
-    // Gérer l'image
-    if ($request->hasFile('image_couverture')) {
-        // Supprimer l'ancienne image si elle existe
-        if ($actualite->image_couverture) {
-            Storage::disk('public')->delete($actualite->image_couverture);
+        if ($request->hasFile('image_couverture')) {
+            if ($actualite->image_couverture_public_id) {
+                Cloudinary::destroy($actualite->image_couverture_public_id);
+            }
+            $result = Cloudinary::upload($request->file('image_couverture')->getRealPath(), [
+                'folder' => 'actualites'
+            ]);
+
+            $validated['image_couverture'] = $result->getSecurePath();
+            $validated['image_couverture_public_id'] = $result->getPublicId();
         }
-        
-        $path = $request->file('image_couverture')->store('actualites', 'public');
-        $validated['image_couverture'] = $path;
+
+        $actualite->update($validated);
+
+        return redirect()->route('admin.actualites.index')
+            ->with('success', 'Actualité mise à jour avec succès');
     }
 
-    $actualite->update($validated);
-
-    return redirect()->route('admin.actualites.index')
-        ->with('success', 'Actualité mise à jour avec succès');
-}
+    public function destroy(Actualite $actualite)
+    {
+        if ($actualite->image_couverture_public_id) {
+            Cloudinary::destroy($actualite->image_couverture_public_id);
+        }
+        $actualite->delete();
+        return redirect()->route('admin.actualites.index')
+            ->with('success', 'Actualité supprimée');
+    }
 }

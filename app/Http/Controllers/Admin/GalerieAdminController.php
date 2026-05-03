@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Galerie;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Illuminate\Http\Request;
 
 class GalerieAdminController extends Controller
@@ -31,8 +32,12 @@ class GalerieAdminController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('galerie', 'public');
-            $validated['image'] = $path;
+            $result = Cloudinary::upload($request->file('image')->getRealPath(), [
+                'folder' => 'galerie'
+            ]);
+
+            $validated['image'] = $result->getSecurePath();
+            $validated['image_public_id'] = $result->getPublicId();
         }
 
         $validated['est_publie'] = true;
@@ -62,8 +67,15 @@ class GalerieAdminController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('galerie', 'public');
-            $validated['image'] = $path;
+            if ($galerie->image_public_id) {
+                Cloudinary::destroy($galerie->image_public_id);
+            }
+            $result = Cloudinary::upload($request->file('image')->getRealPath(), [
+                'folder' => 'galerie'
+            ]);
+
+            $validated['image'] = $result->getSecurePath();
+            $validated['image_public_id'] = $result->getPublicId();
         }
 
         $galerie->update($validated);
@@ -74,6 +86,9 @@ class GalerieAdminController extends Controller
 
     public function destroy(Galerie $galerie)
     {
+        if ($galerie->image_public_id) {
+            Cloudinary::destroy($galerie->image_public_id);
+        }
         $galerie->delete();
         return redirect()->route('admin.galerie.index')
             ->with('success', 'Image supprimée');
