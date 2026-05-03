@@ -146,7 +146,9 @@
                     grid.innerHTML = data.albums.map(album => `
                         <div class="album-card bg-white rounded-2xl overflow-hidden shadow-lg cursor-pointer group" onclick="openAlbum(${album.id})">
                             <div class="relative h-64 overflow-hidden">
-                                <img src="${album.couverture_url}" alt="${album.titre}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                            
+                                 <!-- J'ai modifié la ligne ci-dessous pour afficher l'image depuis Cloudinary. -->
+                                <img src="${album.couverture}" alt="${album.titre}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
                                 <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
                                     <span class="bg-primary text-white px-4 py-2 rounded-full text-sm">
                                         <i class="fas fa-images mr-2"></i>${album.images_count} photos
@@ -193,9 +195,10 @@
             .then(data => {
                 if (data.photos && data.photos.data.length > 0) {
                     grid.innerHTML = data.photos.data.map(photo => `
-                        <div class="photo-card bg-white rounded-2xl overflow-hidden shadow-lg cursor-pointer group" onclick="openImageModal('${photo.image_url}', '${escapeHtml(photo.titre)}', '${escapeHtml(photo.description || '')}', '${photo.lieu || 'Non spécifié'}', '${new Date(photo.date_prise).toLocaleDateString('fr-FR')}')">
+                        <div class="photo-card bg-white rounded-2xl overflow-hidden shadow-lg cursor-pointer group" onclick="openImageModal('${photo.image}', '${escapeHtml(photo.titre)}', '${escapeHtml(photo.description || '')}', '${photo.lieu || 'Non spécifié'}', '${new Date(photo.date_prise).toLocaleDateString('fr-FR')}')">
                             <div class="relative h-56 overflow-hidden">
-                                <img src="${photo.image_url}" alt="${escapeHtml(photo.titre)}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                                <!-- J'ai modifié la ligne ci-dessous pour afficher l'image depuis Cloudinary. -->
+                                <img src="${photo.image}" alt="${escapeHtml(photo.titre)}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
                             </div>
                             <div class="p-4">
                                 <h3 class="font-semibold text-dark mb-1">${escapeHtml(photo.titre)}</h3>

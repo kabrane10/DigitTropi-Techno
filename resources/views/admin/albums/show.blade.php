@@ -11,7 +11,7 @@
             <!-- Image couverture -->
             <div class="md:w-64 h-48 rounded-lg overflow-hidden bg-gray-100">
                 @if($album->couverture)
-                    <img src="{{ asset('storage/' . $album->couverture) }}" alt="{{ $album->titre }}" class="w-full h-full object-cover">
+                    <img src="{{ $album->couverture }}" alt="{{ $album->titre }}" class="w-full h-full object-cover">
                 @else
                     <div class="w-full h-full flex items-center justify-center">
                         <i class="fas fa-images text-4xl text-gray-300"></i>
@@ -77,10 +77,10 @@
             @foreach($album->images as $image)
             <div class="relative group">
                 <div class="aspect-square rounded-lg overflow-hidden bg-gray-100">
-                    <img src="{{ asset('storage/' . $image->image) }}" alt="{{ $image->titre }}" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110">
+                    <img src="{{ $image->image }}" alt="{{ $image->titre }}" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110">
                 </div>
                 <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-2">
-                    <button onclick="viewImage('{{ asset('storage/' . $image->image) }}', '{{ $image->titre }}')" class="bg-white text-gray-800 p-2 rounded-full hover:bg-gray-100">
+                    <button onclick="viewImage('{{ $image->image }}', '{{ $image->titre }}')" class="bg-white text-gray-800 p-2 rounded-full hover:bg-gray-100">
                         <i class="fas fa-eye"></i>
                     </button>
                     <form action="{{ route('admin.galerie.destroy', $image) }}" method="POST" class="inline">

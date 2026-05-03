@@ -55,7 +55,10 @@
                 <label class="block text-sm font-semibold text-gray-700 mb-2">Image de couverture</label>
                 @if($album->couverture)
                 <div class="mb-3">
-                    <img src="{{ asset('storage/' . $album->couverture) }}" class="h-32 rounded-lg object-cover">
+                    {{-- J'ai modifié la ligne ci-dessous pour afficher l'image depuis Cloudinary.
+                         Anciennement : <img src="{{ asset('storage/' . $album->couverture) }}" ...>
+                         Maintenant, j'utilise directement l'URL de l'image qui est maintenant stockée dans la base de données. --}}
+                    <img src="{{ $album->couverture }}" class="h-32 rounded-lg object-cover">
                 </div>
                 @endif
                 <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-primary transition cursor-pointer"

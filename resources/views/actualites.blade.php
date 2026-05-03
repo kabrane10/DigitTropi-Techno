@@ -245,7 +245,8 @@
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
                     ${data.actualites_en_avant.map((a, i) => `
                         <div class="${i===0?'lg:col-span-2':''} bg-white rounded-2xl shadow-xl overflow-hidden">
-                            ${i===0 && a.image_couverture ? `<img src="/storage/${a.image_couverture}" class="w-full h-64 object-cover">` : ''}
+                            <!-- J'ai modifié la ligne ci-dessous pour afficher l'image depuis Cloudinary. -->
+                            ${i===0 && a.image_couverture ? `<img src="${a.image_couverture}" class="w-full h-64 object-cover">` : ''}
                             <div class="p-6"><div class="flex items-center gap-2 mb-3"><span class="bg-primary/10 text-primary text-xs px-3 py-1 rounded-full">${a.categorie}</span>
                             <span class="text-gray-400 text-xs">${new Date(a.date_publication).toLocaleDateString('fr-FR')}</span></div>
                             <h3 class="text-${i===0?'2xl':'xl'} font-bold mb-3">${escapeHtml(a.titre)}</h3>
@@ -266,7 +267,8 @@
                     ${data.actualites.data.map(a => `
                         <div class="bg-white rounded-xl shadow-md overflow-hidden">
                             <div class="md:flex">
-                                ${a.image_couverture ? `<div class="md:w-72 h-48 md:h-auto"><img src="/storage/${a.image_couverture}" class="w-full h-full object-cover"></div>` :
+                                <!-- J'ai modifié la ligne ci-dessous pour afficher l'image depuis Cloudinary. -->
+                                ${a.image_couverture ? `<div class="md:w-72 h-48 md:h-auto"><img src="${a.image_couverture}" class="w-full h-full object-cover"></div>` :
                                     `<div class="md:w-72 h-48 bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center"><i class="fas fa-newspaper text-4xl text-primary/50"></i></div>`}
                                 <div class="p-6 flex-1">
                                     <div class="flex items-center gap-2 mb-2"><span class="bg-gray-100 text-gray-600 text-xs px-3 py-1 rounded-full">${a.categorie}</span>

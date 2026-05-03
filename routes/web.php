@@ -65,11 +65,6 @@ Route::get('/administration', function() {
     return view('auth.role-selection');
 })->name('role.selection');
 
-// ========== ESPACE ADMIN ==========
-// Route::get('/test-simple', function() {
-//     return 'Route test fonctionne';
-// });
-
 
 // ========== ROUTES API POUR LE CHARGEMENT AJAX ==========
 Route::get('/actualites/api/data', [ActualiteController::class, 'apiData'])->name('actualites.api');
@@ -80,14 +75,21 @@ Route::get('/galerie/api/data', [GalerieController::class, 'apiData'])->name('ga
 Route::get('/galerie/api/albums', [GalerieController::class, 'getAlbums']);
 Route::get('/galerie/api/albums/{id}', [GalerieController::class, 'getAlbumImages']);
 
+// --- ROUTES PUBLIQUES (Accessibles à tous)
+
+Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [LoginController::class, 'login']);
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
 Route::prefix('admin')->name('admin.')->group(function () {
     
     // Authentification
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-    
-    // Routes protégées
+    //================================================================//
+    //                    Routes protégées                            //
+    //================================================================//
     Route::middleware('auth:admin')->group(function () {
         
         // Dashboard

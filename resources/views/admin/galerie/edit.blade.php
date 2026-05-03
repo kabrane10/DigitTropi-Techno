@@ -13,7 +13,10 @@
             <div class="md:col-span-2">
                 <label class="block text-sm font-semibold text-gray-700 mb-2">Image actuelle</label>
                 <div class="mb-4">
-                    <img src="{{ asset('storage/'.$galerie->image) }}" alt="{{ $galerie->titre }}" class="h-48 rounded-lg object-cover">
+                    {{-- J'ai modifié la ligne ci-dessous pour afficher l'image depuis Cloudinary.
+                         Anciennement : <img src="{{ asset('storage/'.$galerie->image) }}" ...>
+                         Maintenant, j'utilise directement l'URL de l'image qui est maintenant stockée dans la base de données. --}}
+                    <img src="{{ $galerie->image }}" alt="{{ $galerie->titre }}" class="h-48 rounded-lg object-cover">
                 </div>
                 <label class="block text-sm font-semibold text-gray-700 mb-2">Nouvelle image (optionnel)</label>
                 <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-primary transition">

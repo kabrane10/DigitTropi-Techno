@@ -83,7 +83,10 @@
                 </label>
                 @if($actualite->image_couverture)
                     <div class="mb-2">
-                        <img src="{{ asset('storage/'.$actualite->image_couverture) }}" 
+                    {{-- J'ai modifié la ligne ci-dessous pour afficher l'image depuis Cloudinary.
+                         Anciennement : <img src="{{ asset('storage/' . $actualite->image_couverture) }}" ...>
+                         Maintenant, j'utilise directement l'URL de l'image qui est maintenant stockée dans la base de données. --}}
+                        <img src="{{ $actualite->image_couverture }}" 
                              alt="{{ $actualite->titre }}" 
                              class="h-32 rounded-lg object-cover">
                     </div>

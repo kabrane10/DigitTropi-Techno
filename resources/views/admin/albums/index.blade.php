@@ -40,7 +40,10 @@
             <!-- Image de couverture -->
             <div class="relative h-48 overflow-hidden">
                 @if($album->couverture)
-                    <img src="{{ asset('storage/' . $album->couverture) }}" alt="{{ $album->titre }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    {{-- J'ai modifié la ligne ci-dessous pour afficher l'image depuis Cloudinary.
+                         Anciennement : <img src="{{ asset('storage/' . $album->couverture) }}" ...>
+                         Maintenant, j'utilise directement l'URL de l'image qui est maintenant stockée dans la base de données. --}}
+                    <img src="{{ $album->couverture }}" alt="{{ $album->titre }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
                 @else
                     <div class="w-full h-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
                         <i class="fas fa-images text-4xl text-primary/50"></i>

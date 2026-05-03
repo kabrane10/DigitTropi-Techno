@@ -18,7 +18,10 @@
             @foreach($images as $image)
             <div class="group relative bg-gray-100 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300">
                 <div class="h-48 overflow-hidden">
-                    <img src="{{ asset('storage/'.$image->image) }}" 
+                    {{-- J'ai modifié la ligne ci-dessous pour afficher l'image depuis Cloudinary.
+                         Anciennement : <img src="{{ asset('storage/'.$image->image) }}" ...>
+                         Maintenant, j'utilise directement l'URL de l'image qui est maintenant stockée dans la base de données. --}}
+                    <img src="{{ $image->image }}" 
                          alt="{{ $image->titre }}"
                          class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
                 </div>

@@ -29,7 +29,10 @@
                 <tr>
                     <td class="px-6 py-4">
                         @if($actualite->image_couverture)
-                            <img src="{{ asset('storage/'.$actualite->image_couverture) }}" class="w-12 h-12 object-cover rounded">
+                        {{-- J'ai modifié la ligne ci-dessous pour afficher l'image depuis Cloudinary.
+                         Anciennement : <img src="{{ asset('storage/' . $actualite->image_couverture) }}" ...>
+                         Maintenant, j'utilise directement l'URL de l'image qui est maintenant stockée dans la base de données. --}}
+                            <img src="{{ $actualite->image_couverture }}" class="w-12 h-12 object-cover rounded">
                         @else
                             <div class="w-12 h-12 bg-gray-200 rounded flex items-center justify-center">
                                 <i class="fas fa-image text-gray-400"></i>

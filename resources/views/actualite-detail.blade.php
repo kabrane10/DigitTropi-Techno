@@ -23,7 +23,7 @@
                 @if($actualite->categorie == 'campagne') Campagne
                 @elseif($actualite->categorie == 'evenement') Événement
                 @elseif($actualite->categorie == 'formation') Formation
-                @else 📰 Annonce
+                @else Annonce
                 @endif
             </span>
             <span class="text-gray-500 text-sm"><i class="far fa-calendar mr-2"></i>{{ $actualite->date_publication->format('d F Y') }}</span>
@@ -35,7 +35,10 @@
         <!-- Image de couverture -->
         @if($actualite->image_couverture)
         <div class="rounded-2xl overflow-hidden shadow-xl mb-8">
-            <img src="{{ asset('storage/'.$actualite->image_couverture) }}" alt="{{ $actualite->titre }}" class="w-full">
+            {{-- J'ai modifié la ligne ci-dessous pour afficher l'image depuis Cloudinary.
+                 Anciennement : <img src="{{ asset('storage/' . $actualite->image_couverture) }}" ...>
+                 Maintenant, j'utilise directement l'URL de l'image qui est maintenant stockée dans la base de données. --}}
+            <img src="{{ $actualite->image_couverture }}" alt="{{ $actualite->titre }}" class="w-full h-auto">
         </div>
         @endif
         
@@ -90,7 +93,9 @@
             <a href="{{ route('actualite.show', $recente->slug) }}" class="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all group">
                 @if($recente->image_couverture)
                 <div class="h-48 overflow-hidden">
-                    <img src="{{ asset('storage/'.$recente->image_couverture) }}" alt="{{ $recente->titre }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                    {{-- J'ai modifié la ligne ci-dessous pour afficher l'image depuis Cloudinary.
+                         Anciennement : <img src="{{ asset('storage/' . $recente->image_couverture) }}" ...> --}}
+                    <img src="{{ $recente->image_couverture }}" alt="{{ $recente->titre }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
                 </div>
                 @endif
                 <div class="p-4">
