@@ -29,6 +29,7 @@ use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\GalerieController;
 use App\Http\Controllers\ActualiteController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\AlbumController;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\DashboardAdminController;
 use App\Http\Controllers\Admin\ActualiteAdminController;
@@ -55,6 +56,7 @@ Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit');
 
 Route::get('/galerie', [GalerieController::class, 'index'])->name('galerie');
+Route::get('/albums/{id}', [AlbumController::class, 'show'])->name('albums.show');
 Route::get('/galerie/categorie/{categorie}', [GalerieController::class, 'filter'])->name('galerie.filter');
 
 Route::get('/actualites', [ActualiteController::class, 'index'])->name('actualites');
