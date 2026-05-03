@@ -5,6 +5,8 @@
 
 @section('content')
 
+@include('admin.partials.greeting')
+
 @php
     $backupDir = storage_path('app/backups');
     $backupFiles = [];

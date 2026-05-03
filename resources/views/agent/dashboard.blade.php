@@ -4,6 +4,9 @@
 @section('header', 'Tableau de bord')
 
 @section('content')
+
+@include('admin.partials.greeting')
+
 <!-- Cartes statistiques -->
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
     <div class="bg-white rounded-xl shadow-sm p-4 sm:p-6 border-l-4 border-primary">
