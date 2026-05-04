@@ -7,6 +7,59 @@
 
 @include('admin.partials.greeting')
 
+@php
+    $backupDir = storage_path('app/backups');
+    $backupFiles = [];
+    
+    // Récupérer les fichiers de sauvegarde
+    if (is_dir($backupDir)) {
+        $backupFiles = glob($backupDir . '/backup-*.sqlite');
+    }
+    
+    // Trouver le fichier le plus récent
+    $lastBackup = null;
+    $backupAge = null;
+    
+    if (!empty($backupFiles)) {
+        $latestTime = 0;
+        foreach ($backupFiles as $file) {
+            $fileTime = filemtime($file);
+            if ($fileTime > $latestTime) {
+                $latestTime = $fileTime;
+                $lastBackup = $file;
+            }
+        }
+        
+        if ($lastBackup) {
+            $backupAge = round((time() - filemtime($lastBackup)) / 3600, 1);
+        }
+    }
+    
+    $backupStatus = ($backupAge && $backupAge <= 30) ? 'ok' : 'warning';
+@endphp
+
+<!-- Carte Dernière sauvegarde -->
+<div class="bg-white rounded-xl shadow-sm mb-6 p-6 border-l-4 {{ $backupStatus == 'ok' ? 'border-green-500' : 'border-yellow-500' }}">
+    <div class="flex items-center justify-between">
+        <div>
+            <p class="text-gray-500 text-sm">Dernière sauvegarde</p>
+            <p class="text-2xl font-bold">
+                @if($lastBackup && file_exists($lastBackup))
+                    {{ date('d/m/Y H:i', filemtime($lastBackup)) }}
+                @else
+                    Jamais
+                @endif
+            </p>
+            @if($backupAge)
+                <p class="text-xs {{ $backupAge <= 30 ? 'text-green-600' : 'text-yellow-600' }} mt-1">
+                    <i class="fas fa-clock mr-1"></i>Il y a {{ $backupAge }} heures
+                </p>
+            @endif
+        </div>
+        <i class="fas fa-database {{ $backupStatus == 'ok' ? 'text-green-500' : 'text-yellow-500' }} text-3xl opacity-50"></i>
+    </div>
+</div>
+
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
     <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-primary">
         <div class="flex items-center justify-between">

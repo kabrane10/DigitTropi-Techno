@@ -80,11 +80,11 @@ class Kernel extends ConsoleKernel
         App\Http\Controllers\Admin\NotificationController::genererNotifications();
     })->hourly();
 
-    // Sauvegarde quotidienne à 02h00 (désactivée pour debug)
-    // $schedule->command('backup:run')->dailyAt('02:00');
+    // Sauvegarde quotidienne à 02h00 (pour debug)
+    $schedule->command('backup:run')->dailyAt('02:00');
 
     // Alternative: toutes les 5 minutes (pour debug)
-    $schedule->command('backup:run')->everyFiveMinutes();
+    //$schedule->command('backup:run')->everyFiveMinutes();
     
     // Nettoyer les vieilles sauvegardes (garder 5 jours)
     $schedule->command('backup:clean')->dailyAt('03:00');
