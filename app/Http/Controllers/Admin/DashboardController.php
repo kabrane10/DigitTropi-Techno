@@ -8,43 +8,53 @@ use App\Models\CreditAgricole;
 use App\Models\Collecte;
 use App\Models\Stock;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        // ... (votre code existant)
+        // Statistiques générales
+        $stats = [
+            'total_producteurs' => Producteur::count(),
+            'producteurs_actifs' => Producteur::where('statut', 'actif')->count(),
+            'superficie_totale' => Producteur::sum('superficie_totale'),
+            'total_credits' => CreditAgricole::where('statut', 'actif')->sum('montant_restant'),
+            'total_collecte_mois' => Collecte::whereMonth('date_collecte', now()->month)->sum('quantite_nette'),
+            'valeur_collecte_mois' => Collecte::whereMonth('date_collecte', now()->month)->sum('montant_total'),
+        ];
 
-        // ----- DÉBUT DE LA CORRECTION ROBUSTE -----
-        $last_backup_date = null; // Initialisation par défaut
-        try {
-            $disk = Storage::disk('local');
-            $backup_folder = config('backup.backup.name');
-            
-            // Vérifie si le dossier existe pour éviter les erreurs
-            if ($disk->exists($backup_folder)) {
-                $files = $disk->files($backup_folder);
+        // Graphique: Producteurs par région
+        $producteurs_par_region = Producteur::select('region', DB::raw('count(*) as total'))
+            ->groupBy('region')
+            ->get();
 
-                if (!empty($files)) {
-                    $last_backup_file = collect($files)->sortByDesc(function ($file) use ($disk) {
-                        return $disk->lastModified($file);
-                    })->first();
+        // Graphique: Collectes par mois (6 derniers mois)
+        $collectes_par_mois = Collecte::select(
+                DB::raw('DATE_FORMAT(date_collecte, "%Y-%m") as mois'),
+                DB::raw('SUM(quantite_nette) as total')
+            )
+            ->where('date_collecte', '>=', now()->subMonths(6))
+            ->groupBy('mois')
+            ->orderBy('mois')
+            ->get();
 
-                    if($last_backup_file) {
-                        $last_backup_date = $disk->lastModified($last_backup_file);
-                    }
-                }
-            }
-        } catch (\Exception $e) {
-            report($e); // Log l'erreur pour le débogage, mais ne bloque pas la page
-        }
-        // ----- FIN DE LA CORRECTION ROBUSTE -----
+        // Top 5 producteurs
+        $top_producteurs = Producteur::withSum('collectes', 'quantite_nette')
+            ->orderBy('collectes_sum_quantite_nette', 'desc')
+            ->limit(5)
+            ->get();
+
+        // Alertes stocks
+        $stocks_alerte = Stock::whereRaw('stock_actuel <= seuil_alerte')->get();
+
+        // Crédits en retard
+        $credits_retard = CreditAgricole::where('statut', 'actif')
+            ->where('date_echeance', '<', now())
+            ->count();
 
         return view('admin.dashboard', compact(
             'stats', 'producteurs_par_region', 'collectes_par_mois',
-            'top_producteurs', 'stocks_alerte', 'credits_retard',
-            'last_backup_date' // La variable est TOUJOURS définie, même si elle est null
+            'top_producteurs', 'stocks_alerte', 'credits_retard'
         ));
     }
 }
