@@ -7,35 +7,13 @@
 
 @include('admin.partials.greeting')
 
+{{-- ----- DÉBUT DE LA CORRECTION ----- --}}
 @php
-    $backupDir = storage_path('app/backups');
-    $backupFiles = [];
+    // Calcule l'âge de la sauvegarde en heures, si la date existe
+    $backupAge = $last_backup_date ? round((time() - $last_backup_date) / 3600, 1) : null;
     
-    // Récupérer les fichiers de sauvegarde
-    if (is_dir($backupDir)) {
-        $backupFiles = glob($backupDir . '/backup-*.sqlite');
-    }
-    
-    // Trouver le fichier le plus récent
-    $lastBackup = null;
-    $backupAge = null;
-    
-    if (!empty($backupFiles)) {
-        $latestTime = 0;
-        foreach ($backupFiles as $file) {
-            $fileTime = filemtime($file);
-            if ($fileTime > $latestTime) {
-                $latestTime = $fileTime;
-                $lastBackup = $file;
-            }
-        }
-        
-        if ($lastBackup) {
-            $backupAge = round((time() - filemtime($lastBackup)) / 3600, 1);
-        }
-    }
-    
-    $backupStatus = ($backupAge && $backupAge <= 30) ? 'ok' : 'warning';
+    // Détermine le statut en fonction de l'âge de la sauvegarde (vous pouvez ajuster le seuil de 30h)
+    $backupStatus = ($backupAge !== null && $backupAge <= 30) ? 'ok' : 'warning';
 @endphp
 
 <!-- Carte Dernière sauvegarde -->
@@ -44,14 +22,16 @@
         <div>
             <p class="text-gray-500 text-sm">Dernière sauvegarde</p>
             <p class="text-2xl font-bold">
-                @if($lastBackup && file_exists($lastBackup))
-                    {{ date('d/m/Y H:i', filemtime($lastBackup)) }}
+                {{-- Affiche la date formatée si elle existe, sinon "Jamais" --}}
+                @if($last_backup_date)
+                    {{ date('d/m/Y H:i', $last_backup_date) }}
                 @else
                     Jamais
                 @endif
             </p>
-            @if($backupAge)
-                <p class="text-xs {{ $backupAge <= 30 ? 'text-green-600' : 'text-yellow-600' }} mt-1">
+            {{-- Affiche l'âge de la sauvegarde si disponible --}}
+            @if($backupAge !== null)
+                <p class="text-xs {{ $backupStatus == 'ok' ? 'text-green-600' : 'text-yellow-600' }} mt-1">
                     <i class="fas fa-clock mr-1"></i>Il y a {{ $backupAge }} heures
                 </p>
             @endif
@@ -59,6 +39,8 @@
         <i class="fas fa-database {{ $backupStatus == 'ok' ? 'text-green-500' : 'text-yellow-500' }} text-3xl opacity-50"></i>
     </div>
 </div>
+{{-- ----- FIN DE LA CORRECTION ----- --}}
+
 
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
     <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-primary">
