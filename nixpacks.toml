@@ -1,6 +1,6 @@
 [variables]
     NIXPACKS_NODE_VERSION = "22"
-    NIXPACKS_PHP_VERSION = "8.4" # Ou 8.4 selon votre besoin
+    NIXPACKS_PHP_VERSION = "8.4" 
 
 [phases.setup]
     nixPkgs = ["php", "nginx", "nodejs_22", "phpPackages.composer"]
