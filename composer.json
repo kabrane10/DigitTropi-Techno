@@ -84,7 +84,9 @@
         "optimize-autoloader": true,
         "preferred-install": "dist",
         "sort-packages": true,
-        "platform": {  },
+        "platform": {
+            "php": "8.4.0"
+        },
         
         "allow-plugins": {
             "composer/package-versions-deprecated": true,
