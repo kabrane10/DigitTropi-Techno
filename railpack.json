@@ -1,0 +1,27 @@
+{
+    "$schema": "https://railway.app/railway.schema.json",
+    "build": {
+      "builder": "NIXPACKS",
+      "nixpacksPlan": {
+        "variables": {
+          "NIXPACKS_PHP_VERSION": "8.4",
+          "NIXPACKS_NODE_VERSION": "22"
+        },
+        "phases": {
+          "setup": {
+            "nixPkgs": ["php84", "php84Packages.composer", "nodejs_22", "nginx"]
+          },
+          "install": {
+            "cmds": ["composer install --ignore-platform-reqs --optimize-autoloader --no-interaction --no-scripts"]
+          },
+          "build": {
+            "cmds": ["npm install", "npm run build", "php artisan optimize"]
+          }
+        }
+      }
+    },
+    "deploy": {
+      "startCommand": "php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=$PORT",
+      "restartPolicyType": "ON_FAILURE"
+    }
+  }
