@@ -15,6 +15,10 @@ return [
                     storage_path('logs'),
                     storage_path('framework'),
                 ],
+
+                'follow_links' => false,
+                'ignore_unreadable_directories' => false,
+                'relative_path' => null,
             ],
             
             'databases' => [
@@ -26,6 +30,7 @@ return [
             'filename_prefix' => '',
             'disks' => [
                 'local',
+                'google',
             ],
         ],
     ],
@@ -43,14 +48,14 @@ return [
         'notifiable' => \Spatie\Backup\Notifications\Notifiable::class,
         
         'mail' => [
-            'to' => 'admin@tropitechno.com',
+            'to' => 'kabranehenry@gmail.com',
         ],
     ],
     
     'monitor_backups' => [
         [
             'name' => env('APP_NAME', 'tropi-techno-backup'),
-            'disks' => ['local'],
+            'disks' => ['local', 'google'],
             'health_checks' => [
                 \Spatie\Backup\Tasks\Monitor\HealthChecks\MaximumAgeInDays::class => 1,
                 \Spatie\Backup\Tasks\Monitor\HealthChecks\MaximumStorageInMegabytes::class => 5000,
@@ -87,7 +92,7 @@ return [
         ],
         'email' => [
             'enabled' => env('BACKUP_EMAIL_ENABLED', false),
-            'recipient' => env('BACKUP_EMAIL', 'admin@tropitechno.com'),
+            'recipient' => env('BACKUP_EMAIL', 'kabranehenry@gmail.com'),
         ],
         'ftp' => [
             'enabled' => env('BACKUP_FTP_ENABLED', false),

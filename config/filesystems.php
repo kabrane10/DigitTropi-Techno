@@ -47,6 +47,15 @@ return [
             'report' => false,
         ],
 
+        'google' => [
+        'driver' => 'google',
+        'serviceAccountJson' => env('GOOGLE_DRIVE_SERVICE_ACCOUNT_JSON'), // Le plus important
+        'folderId' => env('GOOGLE_DRIVE_FOLDER_ID'),
+        // 'clientId' => env('GOOGLE_DRIVE_CLIENT_ID'), // Optionnel si JSON complet
+        // 'clientSecret' => env('GOOGLE_DRIVE_CLIENT_SECRET'), // Optionnel
+        // 'refreshToken' => env('GOOGLE_DRIVE_REFRESH_TOKEN'), // Optionnel
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),
