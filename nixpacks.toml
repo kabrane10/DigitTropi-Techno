@@ -1,8 +1,9 @@
 [variables]
-    PHP_VERSION = '8.4'
+    NIXPACKS_NODE_VERSION = "22"
+    NIXPACKS_PHP_VERSION = "8.4" # Ou 8.4 selon votre besoin
 
 [phases.setup]
-    nixPkgs = ['...', 'php84', 'php84Packages.composer', 'nodejs_20']
+    nixPkgs = ["php", "nginx", "nodejs_22", "phpPackages.composer"]
 
 [phases.install]
 cmds = ["composer install --optimize-autoloader --no-interaction --no-scripts"]
