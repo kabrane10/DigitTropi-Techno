@@ -84,11 +84,8 @@
         "optimize-autoloader": true,
         "preferred-install": "dist",
         "sort-packages": true,
-        "platform": {
-            "php": "8.3.0",
-            "ext-gd": "2.0",
-            "ext-zip": "1.0" 
-        },
+        "platform": {  },
+        
         "allow-plugins": {
             "composer/package-versions-deprecated": true,
             "pestphp/pest-plugin": true,
