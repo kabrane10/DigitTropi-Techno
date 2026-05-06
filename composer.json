@@ -87,7 +87,7 @@
         "platform": {
             "php": "8.2.28",
             "ext-gd": "2.0",
-            "ext-zip": "1.0" 
+            "ext-zip": "1.21.1"
         },
         "allow-plugins": {
             "composer/package-versions-deprecated": true,
