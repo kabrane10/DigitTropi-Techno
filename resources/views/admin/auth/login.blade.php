@@ -74,6 +74,12 @@
             
             <form action="{{ route('admin.login.submit') }}" method="POST" class="p-8">
                 @csrf
+
+                @if($errors->any())
+                <div class="bg-red-50 border-l-4 border-red-500 text-red-700 p-3 mb-4 rounded text-sm">
+                    {{ $errors->first() }}
+                </div>
+                @endif
                 
                 <!-- Champ Email -->
                 <div class="mb-6">

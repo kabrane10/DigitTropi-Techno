@@ -77,6 +77,18 @@
         <div class="text-center mt-6"><p class="text-xs text-gray-500">&copy; {{ date('Y') }} Tropi-Techno Sarl - Agriculture Biologique au Togo</p></div>
     </div>
     
-    <script>function togglePassword(){const p=document.getElementById('password'),e=document.getElementById('eyeIcon');if(p.type==='password'){p.type='text';e.classList.remove('fa-eye-slash');e.classList.add('fa-eye');}else{p.type='password';e.classList.remove('fa-eye');e.classList.add('fa-eye-slash');}}</script>
+    <script>
+    function togglePassword(){const p=document.getElementById('password'),
+        e=document.getElementById('eyeIcon');
+        if(p.type==='password'){p.type='text';
+            e.classList.remove('fa-eye-slash');
+            e.classList.add('fa-eye');
+        }else{p.type='password';
+            e.classList.remove('fa-eye');
+            e.classList.add('fa-eye-slash');
+        }
+    }
+
+    </script>
 </body>
 </html>
