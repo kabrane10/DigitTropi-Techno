@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Distribution de semences - {{ $distribution->code_distribution }}</title>
+    <link rel="icon" href="{{ asset('images/favicon.png') }}">
     <style>
         * {
             margin: 0;
