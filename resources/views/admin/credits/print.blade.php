@@ -235,7 +235,7 @@
         <!-- Bouton d'impression -->
         <div style="text-align: center; margin-bottom: 20px;">
             <button onclick="window.print()" class="btn-print">
-                🖨️ Imprimer / Télécharger PDF
+                 Imprimer / Télécharger PDF
             </button>
         </div>
         
