@@ -163,7 +163,7 @@
                     <i class="fas fa-arrow-left mr-1"></i>Retour
                 </a>
                 <div class="space-x-3">
-                     <a href="{{ route('admin.distributions.print', $distribution) }}" target="_blank" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition">
+                     <a href="{{ route('admin.distributions.print', $distribution->id) }}" target="_blank" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition">
                         <i class="fas fa-print mr-2"></i>Imprimer la fiche
                     </a>
                     <a href="{{ route('admin.distributions.edit', $distribution) }}" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600">

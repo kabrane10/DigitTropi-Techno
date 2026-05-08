@@ -141,7 +141,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Distributions
         Route::resource('distributions', DistributionSemenceController::class);
         Route::get('/distributions-dashboard', [DistributionSemenceController::class, 'dashboard'])->name('distributions.dashboard');
-        Route::get('/distributions-print', [DistributionSemenceController::class, 'print'])->name('distributions.print');
+        Route::get('/distributions/{id}/print', [DistributionSemenceController::class, 'print'])->name('distributions.print');
         Route::get('/distributions-export', [DistributionSemenceController::class, 'export'])->name('distributions.export');
         
 
