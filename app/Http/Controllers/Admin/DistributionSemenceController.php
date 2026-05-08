@@ -9,6 +9,7 @@ use App\Models\Semence;
 use App\Models\CreditAgricole;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class DistributionSemenceController extends Controller
 {
@@ -54,6 +55,7 @@ class DistributionSemenceController extends Controller
             'semence_id' => 'required|exists:semences,id',
             'quantite' => 'required|numeric|min:1',
             'superficie_emblevee' => 'required|numeric|min:0',
+            'rendement_estime' => 'nullable|numeric|min:0',
             'date_distribution' => 'required|date',
             'saison' => 'required|in:principale,contre-saison,hivernage',
             'credit_id' => 'nullable|exists:credits_agricoles,id',
@@ -120,6 +122,7 @@ class DistributionSemenceController extends Controller
             'semence_id' => 'required|exists:semences,id',
             'quantite' => 'required|numeric|min:1',
             'superficie_emblevee' => 'required|numeric|min:0',
+            'rendement_estime' => 'nullable|numeric|min:0',
             'date_distribution' => 'required|date',
             'saison' => 'required|in:principale,contre-saison,hivernage',
             'credit_id' => 'nullable|exists:credits_agricoles,id',
@@ -205,5 +208,40 @@ class DistributionSemenceController extends Controller
         ];
         
         return view('admin.distributions.dashboard', compact('stats'));
+    }
+
+    /**
+     * Exporter les distributions
+     */
+    public function export()
+    {
+        $distributions = DistributionSemence::with(['producteur', 'semence'])->get();
+        
+        $csv = "Code,Date,Producteur,Semence,Quantité,Superficie,Rendement estimé,Saison,Observations\n";
+        
+        foreach ($distributions as $d) {
+            $csv .= "{$d->code_distribution},";
+            $csv .= "{$d->date_distribution->format('d/m/Y')},";
+            $csv .= "{$d->producteur->nom_complet},";
+            $csv .= "{$d->semence->nom} ({$d->semence->variete}),";
+            $csv .= "{$d->quantite} {$d->semence->unite},";
+            $csv .= "{$d->superficie_emblevee} ha,";
+            $csv .= ($d->rendement_estime ? $d->rendement_estime . ' kg/ha' : '-') . ",";
+            $csv .= "{$d->saison},";
+            $csv .= "\"{$d->observations}\"\n";
+        }
+        
+        return response($csv)
+            ->header('Content-Type', 'text/csv')
+            ->header('Content-Disposition', 'attachment; filename="distributions.csv"');
+    }
+
+    /**
+     * Imprimer une fiche de distribution
+     */
+    public function print($id)
+    {
+        $distribution = DistributionSemence::with(['producteur', 'semence', 'credit'])->findOrFail($id);
+        return view('admin.distributions.print', compact('distribution'));
     }
 }
