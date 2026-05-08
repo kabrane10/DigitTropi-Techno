@@ -71,6 +71,14 @@
             font-size: 14px;
         }
         
+        .logo-img {
+           height: 70px;
+           width: auto;
+           background: white;
+           border-radius: 12px;
+           padding: 8px;
+           box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+       }
         .section-content {
             padding: 15px;
         }
