@@ -45,9 +45,9 @@
             <div>
                 <div class="flex justify-between mb-1">
                     <span class="text-sm font-medium">
-                        @if($item->saison == 'principale') 🌾 Principale
-                        @elseif($item->saison == 'contre-saison') 🌱 Contre-saison
-                        @else 💧 Hivernage
+                        @if($item->saison == 'principale')  Principale
+                        @elseif($item->saison == 'contre-saison')  Contre-saison
+                        @else  Hivernage
                         @endif
                     </span>
                     <span class="text-sm text-gray-500">{{ $item->total }} distributions</span>

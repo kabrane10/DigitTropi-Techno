@@ -66,7 +66,7 @@
             <div class="p-4 border-b border-white/10">
                 <div class="bg-white/10 rounded-lg p-3">
                     <p class="text-white/70 text-xs">Connecté en tant que</p>
-                    <p class="text-white font-semibold">{{ Auth::guard('admin')->user()->nom_complet ?? 'Admin' }}</p>
+                    <p class="text-white font-semibold">{{ Auth::guard('admin')->user()->nom_complet ?? 'Administrateur' }}</p>
                     <p class="text-white/60 text-xs">{{ Auth::guard('admin')->user()->code_admin ?? '' }}</p>
                 </div>
             </div>

@@ -14,7 +14,7 @@
                 <label class="block text-sm font-semibold mb-2">
                     <i class="fas fa-user text-primary mr-1"></i> Producteur *
                 </label>
-                <select name="producteur_id" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-primary">
+                <select name="producteur_id" id="producteur_id" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-primary">
                     <option value="">-- Sélectionnez un producteur --</option>
                     @foreach($producteurs as $producteur)
                     <option value="{{ $producteur->id }}" {{ old('producteur_id') == $producteur->id ? 'selected' : '' }}>
@@ -66,9 +66,20 @@
                 <label class="block text-sm font-semibold mb-2">
                     <i class="fas fa-map-marked-alt text-primary mr-1"></i> Superficie emblavée (ha) *
                 </label>
-                <input type="number" step="0.01" name="superficie_emblevee" required 
+                <input type="number" step="0.01" name="superficie_emblevee" id="superficie" required 
                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-primary"
                        placeholder="Ex: 2.5">
+            </div>
+            
+            <!-- Rendement estimé (NOUVEAU) -->
+            <div>
+                <label class="block text-sm font-semibold mb-2">
+                    <i class="fas fa-chart-line text-primary mr-1"></i> Rendement estimé (kg/ha)
+                </label>
+                <input type="number" step="0.01" name="rendement_estime" id="rendement_estime" 
+                       class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-primary"
+                       placeholder="Ex: 2500">
+                <p class="text-xs text-gray-500 mt-1">Estimation du rendement attendu par hectare</p>
             </div>
             
             <!-- Date -->
@@ -86,9 +97,9 @@
                     <i class="fas fa-cloud-sun text-primary mr-1"></i> Saison *
                 </label>
                 <select name="saison" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-primary">
-                    <option value="principale">☀️ Principale (Juin - Septembre)</option>
+                    <option value="principale"> Principale (Juin - Septembre)</option>
                     <option value="contre-saison">☀️ Contre-saison (Octobre - Décembre)</option>
-                    <option value="hivernage">☀️ Hivernage (Janvier - Mai)</option>
+                    <option value="hivernage"> Hivernage (Janvier - Mai)</option>
                 </select>
             </div>
             
@@ -120,8 +131,8 @@
         
         <!-- Récapitulatif -->
         <div class="mt-6 p-4 bg-green-50 rounded-lg">
-            <h4 class="font-semibold text-dark mb-3">Récapitulatif</h4>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <h4 class="font-semibold text-dark mb-3"> Récapitulatif de la distribution</h4>
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                 <div>
                     <p class="text-sm text-gray-500">Producteur</p>
                     <p class="font-semibold" id="recap_producteur">-</p>
@@ -138,6 +149,19 @@
                     <p class="text-sm text-gray-500">Superficie</p>
                     <p class="font-semibold" id="recap_superficie">0 ha</p>
                 </div>
+                <div>
+                    <p class="text-sm text-gray-500">Rendement estimé</p>
+                    <p class="font-semibold text-blue-600" id="recap_rendement">-</p>
+                </div>
+            </div>
+            
+            <!-- Production totale estimée -->
+            <div class="mt-3 pt-3 border-t border-green-200">
+                <div class="flex justify-between items-center">
+                    <p class="text-sm font-semibold text-dark"> Production totale estimée :</p>
+                    <p class="text-lg font-bold text-primary" id="recap_production_totale">0 kg</p>
+                </div>
+                <p class="text-xs text-gray-500 mt-1">Calculé à partir de la superficie × rendement estimé</p>
             </div>
         </div>
         
@@ -159,8 +183,11 @@
     const recapSemence = document.getElementById('recap_semence');
     const recapQuantite = document.getElementById('recap_quantite');
     const recapSuperficie = document.getElementById('recap_superficie');
-    const producteurSelect = document.querySelector('select[name="producteur_id"]');
-    const superficieInput = document.querySelector('input[name="superficie_emblevee"]');
+    const recapRendement = document.getElementById('recap_rendement');
+    const recapProductionTotale = document.getElementById('recap_production_totale');
+    const producteurSelect = document.getElementById('producteur_id');
+    const superficieInput = document.getElementById('superficie');
+    const rendementInput = document.getElementById('rendement_estime');
     
     // Mettre à jour les infos quand on sélectionne une semence
     semenceSelect.addEventListener('change', function() {
@@ -172,7 +199,6 @@
             stockInfo.textContent = `Stock disponible: ${Number(stock).toLocaleString()} ${unite}`;
             uniteLabel.textContent = unite;
             
-            // Vérifier si la quantité dépasse le stock
             if (quantiteInput.value > stock) {
                 quantiteInput.setCustomValidity('Quantité supérieure au stock disponible');
             } else {
@@ -181,13 +207,13 @@
         }
         
         recapSemence.textContent = selected.textContent.split('-')[0].trim();
+        updateProductionTotale();
     });
     
     // Vérifier la quantité
     quantiteInput.addEventListener('input', function() {
         const selected = semenceSelect.options[semenceSelect.selectedIndex];
         const stock = selected.dataset.stock;
-        const unite = selected.dataset.unite || 'kg';
         
         if (stock && this.value > stock) {
             this.setCustomValidity('Quantité supérieure au stock disponible');
@@ -209,6 +235,31 @@
     // Mettre à jour le récapitulatif superficie
     superficieInput.addEventListener('input', function() {
         recapSuperficie.textContent = `${Number(this.value).toLocaleString()} ha`;
+        updateProductionTotale();
     });
+    
+    // Mettre à jour le récapitulatif rendement
+    rendementInput.addEventListener('input', function() {
+        if (this.value) {
+            recapRendement.textContent = `${Number(this.value).toLocaleString()} kg/ha`;
+        } else {
+            recapRendement.textContent = '-';
+        }
+        updateProductionTotale();
+    });
+    
+    // Calculer et afficher la production totale estimée
+    function updateProductionTotale() {
+        const superficie = parseFloat(superficieInput.value) || 0;
+        const rendement = parseFloat(rendementInput.value) || 0;
+        const productionTotale = superficie * rendement;
+        
+        if (productionTotale > 0) {
+            recapProductionTotale.textContent = `${productionTotale.toLocaleString()} kg`;
+            recapProductionTotale.classList.add('text-green-600');
+        } else {
+            recapProductionTotale.textContent = '0 kg';
+        }
+    }
 </script>
 @endsection
