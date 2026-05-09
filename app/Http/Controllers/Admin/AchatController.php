@@ -7,6 +7,7 @@ use App\Models\Achat;
 use App\Models\Collecte;
 use App\Exports\achatsExport;
 use App\Models\Producteur;
+use App\Models\Bordereau;
 use App\Traits\DatabaseCompatibility;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -34,6 +35,7 @@ class AchatController extends Controller
      */
     public function create()
     {
+         //On récupère les collectes qui n'ont pas encore d'achat associé
         $collectes = Collecte::with('producteur')
             ->whereDoesntHave('achat')
             ->orderBy('date_collecte', 'desc')
@@ -140,11 +142,29 @@ public function dashboard()
             'notes' => 'nullable|string'
         ]);
         
-        $collecte = Collecte::find($validated['collecte_id']);
-        
+         //On vérifie que la quantité ne dépasse pas celle de la collecte
+         $collecte = Collecte::find($validated['collecte_id']);
+         if ($validated['quantite'] > $collecte->quantite_nette) {
+             return back()->with('error', 'La quantité achetée ne peut pas dépasser la quantité collectée.')
+                 ->withInput();
+         }
+         
+         //On vérifie que la collecte n'a pas déjà un achat
+         if ($collecte->achat) {
+             return back()->with('error', 'Cette collecte a déjà un achat associé.')
+                 ->withInput();
+         }
+
         $validated['code_achat'] = 'ACH-' . str_pad(Achat::max('id') + 1, 6, '0', STR_PAD_LEFT);
         $validated['montant_total'] = $validated['quantite'] * $validated['prix_achat'];
         $validated['statut'] = 'confirme';
+
+        // Générer la référence facture si non fournie
+        if (empty($validated['reference_facture'])) {
+            $date = date('Ymd');
+            $random = str_pad(rand(1, 9999), 4, '0', STR_PAD_LEFT);
+            $validated['reference_facture'] = 'FAC-' . $date . '-' . $random;
+        }
         
         Achat::create($validated);
         
@@ -201,4 +221,54 @@ public function dashboard()
             ->header('Content-Type', 'text/csv')
             ->header('Content-Disposition', 'attachment; filename="achats.csv"');
     }
+
+    
+/**
+ * Générer un bordereau d'achat dédié (impression)
+ */
+public function printBordereau($id)
+{
+    $achat = Achat::with(['collecte.producteur'])->findOrFail($id);
+    
+    $contenu = [
+        'numero_achat' => $achat->code_achat,
+        'date_achat' => $achat->date_achat->format('d/m/Y'),
+        'acheteur' => $achat->acheteur,
+        'mode_paiement' => $achat->mode_paiement,
+        'reference_facture' => $achat->reference_facture,
+        'statut' => $achat->statut,
+        'vendeur' => [
+            'nom' => $achat->collecte->producteur->nom_complet,
+            'code' => $achat->collecte->producteur->code_producteur,
+            'contact' => $achat->collecte->producteur->contact,
+            'localisation' => $achat->collecte->producteur->localisation
+        ],
+        'produits' => [
+            [
+                'nom' => $achat->collecte->produit,
+                'quantite' => $achat->quantite,
+                'prix_unitaire' => $achat->prix_achat,
+                'montant' => $achat->montant_total
+            ]
+        ],
+        'quantite_totale' => $achat->quantite,
+        'montant_total' => $achat->montant_total,
+        'observations' => $achat->notes
+    ];
+
+    $bordereau = Bordereau::create([
+        'code_bordereau' => 'BRD-ACH-' . str_pad(Bordereau::count() + 1, 6, '0', STR_PAD_LEFT),
+        'type' => 'achat',
+        'reference_id' => $achat->id,
+        'reference_type' => Achat::class,
+        'date_emission' => now(),
+        'contenu' => $contenu,
+        'emetteur' => auth()->guard('admin')->user()->nom ?? 'Administrateur',
+        'destinataire' => $achat->collecte->producteur->nom_complet,
+        'statut' => 'valide'
+    ]);
+
+    return redirect()->route('admin.bordereaux.show', $bordereau)
+        ->with('success', 'Bordereau d\'achat généré avec succès');
+}
 }
