@@ -50,7 +50,7 @@
                     </td>
                     <td class="px-6 py-4 text-center space-x-2">
                         <a href="{{ route('admin.achats.show', $achat) }}" class="text-blue-600"><i class="fas fa-eye"></i></a>
-                        <form action="{{ route('admin.bordereaux.generer-achat', $achat->id) }}" method="POST" class="inline">
+                        <form action="{{ route('admin.achats.print-bordereau', $achat->id) }}" method="POST" class="inline">
                             @csrf
                             <button type="submit" class="text-green-600" title="Générer bordereau">
                                 <i class="fas fa-file-alt"></i>
@@ -59,7 +59,7 @@
                         <form action="{{ route('admin.achats.destroy', $achat) }}" method="POST" class="inline delete-confirm">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="text-red-600"><i class="fas fa-trash"></i></button>
+                            <button type="submit" class="text-red-600"><i class="fas fa-trash" title="Supprimer"></i></button>
                         </form>
                     </td>
                 </tr>

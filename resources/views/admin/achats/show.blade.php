@@ -17,9 +17,6 @@
                     <span class="px-3 py-1 bg-white/20 rounded-full text-white text-sm">
                         {{ $achat->statut }}
                     </span>
-                    <button onclick="window.print()" class="px-3 py-1 bg-white/20 rounded-full text-white text-sm hover:bg-white/30 transition">
-                        <i class="fas fa-print mr-1"></i> Imprimer
-                    </button>
                 </div>
             </div>
         </div>
@@ -149,9 +146,6 @@
                     <i class="fas fa-arrow-left mr-1"></i>Retour
                 </a>
                 <div class="space-x-3">
-                    <button onclick="window.print()" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
-                        <i class="fas fa-print mr-2"></i>Imprimer
-                    </button>
                     <a href="{{ route('admin.achats.edit', $achat) }}" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600">
                         <i class="fas fa-edit mr-2"></i>Modifier
                     </a>

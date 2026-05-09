@@ -130,9 +130,9 @@
                     <i class="fas fa-chart-line text-primary mr-1"></i> Statut
                 </label>
                 <select name="statut" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-primary">
-                    <option value="confirme" {{ $achat->statut == 'confirme' ? 'selected' : '' }}>✅ Confirmé</option>
-                    <option value="en_attente" {{ $achat->statut == 'en_attente' ? 'selected' : '' }}>⏳ En attente</option>
-                    <option value="annule" {{ $achat->statut == 'annule' ? 'selected' : '' }}>❌ Annulé</option>
+                    <option value="confirme" {{ $achat->statut == 'confirme' ? 'selected' : '' }}> Confirmé</option>
+                    <option value="en_attente" {{ $achat->statut == 'en_attente' ? 'selected' : '' }}> En attente</option>
+                    <option value="annule" {{ $achat->statut == 'annule' ? 'selected' : '' }}> Annulé</option>
                 </select>
             </div>
             
