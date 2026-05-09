@@ -165,7 +165,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('achats', AchatController::class);
         Route::get('/achats-dashboard', [AchatController::class, 'dashboard'])->name('achats.dashboard');
         Route::post('/achats/{id}/valider', [AchatController::class, 'valider'])->name('achats.valider');
-        Route::post('/achats/{id}/print-bordereau', [AchatController::class, 'printBordereau'])->name('achats.print-bordereau');
+        Route::get('/achats/{id}/print-bordereau', [AchatController::class, 'printBordereau'])->name('achats.print-bordereau');
         Route::get('/achats-export', [AchatController::class, 'export'])->name('achats.export');
         
         // Crédits
