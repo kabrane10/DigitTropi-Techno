@@ -268,7 +268,7 @@ public function printBordereau($id)
         'statut' => 'valide'
     ]);
 
-    return redirect()->route('admin.bordereaux.show', $bordereau)
+    return redirect()->route('admin.achats.print-bordereau', $bordereau->id)
         ->with('success', 'Bordereau d\'achat généré avec succès');
 }
 }
