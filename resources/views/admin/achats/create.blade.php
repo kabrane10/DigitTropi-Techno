@@ -27,11 +27,12 @@
                     @foreach($collectes as $collecte)
                     <option value="{{ $collecte->id }}" 
                             data-produit="{{ $collecte->produit }}"
-                            data-quantite="{{ $collecte->quantite_nette }}"
-                            data-producteur="{{ $collecte->producteur->nom_complet }}">
+                            data-quantite="{{ (float)$collecte->quantite_nette }}"
+                            data-producteur="{{ $collecte->producteur->nom_complet }}"
+                            data-code="{{ $collecte->code_collecte }}">
                         {{ $collecte->code_collecte }} - {{ $collecte->producteur->nom_complet }} - 
-                        {{ $collecte->produit }} ({{ number_format($collecte->quantite_nette) }} kg) - 
-                        {{ number_format($collecte->date_collecte->format('d/m/Y')) }}
+                        {{ $collecte->produit }} ({{ number_format((float)$collecte->quantite_nette) }} kg) - 
+                        {{ $collecte->date_collecte->format('d/m/Y') }}
                     </option>
                     @endforeach
                 </select>
