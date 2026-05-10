@@ -108,6 +108,9 @@ class CreditController extends Controller
             'producteur_id' => 'required|exists:producteurs,id',
             'cooperative_id' => 'required|exists:cooperatives,id',
             'montant_total' => 'required|numeric|min:1000',
+            'type_intrant' => 'required|string|max:255',  
+            'quantite_intrant' => 'required|numeric|min:0',  
+            'unite_intrant' => 'required|string|max:50',  
             'taux_interet' => 'required|numeric|min:0|max:100',
             'duree_mois' => 'required|integer|min:1|max:60',
             'date_octroi' => 'required|date',
@@ -200,6 +203,9 @@ class CreditController extends Controller
             'producteur_id' => 'required|exists:producteurs,id',
             'cooperative_id' => 'required|exists:cooperatives,id',
             'montant_total' => 'required|numeric|min:1000',
+            'type_intrant' => 'required|string|max:255',  
+            'quantite_intrant' => 'required|numeric|min:0',  
+            'unite_intrant' => 'required|string|max:50',  
             'taux_interet' => 'required|numeric|min:0|max:100',
             'duree_mois' => 'required|integer|min:1|max:60',
             'date_octroi' => 'required|date',
@@ -257,9 +263,9 @@ public function destroy($id)
     if ($resteAPayer > 0) {
         return redirect()->route('admin.credits.index')
             ->with('error', sprintf(
-                '❌ Suppression impossible ! Ce crédit n\'est pas encore entièrement remboursé.<br><br>
-                💰 Reste à payer : <strong>%s CFA</strong><br><br>
-                💡 Veuillez d\'abord compléter le remboursement.',
+                ' Suppression impossible ! Ce crédit n\'est pas encore entièrement remboursé.<br><br>
+                 Reste à payer : <strong>%s CFA</strong><br><br>
+                 Veuillez d\'abord compléter le remboursement.',
                 number_format($resteAPayer, 0, ',', ' ')
             ));
     }
@@ -276,17 +282,17 @@ public function destroy($id)
         if ($hasDistributions) $dependances[] = $credit->distributionsSemences()->count() . " distribution(s)";
         
         return redirect()->route('admin.credits.index')
-            ->with('error', '❌ Suppression impossible ! Ce crédit est lié à : ' . implode(', ', $dependances));
+            ->with('error', ' Suppression impossible ! Ce crédit est lié à : ' . implode(', ', $dependances));
     }
     
     // Suppression
     try {
         $credit->delete();
         return redirect()->route('admin.credits.index')
-            ->with('success', '✅ Crédit supprimé avec succès.');
+            ->with('success', ' Crédit supprimé avec succès.');
     } catch (\Exception $e) {
         return redirect()->route('admin.credits.index')
-            ->with('error', '❌ Erreur technique lors de la suppression.');
+            ->with('error', ' Erreur technique lors de la suppression.');
     }
 }
    /**
@@ -342,8 +348,8 @@ public function remboursement(Request $request, $id)
         DB::commit();
         
         $message = $credit->statut == 'rembourse' 
-            ? '✅ Crédit entièrement remboursé !' 
-            : '✅ Remboursement enregistré avec succès. Reste à payer : ' . number_format($credit->montant_restant, 0, ',', ' ') . ' CFA';
+            ? ' Crédit entièrement remboursé !' 
+            : ' Remboursement enregistré avec succès. Reste à payer : ' . number_format($credit->montant_restant, 0, ',', ' ') . ' CFA';
         
         return redirect()->route('admin.credits.show', $credit)
             ->with('success', $message);

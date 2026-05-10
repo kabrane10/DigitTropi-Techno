@@ -39,6 +39,8 @@ use App\Http\Controllers\Admin\ProducteurController;
 use App\Http\Controllers\Admin\CooperativeController;
 use App\Http\Controllers\Admin\DistributionSemenceController;
 use App\Http\Controllers\Admin\SemenceController;
+use App\Http\Controllers\Admin\EstimationBesoinController;
+use App\Http\Controllers\Admin\IntrantController;
 use App\Http\Controllers\Admin\CollecteController;
 use App\Http\Controllers\Admin\AchatController;
 use App\Http\Controllers\Admin\SuiviParcellaireController;
@@ -175,6 +177,19 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/credits-dashboard', [CreditController::class, 'dashboard'])->name('credits.dashboard');
         Route::get('/credits/{id}/print', [CreditController::class, 'print'])->name('credits.print');
         Route::get('/admin/credits/fix-status', [CreditController::class, 'checkAndFixStatus'])->name('credits.fix-status');
+
+        // Estimations de besoin
+        Route::resource('estimations', EstimationBesoinController::class);
+        Route::post('/estimations/{id}/convert-to-credit', [EstimationBesoinController::class, 'convertToCredit'])->name('estimations.convert-to-credit');
+        Route::get('/estimations/{id}/print', [EstimationBesoinController::class, 'print'])->name('estimations.print');
+
+         // Intrants
+        Route::resource('intrants', IntrantController::class);
+        Route::get('/intrants/alertes', [IntrantController::class, 'alerte'])->name('intrants.alertes');
+        Route::get('/intrants/dashboard', [IntrantController::class, 'dashboard'])->name('intrants.dashboard');
+        Route::get('/intrants/{id}/stock/{zone}', [IntrantController::class, 'stock'])->name('intrants.stock');
+        Route::post('/intrants/{id}/stock/{zone}/ajouter', [IntrantController::class, 'ajouterStock'])->name('intrants.ajouter-stock');
+        Route::post('/intrants/{id}/stock/{zone}/retirer', [IntrantController::class, 'retirerStock'])->name('intrants.retirer-stock');
 
         // Stocks
         Route::resource('stocks', StockController::class);

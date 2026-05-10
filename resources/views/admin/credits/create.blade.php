@@ -68,7 +68,40 @@
                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-primary"
                        placeholder="Ex: 12">
             </div>
-            
+
+            <!-- Type d'intrant -->
+            <div>
+                <label class="block text-sm font-semibold mb-2">
+                    <i class="fas fa-boxes text-primary mr-1"></i> Type d'intrant *
+                </label>
+                <select name="type_intrant" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-primary">
+                    <option value="">-- Sélectionnez un intrant --</option>
+                    <option value="semences"> Semences</option>
+                    <option value="engrais"> Engrais</option>
+                    <option value="pesticides"> Pesticides</option>
+                    <option value="herbicides"> Herbicides</option>
+                    <option value="autres"> Autres</option>
+                </select>
+            </div>
+
+            <!-- Quantité d'intrant -->
+            <div>
+                <label class="block text-sm font-semibold mb-2">
+                    <i class="fas fa-weight-hanging text-primary mr-1"></i> Quantité d'intrant *
+                </label>
+                <div class="flex">
+                    <input type="number" step="0.01" name="quantite_intrant" id="quantite_intrant" required 
+                           class="w-full px-4 py-2 border rounded-l-lg focus:outline-none focus:border-primary"
+                           placeholder="Quantité">
+                    <select name="unite_intrant" required class="px-3 py-2 bg-gray-100 border border-l-0 rounded-r-lg">
+                        <option value="kg">kg</option>
+                        <option value="litre">Litre</option>
+                        <option value="sac">Sac</option>
+                        <option value="botte">Bol</option>
+                    </select>
+                </div>
+            </div>
+
             <div>
                 <label class="block text-sm font-semibold mb-2">Date d'octroi *</label>
                 <input type="date" name="date_octroi" required value="{{ date('Y-m-d') }}"

@@ -130,6 +130,29 @@
                     </a>
                 </div>
 
+                <!-- ========== INTRANTS ========== -->
+                <div class="pt-4">
+                    <p class="text-white/50 text-xs uppercase px-4 mb-2">Intrants</p>
+                    <a href="{{ route('admin.intrants.index') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg transition {{ request()->routeIs('admin.intrants.*') ? 'bg-primary text-white' : 'text-white/80 hover:bg-white/10' }}">
+                        <i class="fas fa-boxes w-5"></i>
+                        <span>Gestion intrants</span>
+                    </a>
+                    <a href="{{ route('admin.intrants.create') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg transition text-white/80 hover:bg-white/10">
+                        <i class="fas fa-plus-circle w-5"></i>
+                        <span>Nouvel intrant</span>
+                    </a>
+                    <a href="{{ route('admin.intrants.alertes') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg transition text-white/80 hover:bg-white/10">
+                        <i class="fas fa-exclamation-triangle w-5"></i>
+                        <span>Alertes stock</span>
+                        @php
+                            $nbAlertes = App\Models\IntrantStock::whereRaw('stock_actuel <= seuil_alerte')->count();
+                        @endphp
+                        @if($nbAlertes > 0)
+                        <span class="ml-auto bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">{{ $nbAlertes }}</span>
+                        @endif
+                    </a>
+                </div>
+
                 <!-- ========== ACHATS ========== -->
                 <div class="pt-4">
                     <p class="text-white/50 text-xs uppercase px-4 mb-2">Achats</p>
@@ -156,6 +179,18 @@
                     </a>
                 </div>
                 
+                <!-- ========== ESTIMATIONS ========== -->
+                <div class="pt-4">
+                    <p class="text-white/50 text-xs uppercase px-4 mb-2">Estimations</p>
+                    <a href="{{ route('admin.estimations.index') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg transition {{ request()->routeIs('admin.estimations.*') ? 'bg-primary text-white' : 'text-white/80 hover:bg-white/10' }}">
+                        <i class="fas fa-calculator w-5"></i>
+                        <span>Estimations besoins</span>
+                    </a>
+                    <a href="{{ route('admin.estimations.create') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg transition text-white/80 hover:bg-white/10">
+                        <i class="fas fa-plus-circle w-5"></i>
+                        <span>Nouvelle estimation</span>
+                    </a>
+                </div>
                 <!-- ========== COLLECTES ========== -->
                 <div class="pt-4">
                     <p class="text-white/50 text-xs uppercase px-4 mb-2">Collectes</p>
