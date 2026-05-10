@@ -38,10 +38,10 @@
             <thead class="bg-gray-50">
                 <tr>
                     <th class="px-6 py-3 text-left">Code</th>
-                    <th class="px-6 py-3 text-left">Date</th>
+                    <!-- <th class="px-6 py-3 text-left">Date</th> -->
                     <th class="px-6 py-3 text-left">Producteur</th>
-                    <th class="px-6 py-3 text-left">Semence</th>
-                    <th class="px-6 py-3 text-right">Quantité</th>
+                    <!-- <th class="px-6 py-3 text-left">Semence</th> -->
+                    <!-- <th class="px-6 py-3 text-right">Quantité</th> -->
                     <th class="px-6 py-3 text-right">Superficie</th>
                     <th class="px-6 py-3 text-right">Crédit estimé</th>
                     <th class="px-6 py-3 text-left">Statut</th>

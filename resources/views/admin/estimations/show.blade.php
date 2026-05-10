@@ -16,9 +16,9 @@
                     <span class="px-3 py-1 bg-white/20 rounded-full text-white text-sm">
                         {{ $estimation->statut_label }}
                     </span>
-                    <button onclick="window.print()" class="px-3 py-1 bg-white/20 rounded-full text-white text-sm hover:bg-white/30">
-                        <i class="fas fa-print mr-1"></i> Imprimer
-                    </button>
+                    <a href="{{ route('admin.estimations.print', $estimation->id) }}" target="_blank"  class="px-3 py-1 bg-white/20 rounded-full text-white text-sm hover:bg-white/30">
+                        <i class="fas fa-print mr-1"></i>Imprimer 
+                    </a>
                 </div>
             </div>
         </div>
@@ -49,7 +49,7 @@
             <!-- Intrants supplémentaires -->
             @if($estimation->intrants && count(json_decode($estimation->intrants, true)) > 0)
             <div class="mb-6">
-                <h4 class="text-lg font-semibold mb-3">📦 Intrants supplémentaires</h4>
+                <h4 class="text-lg font-semibold mb-3"> Intrants supplémentaires</h4>
                 <div class="p-4 bg-gray-50 rounded-lg">
                     <table class="w-full">
                         <thead class="bg-gray-100">
@@ -59,10 +59,10 @@
                             @foreach(json_decode($estimation->intrants, true) as $intrant)
                             <tr>
                                 <td class="px-3 py-2">
-                                    @if($intrant['type'] == 'engrais') 🧪 Engrais
-                                    @elseif($intrant['type'] == 'pesticide') 🐛 Pesticide
-                                    @elseif($intrant['type'] == 'herbicide') 🌿 Herbicide
-                                    @else 📦 Autre
+                                    @if($intrant['type'] == 'engrais')  Engrais
+                                    @elseif($intrant['type'] == 'pesticide')  Pesticide
+                                    @elseif($intrant['type'] == 'herbicide')  Herbicide
+                                    @else  Autre
                                     @endif
                                 </td>
                                 <td class="px-3 py-2 text-right">{{ number_format($intrant['quantite'], 2) }}</td>

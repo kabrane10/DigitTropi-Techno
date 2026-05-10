@@ -27,7 +27,9 @@
                 <i class="fas fa-info-circle text-green-500 text-xl mr-3"></i>
                 <div>
                     <p class="font-semibold text-green-800">Crédit basé sur une estimation</p>
-                    <p class="text-sm text-green-700">Ce crédit est basé sur l'estimation N° {{ $estimation_id }}</p>
+                    <p class="text-sm text-green-700">Ce crédit est basé sur l'estimation N° {{ $estimation_id }} de 
+                    {{ \App\Models\Producteur::find(request('producteur_id'))->nom_complet }}
+                    </p>
                 </div>
             </div>
         </div>
@@ -159,7 +161,7 @@
         
         <!-- Récapitulatif -->
         <div class="mt-6 p-4 bg-blue-50 rounded-lg">
-            <h4 class="font-semibold text-dark mb-3">📊 Récapitulatif du crédit</h4>
+            <h4 class="font-semibold text-dark mb-3"> Récapitulatif du crédit</h4>
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div class="bg-white p-3 rounded-lg shadow-sm">
                     <p class="text-sm text-gray-500">Mensualité estimée</p>
