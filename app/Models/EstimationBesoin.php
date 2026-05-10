@@ -9,6 +9,8 @@ class EstimationBesoin extends Model
 {
     use HasFactory;
 
+    protected $table = 'estimation_besoins';
+
     protected $fillable = [
         'code_estimation', 'producteur_id', 'semence_id', 'quantite_estimee',
         'superficie_prevue', 'credit_montant', 'intrants', 'date_estimation', 'statut', 'observations'
