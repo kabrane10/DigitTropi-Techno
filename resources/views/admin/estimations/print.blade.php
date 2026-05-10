@@ -3,33 +3,151 @@
 <head>
     <meta charset="UTF-8">
     <title>Estimation de besoin - {{ $estimation->code_estimation }}</title>
+    <link rel="icon" href="{{ asset('images/favicon.png') }}">
     <style>
-        *{margin:0;padding:0;box-sizing:border-box}
-        body{font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;padding:20px;background:white}
-        .print-container{max-width:800px;margin:0 auto}
-        .header{text-align:center;margin-bottom:30px;border-bottom:2px solid #2d6a4f;padding-bottom:20px}
-        .logo{max-height:50px;margin-bottom:10px}
-        .title{font-size:24px;font-weight:bold;color:#2d6a4f}
-        .subtitle{font-size:12px;color:#666}
-        .code{font-size:11px;color:#999;margin-top:5px}
-        .section{margin-bottom:20px;border:1px solid #ddd;border-radius:8px;overflow:hidden}
-        .section-title{background:#2d6a4f;color:white;padding:10px 15px;font-weight:bold;font-size:14px}
-        .section-content{padding:15px}
-        .info-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:15px}
-        .info-label{font-size:11px;color:#666;margin-bottom:3px}
-        .info-value{font-size:13px;font-weight:500}
-        .info-value.highlight{font-weight:bold;color:#2d6a4f}
-        .totals{margin-top:15px;padding:15px;background:#f0fdf4;border-radius:8px;text-align:center}
-        .total-grand{font-size:18px;font-weight:bold;color:#2d6a4f}
-        .badge{padding:3px 8px;border-radius:12px;font-size:10px;display:inline-block}
-        .badge-approuve{background:#d1fae5;color:#065f46}
-        .badge-rejete{background:#fee2e2;color:#991b1b}
-        .badge-attente{background:#fef3c7;color:#92400e}
-        .signatures{display:grid;grid-template-columns:repeat(2,1fr);gap:40px;margin-top:30px;padding-top:20px;border-top:1px solid #ddd}
-        .signature-line{border-top:1px solid #333;margin-top:40px;padding-top:10px}
-        .footer{margin-top:30px;text-align:center;font-size:10px;color:#999;border-top:1px solid #ddd;padding-top:15px}
-        .btn-print{display:block;background:#2d6a4f;color:white;padding:10px;margin-bottom:20px;text-align:center;border-radius:5px;cursor:pointer}
-        @media print{.btn-print{display:none}}
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+        }
+        body{
+            font-family:'Helvetica Neue',Arial,sans-serif;
+            font-size:12px;
+            padding:20px;
+            background:white;
+        }
+        .print-container{
+            max-width:800px;
+            margin:0 auto;
+        }
+        .header{
+            text-align:center;
+            margin-bottom:30px;
+            border-bottom:2px solid #2d6a4f;
+            padding-bottom:20px;
+        }
+        .logo{
+            max-height:50px;
+            margin-bottom:10px;
+        }
+        .logo-img {
+           height: 70px;
+           width: auto;
+           background: white;
+           border-radius: 12px;
+           padding: 8px;
+           box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+       }
+        .title{
+            font-size:24px;
+            font-weight:bold;
+            color:#2d6a4f;
+        }
+        .subtitle{
+            font-size:12px;
+            color:#666;
+        }
+        .code{
+            font-size:11px;
+            color:#999;
+            margin-top:5px;
+        }
+        .section{
+            margin-bottom:20px;
+            border:1px solid #ddd;
+            border-radius:8px;
+            overflow:hidden;
+        }
+        .section-title{
+            background:#2d6a4f;
+            color:white;
+            padding:10px 15px;
+            font-weight:bold;
+            font-size:14px;
+        }
+        .section-content{
+            padding:15px;
+        }
+        .info-grid{
+            display:grid;
+            grid-template-columns:repeat(2,1fr);
+            gap:15px;
+        }
+        .info-label{
+            font-size:11px;
+            color:#666;
+            margin-bottom:3px;
+        }
+        .info-value{
+            font-size:13px;font-weight:500}
+        .info-value.highlight{
+            font-weight:bold;
+            color:#2d6a4f;
+        }
+        .totals{
+            margin-top:15px;
+            padding:15px;
+            background:#f0fdf4;
+            border-radius:8px;
+            text-align:center;
+        }
+        .total-grand{
+            font-size:18px;
+            font-weight:bold;
+            color:#2d6a4f;
+        }
+        .badge{
+            padding:3px 8px;
+            border-radius:12px;
+            font-size:10px;
+            display:inline-block;
+        }
+        .badge-approuve{
+            background:#d1fae5;
+            color:#065f46;
+        }
+        .badge-rejete{
+            background:#fee2e2
+            ;color:#991b1b;
+        }
+        .badge-attente{
+            background:#fef3c7;
+            color:#92400e;
+        }
+        .signatures{
+            display:grid;
+            grid-template-columns:repeat(2,1fr);
+            gap:40px;margin-top:30px;
+            padding-top:20px;
+            border-top:1px solid #ddd;
+        }
+        .signature-line{
+            border-top:1px solid #333;
+            margin-top:40px;
+            padding-top:10px;
+        }
+        .footer{
+            margin-top:30px;
+            text-align:center;
+            font-size:10px;
+            color:#999;
+            border-top:1px solid #ddd;
+            padding-top:15px;
+        }
+        .btn-print{
+            display:block;
+            background:#2d6a4f;
+            color:white;padding:10px;
+            margin-bottom:20px;
+            text-align:center;
+            border-radius:5px;
+            cursor:pointer;
+        }
+        @media print{
+            .btn-print{
+                display:none;
+            }
+        }
     </style>
 </head>
 <body>
@@ -87,10 +205,10 @@
                             @foreach($estimation->intrants as $intrant)
                             <tr>
                                 <td style="border:1px solid #ddd;padding:8px">
-                                    @if($intrant->type == 'engrais') 🌱 Engrais
-                                    @elseif($intrant->type == 'pesticide') 🐛 Pesticide
-                                    @elseif($intrant->type == 'herbicide') 🌿 Herbicide
-                                    @else 📦 {{ ucfirst($intrant->type) }}
+                                    @if($intrant->type == 'engrais')  Engrais
+                                    @elseif($intrant->type == 'pesticide')  Pesticide
+                                    @elseif($intrant->type == 'herbicide')  Herbicide
+                                    @else  {{ ucfirst($intrant->type) }}
                                     @endif
                                 </td>
                                 <td style="border:1px solid #ddd;padding:8px;text-align:right">{{ number_format($intrant->quantite, 2) }}</td>
