@@ -17,6 +17,16 @@ class Authenticate extends Middleware
             if ($request->is('admin/*') || $request->is('admin')) {
                 return route('admin.login');
             }
+
+            if (!$request->expectsJson()) {
+                // Vérifier que la route /admin/achats/* n'est pas redirigée
+                if ($request->is('admin/achats/*')) {
+                    return route('admin.login');
+                }
+                return route('admin.login');
+            }
+            return null;
+            
             // Pour l'espace animateur
             if ($request->is('animateur/*') || $request->is('animateur')) {
                 return route('animateur.login');
