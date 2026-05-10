@@ -13,7 +13,8 @@ class EstimationBesoin extends Model
 
     protected $fillable = [
         'code_estimation', 'producteur_id', 'semence_id', 'quantite_estimee',
-        'superficie_prevue', 'credit_montant', 'intrants', 'date_estimation', 'statut', 'observations'
+        'superficie_prevue', 'credit_montant', 'intrants', 'date_estimation', 'statut', 'observations',
+        'cout_semences', 'cout_intrants', 'autres_frais', 'total_estimation'
     ];
 
     protected $casts = [
@@ -21,7 +22,11 @@ class EstimationBesoin extends Model
         'quantite_estimee' => 'decimal:2',
         'superficie_prevue' => 'decimal:2',
         'credit_montant' => 'decimal:2',
-         'intrants' => 'array'
+        'intrants' => 'array',
+        'cout_semences' => 'decimal:2',
+        'cout_intrants' => 'decimal:2',
+        'autres_frais' => 'decimal:2',
+        'total_estimation' => 'decimal:2',
     ];
 
     public function producteur()

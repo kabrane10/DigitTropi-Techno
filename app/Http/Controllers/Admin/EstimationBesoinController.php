@@ -29,31 +29,35 @@ class EstimationBesoinController extends Controller
     }
 
     public function store(Request $request)
-{
-    $validated = $request->validate([
-        'producteur_id' => 'required|exists:producteurs,id',
-        'semence_id' => 'required|exists:semences,id',
-        'quantite_estimee' => 'required|numeric|min:0',
-        'superficie_prevue' => 'required|numeric|min:0',
-        'credit_montant' => 'nullable|numeric|min:0',
-        'intrants' => 'nullable|array',
-        'date_estimation' => 'required|date',
-        'statut' => 'required|in:en_attente,approuve,rejete',
-        'observations' => 'nullable|string'
-    ]);
+    {
+        $validated = $request->validate([
+            'producteur_id' => 'required|exists:producteurs,id',
+            'semence_id' => 'required|exists:semences,id',
+            'quantite_estimee' => 'required|numeric|min:0',
+            'superficie_prevue' => 'required|numeric|min:0',
+            'credit_montant' => 'nullable|numeric|min:0',
+            'intrants' => 'nullable|array',
+            'date_estimation' => 'required|date',
+            'statut' => 'required|in:en_attente,approuve,rejete',
+            'observations' => 'nullable|string',
+            'cout_semences' => 'nullable|numeric|min:0',
+            'cout_intrants' => 'nullable|numeric|min:0',
+            'autres_frais' => 'nullable|numeric|min:0',
+            'total_estimation' => 'nullable|numeric|min:0',
+        ]);
 
-    // Traiter les intrants
-    if ($request->has('intrants')) {
-        $validated['intrants'] = json_encode(array_values($request->intrants));
+        // Traiter les intrants
+        if ($request->has('intrants')) {
+            $validated['intrants'] = json_encode(array_values($request->intrants));
+        }
+
+        $validated['code_estimation'] = 'EST-' . str_pad(EstimationBesoin::max('id') + 1, 6, '0', STR_PAD_LEFT);
+        
+        EstimationBesoin::create($validated);
+
+        return redirect()->route('admin.estimations.index')
+            ->with('success', 'Estimation de besoin enregistrée avec succès');
     }
-
-    $validated['code_estimation'] = 'EST-' . str_pad(EstimationBesoin::max('id') + 1, 6, '0', STR_PAD_LEFT);
-    
-    EstimationBesoin::create($validated);
-
-    return redirect()->route('admin.estimations.index')
-        ->with('success', 'Estimation de besoin enregistrée avec succès');
-}
 
     public function show($id)
     {
@@ -72,31 +76,35 @@ class EstimationBesoinController extends Controller
 
     public function update(Request $request, $id)
     {
-    $estimation = EstimationBesoin::findOrFail($id);
+        $estimation = EstimationBesoin::findOrFail($id);
 
-    $validated = $request->validate([
-        'semence_id' => 'required|exists:semences,id',
-        'quantite_estimee' => 'required|numeric|min:0',
-        'superficie_prevue' => 'required|numeric|min:0',
-        'credit_montant' => 'nullable|numeric|min:0',
-        'intrants' => 'nullable|array',
-        'date_estimation' => 'required|date',
-        'statut' => 'required|in:en_attente,approuve,rejete',
-        'observations' => 'nullable|string'
-    ]);
+        $validated = $request->validate([
+            'semence_id' => 'required|exists:semences,id',
+            'quantite_estimee' => 'required|numeric|min:0',
+            'superficie_prevue' => 'required|numeric|min:0',
+            'credit_montant' => 'nullable|numeric|min:0',
+            'intrants' => 'nullable|array',
+            'date_estimation' => 'required|date',
+            'statut' => 'required|in:en_attente,approuve,rejete',
+            'observations' => 'nullable|string',
+            'cout_semences' => 'nullable|numeric|min:0',
+            'cout_intrants' => 'nullable|numeric|min:0',
+            'autres_frais' => 'nullable|numeric|min:0',
+            'total_estimation' => 'nullable|numeric|min:0',
+        ]);
 
-    // Traiter les intrants
-    $intrants = $request->input('intrants');
-    if ($intrants && is_array($intrants) && count($intrants) > 0) {
-        $validated['intrants'] = json_encode(array_values($intrants));
-    } else {
-    $validated['intrants'] = null;
-}
+        // Traiter les intrants
+        $intrants = $request->input('intrants');
+        if ($intrants && is_array($intrants) && count($intrants) > 0) {
+            $validated['intrants'] = json_encode(array_values($intrants));
+        } else {
+            $validated['intrants'] = null;
+        }
 
-    $estimation->update($validated);
+        $estimation->update($validated);
 
-    return redirect()->route('admin.estimations.index')
-        ->with('success', 'Estimation mise à jour avec succès');
+        return redirect()->route('admin.estimations.index')
+            ->with('success', 'Estimation mise à jour avec succès');
     }
 
     public function destroy($id)
@@ -109,8 +117,8 @@ class EstimationBesoinController extends Controller
     }
 
     /**
- * Convertir une estimation en crédit
- */
+     * Convertir une estimation en crédit
+     */
     public function convertToCredit($id)
     {
         try {
@@ -147,11 +155,10 @@ class EstimationBesoinController extends Controller
         }
     }
 
-
     public function print($id)
     {
-    $estimation = EstimationBesoin::with(['producteur', 'semence'])->findOrFail($id);
-    return view('admin.estimations.print', compact('estimation'));
+        $estimation = EstimationBesoin::with(['producteur', 'semence'])->findOrFail($id);
+        return view('admin.estimations.print', compact('estimation'));
     }
 
 }

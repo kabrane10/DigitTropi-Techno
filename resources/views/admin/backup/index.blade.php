@@ -20,9 +20,9 @@
     
     <div class="mb-6 p-4 bg-blue-50 rounded-lg">
         <div class="flex items-center">
-            <i class="fas fa-info-circle text-blue-500 text-xl mr-3"></i>
+            
             <div>
-                <p class="font-semibold text-blue-800">Planification automatique</p>
+<i class="fas fa-info-circle text-blue-500 text-xl mr-3"></i>                <p class="font-semibold text-blue-800">Planification automatique</p>
                 <p class="text-sm text-blue-700">Une sauvegarde automatique est effectuée tous les jours à 02h00. Conservation des 7 dernières sauvegardes.</p>
             </div>
         </div>
