@@ -150,12 +150,10 @@
                         <i class="fas fa-edit mr-2"></i>Modifier
                     </a>
                     {{-- BOUTON POUR GÉNÉRER LE BORDEREAU D'ACHAT DÉDIÉ --}}
-                    <form action="{{ route('admin.achats.print-bordereau', $achat->id) }}" method="POST" class="inline">
-                        @csrf
-                        <button type="submit" class="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600">
-                            <i class="fas fa-file-invoice mr-2"></i>Générer bordereau
-                        </button>
-                    </form>
+                    <a href="{{ route('admin.achats.print-bordereau', $achat->id) }}" 
+                       class="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 inline-block">
+                        <i class="fas fa-file-invoice mr-2"></i>Générer bordereau
+                    </a>
                     <form action="{{ route('admin.achats.destroy', $achat) }}" method="POST" class="inline delete-confirm">
                         @csrf
                         @method('DELETE')
