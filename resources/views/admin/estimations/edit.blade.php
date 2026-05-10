@@ -133,6 +133,7 @@
                                         <option value="kg" {{ $intrant['unite'] == 'kg' ? 'selected' : '' }}>kg</option>
                                         <option value="litre" {{ $intrant['unite'] == 'litre' ? 'selected' : '' }}>Litre</option>
                                         <option value="sac" {{ $intrant['unite'] == 'sac' ? 'selected' : '' }}>Sac</option>
+                                        <option value="bol" {{ $intrant['unite'] == 'bol' ? 'selected' : '' }}>Bol</option>
                                     </select>
                                 </div>
                                 <div class="flex items-end">

@@ -86,11 +86,12 @@ class EstimationBesoinController extends Controller
     ]);
 
     // Traiter les intrants
-    if ($request->has('intrants')) {
-        $validated['intrants'] = json_encode(array_values($request->intrants));
+    $intrants = $request->input('intrants');
+    if ($intrants && is_array($intrants) && count($intrants) > 0) {
+        $validated['intrants'] = json_encode(array_values($intrants));
     } else {
-        $validated['intrants'] = null;
-    }
+    $validated['intrants'] = null;
+}
 
     $estimation->update($validated);
 
@@ -108,19 +109,44 @@ class EstimationBesoinController extends Controller
     }
 
     /**
-     * Convertir une estimation en crédit
-     */
+ * Convertir une estimation en crédit
+ */
     public function convertToCredit($id)
     {
-        $estimation = EstimationBesoin::findOrFail($id);
-        
-        // Rediriger vers la création de crédit avec les données pré-remplies
-        return redirect()->route('admin.credits.create', [
-            'producteur_id' => $estimation->producteur_id,
-            'montant_estime' => $estimation->credit_montant,
-            'estimation_id' => $estimation->id
-        ])->with('success', 'Formulaire de crédit pré-rempli à partir de l\'estimation');
+        try {
+            $estimation = EstimationBesoin::with(['producteur', 'semence'])->findOrFail($id);
+            
+            // Vérifications
+            if (!$estimation->credit_montant || $estimation->credit_montant <= 0) {
+                return redirect()->route('admin.estimations.index')
+                    ->with('error', 'Cette estimation n\'a pas de montant de crédit défini.');
+            }
+            
+            // Vérifier que le producteur existe
+            if (!$estimation->producteur) {
+                return redirect()->route('admin.estimations.index')
+                    ->with('error', 'Le producteur associé à cette estimation n\'existe plus.');
+            }
+            
+            // Construction des paramètres
+            $params = [
+                'producteur_id' => $estimation->producteur_id,
+                'montant_total' => $estimation->credit_montant,
+                'estimation_id' => $estimation->id,
+                'type_intrant' => 'semences',
+                'quantite_intrant' => $estimation->quantite_estimee,
+                'unite_intrant' => $estimation->semence->unite ?? 'kg'
+            ];
+            
+            return redirect()->route('admin.credits.create', $params)
+                ->with('success', 'Formulaire de crédit pré-rempli à partir de l\'estimation N° ' . $estimation->code_estimation);
+                
+        } catch (\Exception $e) {
+            return redirect()->route('admin.estimations.index')
+                ->with('error', 'Erreur lors de la conversion: ' . $e->getMessage());
+        }
     }
+
 
     public function print($id)
     {
