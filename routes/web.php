@@ -184,9 +184,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/estimations/{id}/print', [EstimationBesoinController::class, 'print'])->name('estimations.print');
 
          // Intrants
-        Route::resource('intrants', IntrantController::class);
         Route::get('/intrants/dashboard', [IntrantController::class, 'dashboard'])->name('intrants.dashboard');
         Route::get('/intrants/alertes', [IntrantController::class, 'alerte'])->name('intrants.alertes');
+        Route::resource('intrants', IntrantController::class);
         Route::get('/intrants/{id}/stock/{zone}', [IntrantController::class, 'stock'])->name('intrants.stock');
         Route::post('/intrants/{id}/stock/{zone}/ajouter', [IntrantController::class, 'ajouterStock'])->name('intrants.ajouter-stock');
         Route::post('/intrants/{id}/stock/{zone}/retirer', [IntrantController::class, 'retirerStock'])->name('intrants.retirer-stock');

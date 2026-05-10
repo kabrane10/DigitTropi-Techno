@@ -52,10 +52,10 @@
                 @forelse($estimations as $estimation)
                 <tr>
                     <td class="px-6 py-4 text-sm font-mono">{{ $estimation->code_estimation }}</td>
-                    <td class="px-6 py-4 text-sm">{{ $estimation->date_estimation->format('d/m/Y') }}</td>
+                    <!-- <td class="px-6 py-4 text-sm">{{ $estimation->date_estimation->format('d/m/Y') }}</td> -->
                     <td class="px-6 py-4">{{ $estimation->producteur->nom_complet }}</td>
-                    <td class="px-6 py-4">{{ $estimation->semence->nom }} ({{ $estimation->semence->variete }})</td>
-                    <td class="px-6 py-4 text-right">{{ number_format($estimation->quantite_estimee) }} {{ $estimation->semence->unite }}</td>
+                    <!-- <td class="px-6 py-4">{{ $estimation->semence->nom }} ({{ $estimation->semence->variete }})</td> -->
+                    <!-- <td class="px-6 py-4 text-right">{{ number_format($estimation->quantite_estimee) }} {{ $estimation->semence->unite }}</td> -->
                     <td class="px-6 py-4 text-right">{{ number_format($estimation->superficie_prevue, 2) }} ha</td>
                     <td class="px-6 py-4 text-right">{{ number_format($estimation->credit_montant ?? 0, 0, ',', ' ') }} CFA</td>
                     <td class="px-6 py-4">

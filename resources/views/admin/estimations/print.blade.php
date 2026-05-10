@@ -102,7 +102,7 @@
                         <tfoot>
                             <tr>
                                 <td colspan="3" style="border:1px solid #ddd;padding:8px;text-align:right"><strong>Total intrants</strong></td>
-                                <td style="border:1px solid #ddd;padding:8px;text-align:right"><strong>{{ number_format($estimation->intrants->sum('cout_estime'), 0, ',', ' ') }} CFA</strong></td>
+                                <td style="border:1px solid #ddd;padding:8px;text-align:right"><strong>{{ number_format($estimation->intrants ? $estimation->intrants->sum('cout_estime') : 0, 0, ',', ' ') }} CFA</strong></td>
                             </tr>
                         </tfoot>
                     </table>
@@ -117,9 +117,9 @@
             <div class="section-content">
                 <div class="info-grid">
                     <div><div class="info-label">Coût des semences</div><div class="info-value">{{ number_format($estimation->cout_semences ?? 0, 0, ',', ' ') }} CFA</div></div>
-                    <div><div class="info-label">Coût des intrants</div><div class="info-value">{{ number_format($estimation->intrants->sum('cout_estime') ?? 0, 0, ',', ' ') }} CFA</div></div>
+                    <div><div class="info-label">Coût des intrants</div><div class="info-value">{{ number_format(($estimation->intrants ? $estimation->intrants->sum('cout_estime') : 0) ?? 0, 0, ',', ' ') }} CFA</div></div>
                     <div><div class="info-label">Autres frais</div><div class="info-value">{{ number_format($estimation->autres_frais ?? 0, 0, ',', ' ') }} CFA</div></div>
-                    <div><div class="info-label">Total estimation</div><div class="info-value highlight">{{ number_format(($estimation->cout_semences ?? 0) + ($estimation->intrants->sum('cout_estime') ?? 0) + ($estimation->autres_frais ?? 0), 0, ',', ' ') }} CFA</div></div>
+                    <div><div class="info-label">Total estimation</div><div class="info-value highlight">{{ number_format(($estimation->cout_semences ?? 0) + ($estimation->intrants ? $estimation->intrants->sum('cout_estime') : 0) + ($estimation->autres_frais ?? 0), 0, ',', ' ') }} CFA</div></div>
                 </div>
             </div>
         </div>
@@ -143,7 +143,7 @@
         @endif
         
         <div class="totals">
-            <div class="total-grand">{{ number_format(($estimation->cout_semences ?? 0) + ($estimation->intrants->sum('cout_estime') ?? 0) + ($estimation->autres_frais ?? 0), 0, ',', ' ') }} CFA</div>
+            <div class="total-grand">{{ number_format(($estimation->cout_semences ?? 0) + ($estimation->intrants ? $estimation->intrants->sum('cout_estime') : 0) + ($estimation->autres_frais ?? 0), 0, ',', ' ') }} CFA</div>
             <div>Montant total estimé</div>
         </div>
         
