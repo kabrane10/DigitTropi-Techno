@@ -155,7 +155,7 @@
         <div class="btn-print" onclick="window.print()"> Imprimer / Télécharger PDF</div>
         
         <div class="header">
-        <img src="{{ asset('images/img6.png') }}"  class="logo-img">
+            <img src="{{ asset('images/img6.png') }}"  class="logo-img">
             <div class="title">FICHE D'ESTIMATION DE BESOIN</div>
             <div class="subtitle">Tropi-Techno Sarl - Agriculture Biologique au Togo</div>
             <div class="code">N° {{ $estimation->code_estimation }}</div>
@@ -187,11 +187,15 @@
             </div>
         </div>
         
+        @php
+            $intrants = json_decode($estimation->intrants);
+        @endphp
+
         <!-- Section Intrants (NOUVEAU) -->
         <div class="section">
             <div class="section-title"> INTRANTS REQUIS</div>
             <div class="section-content">
-                @if($estimation->intrants && $estimation->intrants->count() > 0)
+                @if(!empty($intrants) && count($intrants) > 0)
                     <table style="width:100%; border-collapse: collapse;">
                         <thead>
                             <tr>
@@ -202,7 +206,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($estimation->intrants as $intrant)
+                            @foreach($intrants as $intrant)
                             <tr>
                                 <td style="border:1px solid #ddd;padding:8px">
                                     @if($intrant->type == 'engrais')  Engrais
@@ -220,7 +224,7 @@
                         <tfoot>
                             <tr>
                                 <td colspan="3" style="border:1px solid #ddd;padding:8px;text-align:right"><strong>Total intrants</strong></td>
-                                <td style="border:1px solid #ddd;padding:8px;text-align:right"><strong>{{ number_format($estimation->intrants ? $estimation->intrants->sum('cout_estime') : 0, 0, ',', ' ') }} CFA</strong></td>
+                                <td style="border:1px solid #ddd;padding:8px;text-align:right"><strong>{{ number_format(collect($intrants)->sum('cout_estime'), 0, ',', ' ') }} CFA</strong></td>
                             </tr>
                         </tfoot>
                     </table>
@@ -235,9 +239,9 @@
             <div class="section-content">
                 <div class="info-grid">
                     <div><div class="info-label">Coût des semences</div><div class="info-value">{{ number_format($estimation->cout_semences ?? 0, 0, ',', ' ') }} CFA</div></div>
-                    <div><div class="info-label">Coût des intrants</div><div class="info-value">{{ number_format(($estimation->intrants ? $estimation->intrants->sum('cout_estime') : 0) ?? 0, 0, ',', ' ') }} CFA</div></div>
+                    <div><div class="info-label">Coût des intrants</div><div class="info-value">{{ number_format(collect($intrants)->sum('cout_estime') ?? 0, 0, ',', ' ') }} CFA</div></div>
                     <div><div class="info-label">Autres frais</div><div class="info-value">{{ number_format($estimation->autres_frais ?? 0, 0, ',', ' ') }} CFA</div></div>
-                    <div><div class="info-label">Total estimation</div><div class="info-value highlight">{{ number_format(($estimation->cout_semences ?? 0) + ($estimation->intrants ? $estimation->intrants->sum('cout_estime') : 0) + ($estimation->autres_frais ?? 0), 0, ',', ' ') }} CFA</div></div>
+                    <div><div class="info-label">Total estimation</div><div class="info-value highlight">{{ number_format(($estimation->cout_semences ?? 0) + (collect($intrants)->sum('cout_estime') ?? 0) + ($estimation->autres_frais ?? 0), 0, ',', ' ') }} CFA</div></div>
                 </div>
             </div>
         </div>
@@ -261,7 +265,7 @@
         @endif
         
         <div class="totals">
-            <div class="total-grand">{{ number_format(($estimation->cout_semences ?? 0) + ($estimation->intrants ? $estimation->intrants->sum('cout_estime') : 0) + ($estimation->autres_frais ?? 0), 0, ',', ' ') }} CFA</div>
+            <div class="total-grand">{{ number_format(($estimation->cout_semences ?? 0) + (collect($intrants)->sum('cout_estime') ?? 0) + ($estimation->autres_frais ?? 0), 0, ',', ' ') }} CFA</div>
             <div>Montant total estimé</div>
         </div>
         
