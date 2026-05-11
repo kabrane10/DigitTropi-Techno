@@ -26,7 +26,7 @@
         <div class="p-6">
             <!-- Producteur -->
             <div class="mb-6">
-                <h4 class="text-lg font-semibold mb-3"> Producteur</h4>
+                <h4 class="text-lg font-semibold mb-3">Producteur</h4>
                 <div class="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
                     <div><label class="text-gray-500 text-sm">Nom complet</label><p class="font-semibold">{{ $estimation->producteur->nom_complet }}</p></div>
                     <div><label class="text-gray-500 text-sm">Code producteur</label><p>{{ $estimation->producteur->code_producteur }}</p></div>
@@ -37,36 +37,53 @@
             
             <!-- Besoins -->
             <div class="mb-6">
-                <h4 class="text-lg font-semibold mb-3"> Besoins estimés</h4>
+                <h4 class="text-lg font-semibold mb-3">Besoins estimés</h4>
                 <div class="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
                     <div><label class="text-gray-500 text-sm">Semence</label><p class="font-semibold">{{ $estimation->semence->nom }} ({{ $estimation->semence->variete }})</p></div>
                     <div><label class="text-gray-500 text-sm">Quantité estimée</label><p class="text-primary font-bold">{{ number_format($estimation->quantite_estimee) }} {{ $estimation->semence->unite }}</p></div>
                     <div><label class="text-gray-500 text-sm">Superficie prévue</label><p>{{ number_format($estimation->superficie_prevue, 2) }} hectares</p></div>
-                    <div><label class="text-gray-500 text-sm">Crédit estimé</label><p class="text-green-600 font-bold">{{ number_format($estimation->credit_montant ?? 0, 0, ',', ' ') }} CFA</p></div>
+                </div>
+            </div>
+
+            <!-- Récapitulatif Financier -->
+            <div class="mb-6">
+                <h4 class="text-lg font-semibold mb-3">Récapitulatif Financier</h4>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4 p-4 bg-blue-50 rounded-lg">
+                    <div><label class="text-gray-500 text-sm">Coût semences</label><p class="font-semibold">{{ number_format($estimation->cout_semences ?? 0, 0, ',', ' ') }} CFA</p></div>
+                    <div><label class="text-gray-500 text-sm">Coût intrants</label><p class="font-semibold">{{ number_format($estimation->cout_intrants ?? 0, 0, ',', ' ') }} CFA</p></div>
+                    <div><label class="text-gray-500 text-sm">Autres frais</label><p class="font-semibold">{{ number_format($estimation->autres_frais ?? 0, 0, ',', ' ') }} CFA</p></div>
+                    <div class="col-span-2 md:col-span-3 mt-2 pt-2 border-t">
+                        <label class="text-gray-600 text-sm">Montant Crédit Estimé</label>
+                        <p class="font-bold text-green-600 text-lg">{{ number_format($estimation->credit_montant ?? 0, 0, ',', ' ') }} CFA</p>
+                    </div>
+                    <div class="col-span-2 md:col-span-3 font-bold text-right bg-white p-3 rounded-md">
+                        <label class="text-gray-800">Total de l'estimation</label>
+                        <p class="text-primary text-xl">{{ number_format($estimation->total_estimation ?? 0, 0, ',', ' ') }} CFA</p>
+                    </div>
                 </div>
             </div>
 
             <!-- Intrants supplémentaires -->
             @if($estimation->intrants && count(json_decode($estimation->intrants, true)) > 0)
             <div class="mb-6">
-                <h4 class="text-lg font-semibold mb-3"> Intrants supplémentaires</h4>
+                <h4 class="text-lg font-semibold mb-3">Détails des Intrants</h4>
                 <div class="p-4 bg-gray-50 rounded-lg">
                     <table class="w-full">
                         <thead class="bg-gray-100">
-                            <tr><th class="px-3 py-2 text-left">Type</th><th class="px-3 py-2 text-right">Quantité</th><th class="px-3 py-2 text-left">Unité</th></tr>
+                            <tr>
+                                <th class="px-3 py-2 text-left">Type</th>
+                                <th class="px-3 py-2 text-right">Quantité</th>
+                                <th class="px-3 py-2 text-left">Unité</th>
+                                <th class="px-3 py-2 text-right">Coût</th>
+                            </tr>
                         </thead>
                         <tbody>
                             @foreach(json_decode($estimation->intrants, true) as $intrant)
                             <tr>
-                                <td class="px-3 py-2">
-                                    @if($intrant['type'] == 'engrais')  Engrais
-                                    @elseif($intrant['type'] == 'pesticide')  Pesticide
-                                    @elseif($intrant['type'] == 'herbicide')  Herbicide
-                                    @else  Autre
-                                    @endif
-                                </td>
-                                <td class="px-3 py-2 text-right">{{ number_format($intrant['quantite'], 2) }}</td>
-                                <td class="px-3 py-2">{{ $intrant['unite'] }}</td>
+                                <td class="px-3 py-2">{{ ucfirst($intrant['type'] ?? 'N/A') }}</td>
+                                <td class="px-3 py-2 text-right">{{ number_format($intrant['quantite'] ?? 0, 2) }}</td>
+                                <td class="px-3 py-2">{{ $intrant['unite'] ?? 'N/A' }}</td>
+                                <td class="px-3 py-2 text-right">{{ number_format($intrant['cout_estime'] ?? 0, 0, ',', ' ') }} CFA</td>
                             </tr>
                             @endforeach
                         </tbody>
@@ -111,5 +128,5 @@
             print-color-adjust:exact
         }
     }
-        </style>
+</style>
 @endsection

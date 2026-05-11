@@ -128,7 +128,7 @@
                         {{ number_format($stock->stock_actuel) }} {{ $stock->unite }}
                     </p>
                     <p class="text-xs text-gray-500">Seuil: {{ number_format($stock->seuil_alerte) }} {{ $stock->unite }}</p>
-                    <a href="{{ route('admin.intrants.stock', ['intrant' => $intrant->id, 'zone' => $stock->zone]) }}" 
+                    <a href="{{ route('admin.intrants.stock', ['id' => $intrant->id, 'zone' => $stock->zone]) }}" 
                        class="text-xs text-primary hover:underline mt-1 inline-block">
                         Gérer le stock →
                     </a>

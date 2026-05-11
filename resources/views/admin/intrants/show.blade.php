@@ -68,10 +68,10 @@
                         <span class="font-semibold">{{ number_format($stock->seuil_alerte) }} {{ $stock->unite }}</span>
                     </div>
                     <div class="flex gap-2">
-                        <a href="{{ route('admin.intrants.stock', ['intrant' => $intrant->id, 'zone' => $stock->zone]) }}" 
-                           class="flex-1 text-center bg-primary text-white px-3 py-1 rounded-lg text-sm hover:bg-secondary">
-                            <i class="fas fa-chart-line mr-1"></i>Gérer
-                        </a>
+                    <a href="{{ route('admin.intrants.stock', ['id' => $intrant->id, 'zone' => $stock->zone]) }}" 
+                       class="flex-1 text-center bg-primary text-white px-3 py-1 rounded-lg text-sm hover:bg-secondary">
+                        <i class="fas fa-chart-line mr-1"></i>Gérer
+                    </a>
                     </div>
                 </div>
                 @endforeach
