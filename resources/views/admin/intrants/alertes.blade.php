@@ -40,7 +40,7 @@
                     <div class="bg-red-500 h-2 rounded-full" style="width: {{ $pourcentage }}%"></div>
                 </div>
                 <div class="flex gap-2">
-                    <a href="{{ route('admin.intrants.stock', ['intrant' => $stock->intrant_id, 'zone' => $stock->zone]) }}" 
+                    <a href="{{ route('admin.intrants.stock', ['id' => $stock->intrant_id, 'zone' => $stock->zone]) }}" 
                        class="flex-1 text-center bg-primary text-white px-3 py-2 rounded-lg text-sm hover:bg-secondary">
                         <i class="fas fa-chart-line mr-1"></i>Gérer
                     </a>
