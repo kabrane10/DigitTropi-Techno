@@ -67,21 +67,40 @@ class IntrantController extends Controller
 
     public function update(Request $request, $id)
     {
-        $intrant = Intrant::findOrFail($id);
+    $intrant = Intrant::findOrFail($id);
 
-        $validated = $request->validate([
-            'nom' => 'required|string|max:255',
-            'type' => 'required|in:engrais,pesticide,herbicide,semence,autre',
-            'unite' => 'required|string|max:50',
-            'prix_unitaire' => 'required|numeric|min:0',
-            'description' => 'nullable|string',
-            'est_actif' => 'boolean'
-        ]);
+    $validated = $request->validate([
+        'nom' => 'required|string|max:255',
+        'type' => 'required|in:engrais,pesticide,herbicide,semence,autre',
+        'unite' => 'required|string|max:50',
+        'prix_unitaire' => 'required|numeric|min:0',
+        'description' => 'nullable|string',
+        'est_actif' => 'boolean',
+        'stocks' => 'array',
+        'stocks.*.seuil_alerte' => 'required|numeric|min:0',
+        'stocks.*.emplacement' => 'nullable|string'
+    ]);
 
-        $intrant->update($validated);
+    $intrant->update($validated);
 
-        return redirect()->route('admin.intrants.index')
-            ->with('success', 'Intrant mis à jour avec succès');
+    // Mettre à jour les seuils et emplacements par zone
+    if (isset($validated['stocks'])) {
+        foreach ($validated['stocks'] as $zone => $data) {
+            $stock = IntrantStock::where('intrant_id', $intrant->id)
+                ->where('zone', $zone)
+                ->first();
+            
+            if ($stock) {
+                $stock->update([
+                    'seuil_alerte' => $data['seuil_alerte'],
+                    'emplacement' => $data['emplacement'] ?? null
+                ]);
+            }
+        }
+    }
+
+    return redirect()->route('admin.intrants.index')
+        ->with('success', 'Intrant mis à jour avec succès');
     }
 
     public function destroy($id)
@@ -207,5 +226,127 @@ class IntrantController extends Controller
             ->get();
         
         return view('admin.intrants.dashboard', compact('stats', 'stocksParZone'));
+    }
+
+    /**
+ * Transférer du stock d'une zone à une autre
+ */
+    public function transferer(Request $request, $intrantId)
+    {
+    $validated = $request->validate([
+        'source_zone' => 'required|string',
+        'destination_zone' => 'required|string|different:source_zone',
+        'quantite' => 'required|numeric|min:0.01',
+        'notes' => 'nullable|string'
+    ]);
+    
+    $sourceStock = IntrantStock::where('intrant_id', $intrantId)
+        ->where('zone', $validated['source_zone'])
+        ->firstOrFail();
+    
+    if ($sourceStock->stock_actuel < $validated['quantite']) {
+        return back()->with('error', 'Stock insuffisant dans la zone source.');
+    }
+    
+    $destinationStock = IntrantStock::firstOrCreate(
+        ['intrant_id' => $intrantId, 'zone' => $validated['destination_zone']],
+        ['stock_actuel' => 0, 'seuil_alerte' => 100, 'unite' => $sourceStock->unite]
+    );
+    
+    DB::beginTransaction();
+    try {
+        // Sortie de la zone source
+        $sourceStock->stock_actuel -= $validated['quantite'];
+        $sourceStock->save();
+        
+        IntrantMouvement::create([
+            'intrant_stock_id' => $sourceStock->id,
+            'type' => 'sortie',
+            'quantite' => $validated['quantite'],
+            'motif' => 'Transfert',
+            'reference' => 'Transfert vers ' . $validated['destination_zone'],
+            'user_id' => auth()->guard('admin')->id(),
+            'notes' => $validated['notes']
+        ]);
+        
+        // Entrée dans la zone destination
+        $destinationStock->stock_actuel += $validated['quantite'];
+        $destinationStock->save();
+        
+        IntrantMouvement::create([
+            'intrant_stock_id' => $destinationStock->id,
+            'type' => 'entree',
+            'quantite' => $validated['quantite'],
+            'motif' => 'Transfert',
+            'reference' => 'Transfert depuis ' . $validated['source_zone'],
+            'user_id' => auth()->guard('admin')->id(),
+            'notes' => $validated['notes']
+        ]);
+        
+        DB::commit();
+        
+        return redirect()->route('admin.intrants.stock', ['intrant' => $intrantId, 'zone' => $validated['source_zone']])
+            ->with('success', "{$validated['quantite']} {$sourceStock->unite} transféré(s) de {$validated['source_zone']} vers {$validated['destination_zone']}");
+            
+    } catch (\Exception $e) {
+        DB::rollback();
+        return back()->with('error', 'Erreur lors du transfert: ' . $e->getMessage());
+    }
+    }
+
+    /**
+ * Données d'évolution pour le graphique
+ */
+public function evolutionData(Request $request)
+{
+    $months = (int) $request->get('months', 6);
+    $data = [];
+    $labels = [];
+    
+    for ($i = $months - 1; $i >= 0; $i--) {
+        $date = now()->subMonths($i);
+        $labels[] = $date->format('M Y');
+        
+        $valeur = IntrantMouvement::whereMonth('created_at', $date->month)
+            ->whereYear('created_at', $date->year)
+            ->get()
+            ->sum(function($mvt) {
+                $prix = $mvt->stock->intrant->prix_unitaire ?? 0;
+                return $mvt->type == 'entree' ? $mvt->quantite * $prix : -($mvt->quantite * $prix);
+            });
+        
+        $data[] = $valeur;
+    }
+    
+    return response()->json([
+        'labels' => $labels,
+        'values' => $data
+    ]);
+}
+
+/**
+ * Générer un rapport PDF
+ */
+    public function rapportPdf()
+    {
+    $intrants = Intrant::with('stocks')->get();
+    $date = now()->format('d/m/Y H:i');
+    
+    $html = view('admin.intrants.rapport-pdf', compact('intrants', 'date'))->render();
+    $pdf = PDF::loadHTML($html);
+    return $pdf->download('rapport-stocks-' . now()->format('Y-m-d') . '.pdf');
+    }
+
+    public function apiShow($id)
+    {
+    $intrant = Intrant::findOrFail($id);
+    return response()->json([
+        'id' => $intrant->id,
+        'nom' => $intrant->nom,
+        'code_intrant' => $intrant->code_intrant,
+        'type' => $intrant->type,
+        'unite' => $intrant->unite,
+        'prix_unitaire' => $intrant->prix_unitaire
+    ]);
     }
 }
