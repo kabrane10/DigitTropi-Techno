@@ -290,7 +290,7 @@
                         <i class="fas fa-truck-loading w-5"></i>
                         <span>Bordereau de collecte</span>
                     </a>
-                    <a href="{{ route('admin.bordereaux.form-collecte') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg transition text-white/80 hover:bg-white/10">
+                    <a href="{{ route('admin.bordereaux.form-contre-passee') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg transition text-white/80 hover:bg-white/10">
                         <i class="fas fa-truck-loading w-5"></i>
                         <span>Bordereau de contre passée</span>
                     </a>    

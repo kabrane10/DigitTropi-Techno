@@ -44,7 +44,7 @@ class IntrantController extends Controller
                 'intrant_id' => $intrant->id,
                 'zone' => $zone,
                 'stock_actuel' => 0,
-                'seuil_alerte' => 100,
+                'seuil_alerte' => 50,
                 'unite' => $validated['unite']
             ]);
         }
