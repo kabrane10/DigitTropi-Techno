@@ -34,7 +34,7 @@
             <h3 class="text-lg font-semibold mb-4 text-green-600">
                 <i class="fas fa-plus-circle mr-2"></i>Ajouter du stock
             </h3>
-            <form action="{{ route('admin.intrants.ajouter-stock', ['intrant' => $stock->intrant_id, 'zone' => $stock->zone]) }}" method="POST" id="formAjout">
+            <form action="{{ route('admin.intrants.ajouter-stock', ['id' => $stock->intrant_id, 'zone' => $stock->zone]) }}" method="POST" id="formAjout">
                 @csrf
                 <div class="space-y-4">
                     <div>
@@ -80,7 +80,7 @@
             <h3 class="text-lg font-semibold mb-4 text-orange-600">
                 <i class="fas fa-minus-circle mr-2"></i>Retirer du stock
             </h3>
-            <form action="{{ route('admin.intrants.retirer-stock', ['intrant' => $stock->intrant_id, 'zone' => $stock->zone]) }}" method="POST" id="formRetrait">
+            <form action="{{ route('admin.intrants.retirer-stock', ['id' => $stock->intrant_id, 'zone' => $stock->zone]) }}" method="POST" id="formRetrait">
                 @csrf
                 <div class="space-y-4">
                     <div>
