@@ -291,7 +291,7 @@
                         <span>Bordereau de collecte</span>
                     </a>
                     <a href="{{ route('admin.bordereaux.form-contre-passee') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg transition text-white/80 hover:bg-white/10">
-                        <i class="fas fa-truck-loading w-5"></i>
+                        <i class="fas fa-rotate-left w-5"></i>
                         <span>Bordereau de contre passée</span>
                     </a>    
                 </div>

@@ -33,7 +33,8 @@ class Bordereau extends Model
             'collecte' => 'Bordereau de Collecte',
             'achat' => 'Bordereau d\'Achat',
             'chargement' => 'Bordereau de Chargement',
-            'livraison' => 'Bordereau de Livraison'
+            'livraison' => 'Bordereau de Livraison',
+            'contre-passee' => 'Bordereau de Contre-Passee'
         ][$this->type] ?? $this->type;
     }
 

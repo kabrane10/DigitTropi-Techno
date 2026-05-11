@@ -26,6 +26,7 @@
                 <option value="achat" {{ request('type') == 'achat' ? 'selected' : '' }}>Achat</option>
                 <option value="chargement" {{ request('type') == 'chargement' ? 'selected' : '' }}>Chargement</option>
                 <option value="livraison" {{ request('type') == 'livraison' ? 'selected' : '' }}>Livraison</option>
+                <option value="autre" {{ request('type') == 'contre-passee' ? 'selected' : '' }}>Contre-passée</option>
             </select>
             <select name="statut" class="px-4 py-2 border rounded-lg focus:outline-none focus:border-primary">
                 <option value="">Tous statuts</option>
