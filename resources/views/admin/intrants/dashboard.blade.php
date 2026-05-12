@@ -96,7 +96,7 @@
     <!-- Stock par zone -->
     <div class="bg-white rounded-xl shadow-sm p-6">
         <div class="flex justify-between items-center mb-4">
-            <h3 class="text-lg font-semibold">📍 Stock par zone</h3>
+            <h3 class="text-lg font-semibold"> Stock par zone</h3>
             <button onclick="resetZoneFilter()" class="text-xs text-primary hover:underline">Réinitialiser</button>
         </div>
         <div class="space-y-4">
@@ -117,14 +117,14 @@
     
     <!-- Activité récente -->
     <div class="bg-white rounded-xl shadow-sm p-6">
-        <h3 class="text-lg font-semibold mb-4">🔔 Activité récente</h3>
+        <h3 class="text-lg font-semibold mb-4"> Activité récente</h3>
         <div class="space-y-3 max-h-80 overflow-y-auto">
             @forelse($activitesRecentes as $activite)
             <div class="flex items-center text-sm border-b pb-3">
                 <span class="w-20 text-gray-400 text-xs">{{ $activite->created_at->diffForHumans() }}</span>
                 <span class="flex-shrink-0 w-24">
                     <span class="px-2 py-1 text-xs rounded-full {{ $activite->type == 'entree' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                        {{ $activite->type == 'entree' ? '➕ Entrée' : '➖ Sortie' }}
+                        {{ $activite->type == 'entree' ? ' Entrée' : ' Sortie' }}
                     </span>
                 </span>
                 <span class="flex-1 font-medium">{{ number_format($activite->quantite) }} {{ $activite->stock->unite ?? 'kg' }}</span>
@@ -147,7 +147,7 @@
         <a href="{{ route('admin.intrants.index', ['zone' => $zone->zone]) }}" 
            class="flex items-center justify-between p-3 rounded-lg border hover:shadow-md transition {{ $zone->nb_alertes > 0 ? 'bg-red-50 border-red-200' : 'bg-gray-50' }}">
             <div>
-                <p class="font-semibold">📍 {{ $zone->zone }}</p>
+                <p class="font-semibold"> {{ $zone->zone }}</p>
                 @if($zone->nb_alertes > 0)
                 <p class="text-sm text-red-600">{{ $zone->nb_alertes }} alerte(s) à réapprovisionner</p>
                 @else

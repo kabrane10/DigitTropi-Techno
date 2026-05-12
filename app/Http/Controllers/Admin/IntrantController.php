@@ -8,6 +8,7 @@ use App\Models\IntrantStock;
 use App\Models\IntrantMouvement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class IntrantController extends Controller
 {
@@ -377,15 +378,21 @@ public function evolutionData(Request $request)
 /**
  * Générer un rapport PDF
  */
-    public function rapportPdf()
-    {
+public function rapportPdf()
+{
     $intrants = Intrant::with('stocks')->get();
     $date = now()->format('d/m/Y H:i');
     
-    $html = view('admin.intrants.rapport-pdf', compact('intrants', 'date'))->render();
-    $pdf = PDF::loadHTML($html);
-    return $pdf->download('rapport-stocks-' . now()->format('Y-m-d') . '.pdf');
+    // Calcul des totaux
+    $valeurTotale = 0;
+    foreach ($intrants as $intrant) {
+        $stockTotal = $intrant->stocks->sum('stock_actuel');
+        $valeurTotale += $stockTotal * $intrant->prix_unitaire;
     }
+    
+    $pdf = PDF::loadView('admin.intrants.rapport-pdf', compact('intrants', 'date', 'valeurTotale'));
+    return $pdf->download('rapport-stocks-' . now()->format('Y-m-d') . '.pdf');
+}
 
     public function apiShow($id)
     {

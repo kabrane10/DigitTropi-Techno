@@ -194,7 +194,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
          Route::post('/intrants/{id}/stock/{zone}/retirer', [IntrantController::class, 'retirerStock'])->name('intrants.retirer-stock');
          Route::post('/intrants/transferer/{intrant}', [IntrantController::class, 'transferer'])->name('intrants.transferer');
          //route api pour intrants
-         Route::get('/admin/intrants/{id}', [IntrantController::class, 'apiShow'])->name('intrants.api.show');
+        //  Route::get('/admin/intrants/{id}', [IntrantController::class, 'apiShow'])->name('intrants.api.show');
          Route::resource('intrants', IntrantController::class);
 
         // Stocks

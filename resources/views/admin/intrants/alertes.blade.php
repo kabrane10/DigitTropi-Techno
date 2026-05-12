@@ -275,6 +275,65 @@
     </div>
 </div>
 
+<!-- Modal Transfert  -->
+<div id="transferModal" class="fixed inset-0 bg-black/50 z-50 hidden items-center justify-center">
+    <div class="bg-white rounded-xl p-6 max-w-md w-full">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-bold"> Transférer du stock</h3>
+            <button onclick="closeTransferModal()" class="text-gray-400 hover:text-gray-600">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        
+        <form id="transferForm" method="POST" action="{{ route('admin.intrants.transferer', $stock->intrant_id) }}">
+            @csrf
+            <input type="hidden" name="source_zone" value="{{ $stock->zone }}">
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold mb-2">De (zone source)</label>
+                    <input type="text" value="{{ $stock->zone }}" class="w-full px-4 py-2 border rounded-lg bg-gray-100" disabled>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-semibold mb-2">Vers (zone destination) *</label>
+                    <select name="destination_zone" id="destination_zone" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-primary">
+                        <option value="">-- Sélectionnez une zone --</option>
+                        @foreach($zones as $zone)
+                        <option value="{{ $zone->zone }}" data-stock="{{ $zone->stock_actuel }}">
+                            {{ $zone->zone }} (stock actuel: {{ number_format($zone->stock_actuel) }} {{ $zone->unite }})
+                        </option>
+                        @endforeach
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-semibold mb-2">Quantité à transférer *</label>
+                    <input type="number" step="0.01" name="quantite" id="transferQuantite" required 
+                           max="{{ $stock->stock_actuel }}" 
+                           class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-primary">
+                    <p class="text-xs text-gray-500 mt-1">Maximum disponible: {{ number_format($stock->stock_actuel) }} {{ $stock->unite }}</p>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-semibold mb-2">Motif du transfert</label>
+                    <textarea name="notes" rows="2" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-primary" 
+                              placeholder="Raison du transfert..."></textarea>
+                </div>
+            </div>
+            
+            <div class="mt-6 flex justify-end gap-3">
+                <button type="button" onclick="closeTransferModal()" class="px-4 py-2 border rounded-lg hover:bg-gray-50 transition">
+                    Annuler
+                </button>
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
+                    <i class="fas fa-exchange-alt mr-2"></i>Transférer
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
     let currentView = 'cards';
     let currentZone = 'Centrale';
@@ -411,9 +470,44 @@
         }
     }
     
-    function openTransferModal(intrantId, zone) {
-        // Implémenter le modal de transfert
-        alert('Fonctionnalité de transfert à implémenter');
+    function openTransferModal() {
+        const modal = document.getElementById('transferModal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        
+        // Réinitialiser le formulaire
+        document.getElementById('destination_zone').value = '';
+        document.getElementById('transferQuantite').value = '';
     }
+    
+    function closeTransferModal() {
+        const modal = document.getElementById('transferModal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+    
+    // Validation de la quantité avant soumission
+    document.getElementById('transferForm')?.addEventListener('submit', function(e) {
+        const quantite = parseFloat(document.getElementById('transferQuantite').value);
+        const maxQuantite = {{ $stock->stock_actuel }};
+        
+        if (isNaN(quantite) || quantite <= 0) {
+            e.preventDefault();
+            alert('Veuillez saisir une quantité valide');
+            return false;
+        }
+        
+        if (quantite > maxQuantite) {
+            e.preventDefault();
+            alert('La quantité ne peut pas dépasser le stock disponible (' + maxQuantite.toLocaleString() + ' {{ $stock->unite }})');
+            return false;
+        }
+        
+        if (!document.getElementById('destination_zone').value) {
+            e.preventDefault();
+            alert('Veuillez sélectionner une zone de destination');
+            return false;
+        }
+    });
 </script>
 @endsection

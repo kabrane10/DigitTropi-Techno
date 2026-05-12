@@ -60,7 +60,7 @@
         <!-- Graphique de répartition -->
         <div class="bg-white rounded-xl shadow-sm p-6">
             <h3 class="text-lg font-semibold mb-4"> Répartition du stock par zone</h3>
-            <canvas id="stockChart" height="200"></canvas>
+            <canvas id="stockChart" height="150"></canvas>
         </div>
         
         <!-- Stock par zone -->
