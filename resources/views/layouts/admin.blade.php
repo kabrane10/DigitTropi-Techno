@@ -85,10 +85,10 @@
                         <i class="fas fa-users w-5"></i>
                         <span>Liste producteurs</span>
                     </a>
-                    <a href="{{ route('admin.producteurs.create') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg transition text-white/80 hover:bg-white/10">
+                    <!-- <a href="{{ route('admin.producteurs.create') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg transition text-white/80 hover:bg-white/10">
                         <i class="fas fa-user-plus w-5"></i>
                         <span>Nouveau producteur</span>
-                    </a>
+                    </a> -->
                 </div>
                 
                 <!-- ========== COOPÉRATIVES ========== -->
@@ -98,10 +98,10 @@
                         <i class="fas fa-handshake w-5"></i>
                         <span>Gestion coopératives</span>
                     </a>
-                    <a href="{{ route('admin.cooperatives.create') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg transition text-white/80 hover:bg-white/10">
+                    <!-- <a href="{{ route('admin.cooperatives.create') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg transition text-white/80 hover:bg-white/10">
                         <i class="fas fa-plus-circle w-5"></i>
                         <span>Nouvelle coopérative</span>
-                    </a>
+                    </a> -->
                 </div>
                 
                 <!-- ========== SEMENCES & DISTRIBUTIONS ========== -->
@@ -111,10 +111,10 @@
                         <i class="fas fa-seedling w-5"></i>
                         <span>Distributions</span>
                     </a>
-                    <a href="{{ route('admin.distributions.create') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg transition text-white/80 hover:bg-white/10">
+                    <!-- <a href="{{ route('admin.distributions.create') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg transition text-white/80 hover:bg-white/10">
                         <i class="fas fa-truck w-5"></i>
                         <span>Nouvelle distribution</span>
-                    </a>
+                    </a> -->
                     <a href="{{ route('admin.distributions.dashboard') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg transition text-white/80 hover:bg-white/10">
                         <i class="fas fa-chart-pie w-5"></i>
                         <span>Dashboard distributions</span>
@@ -124,10 +124,10 @@
                         <i class="fas fa-seedling w-5"></i>
                         <span>Liste des semences</span>
                     </a>
-                    <a href="{{ route('admin.semences.create') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg transition text-white/80 hover:bg-white/10">
+                    <!-- <a href="{{ route('admin.semences.create') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg transition text-white/80 hover:bg-white/10">
                         <i class="fas fa-plus-circle w-5"></i>
                         <span>Nouvelle semence</span>
-                    </a>
+                    </a> -->
                 </div>
 
                 <!-- ========== INTRANTS ========== -->
@@ -137,10 +137,10 @@
                         <i class="fas fa-boxes w-5"></i>
                         <span>Gestion intrants</span>
                     </a>
-                    <a href="{{ route('admin.intrants.create') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg transition text-white/80 hover:bg-white/10">
+                    <!-- <a href="{{ route('admin.intrants.create') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg transition text-white/80 hover:bg-white/10">
                         <i class="fas fa-plus-circle w-5"></i>
                         <span>Nouvel intrant</span>
-                    </a>
+                    </a> -->
                     <a href="{{ route('admin.intrants.alertes') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg transition text-white/80 hover:bg-white/10">
                         <i class="fas fa-exclamation-triangle w-5"></i>
                         <span>Alertes stock</span>
@@ -173,10 +173,10 @@
                         <i class="fas fa-hand-holding-usd w-5"></i>
                         <span>Gestion crédits</span>
                     </a>
-                    <a href="{{ route('admin.credits.create') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg transition text-white/80 hover:bg-white/10">
+                    <!-- <a href="{{ route('admin.credits.create') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg transition text-white/80 hover:bg-white/10">
                         <i class="fas fa-plus-circle w-5"></i>
                         <span>Nouveau crédit</span>
-                    </a>
+                    </a> -->
                 </div>
                 
                 <!-- ========== ESTIMATIONS ========== -->
@@ -186,10 +186,10 @@
                         <i class="fas fa-calculator w-5"></i>
                         <span>Estimations besoins</span>
                     </a>
-                    <a href="{{ route('admin.estimations.create') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg transition text-white/80 hover:bg-white/10">
+                    <!-- <a href="{{ route('admin.estimations.create') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg transition text-white/80 hover:bg-white/10">
                         <i class="fas fa-plus-circle w-5"></i>
                         <span>Nouvelle estimation</span>
-                    </a>
+                    </a> -->
                 </div>
                 <!-- ========== COLLECTES ========== -->
                 <div class="pt-4">
@@ -198,10 +198,10 @@
                         <i class="fas fa-truck-loading w-5"></i>
                         <span>Gestion collectes</span>
                     </a>
-                    <a href="{{ route('admin.collectes.create') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg transition text-white/80 hover:bg-white/10">
+                    <!-- <a href="{{ route('admin.collectes.create') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg transition text-white/80 hover:bg-white/10">
                         <i class="fas fa-plus-circle w-5"></i>
                         <span>Nouvelle collecte</span>
-                    </a>
+                    </a> -->
                     <a href="{{ route('admin.collectes.dashboard') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg transition text-white/80 hover:bg-white/10">
                         <i class="fas fa-chart-line w-5"></i>
                         <span>Dashboard collectes</span>
@@ -232,10 +232,10 @@
                         <i class="fas fa-list w-5"></i>
                         <span>Liste des suivis</span>
                     </a>
-                    <a href="{{ route('admin.suivi.create') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg transition text-white/80 hover:bg-white/10">
+                    <!-- <a href="{{ route('admin.suivi.create') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg transition text-white/80 hover:bg-white/10">
                         <i class="fas fa-plus-circle w-5"></i>
                         <span>Nouveau suivi</span>
-                    </a>
+                    </a> -->
                 </div>
                 
                 <!-- ========== RAPPORTS ========== -->
@@ -323,7 +323,7 @@
                 </div>
                 <!-- ========== GALERIE ========== -->
                 <div class="pt-4">
-                    <p class="text-white/50 text-xs uppercase px-4 mb-2">Galerie</p>
+                    <p class="text-white/50 text-xs uppercase px-4 mb-2">Activités</p>
     
                     <!-- Option 1: Photos individuelles (ancien système) -->
                     <a href="{{ route('admin.galerie.index') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg transition {{ request()->routeIs('admin.galerie.*') ? 'bg-primary text-white' : 'text-white/80 hover:bg-white/10' }}">
@@ -338,7 +338,7 @@
                     <!-- Option 2: Albums photos (nouveau système) -->
                     <a href="{{ route('admin.albums.index') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg transition {{ request()->routeIs('admin.albums.*') ? 'bg-primary text-white' : 'text-white/80 hover:bg-white/10' }}">
                         <i class="fas fa-images w-5"></i>
-                        <span>Albums photos</span>
+                        <span>Albums Activité</span>
                     </a>
                     <a href="{{ route('admin.albums.create') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg transition text-white/80 hover:bg-white/10">
                         <i class="fas fa-plus-circle w-5"></i>

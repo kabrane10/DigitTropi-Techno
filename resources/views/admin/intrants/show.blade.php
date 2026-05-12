@@ -59,13 +59,13 @@
         
         <!-- Graphique de répartition -->
         <div class="bg-white rounded-xl shadow-sm p-6">
-            <h3 class="text-lg font-semibold mb-4">📊 Répartition du stock par zone</h3>
+            <h3 class="text-lg font-semibold mb-4"> Répartition du stock par zone</h3>
             <canvas id="stockChart" height="200"></canvas>
         </div>
         
         <!-- Stock par zone -->
         <div class="bg-white rounded-xl shadow-sm p-6">
-            <h3 class="text-lg font-semibold mb-4">📍 Détail par zone</h3>
+            <h3 class="text-lg font-semibold mb-4"> Détail par zone</h3>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 @foreach($intrant->stocks as $stock)
                 <div class="border rounded-lg p-4 {{ $stock->est_critique ? 'border-red-300 bg-red-50' : 'border-green-300 bg-green-50' }}">
@@ -96,7 +96,7 @@
                         </div>
                     </div>
                     <div class="flex gap-2 mt-3">
-                        <a href="{{ route('admin.intrants.stock', ['intrant' => $intrant->id, 'zone' => $stock->zone]) }}" 
+                        <a href="{{ route('admin.intrants.stock', ['id' => $intrant->id, 'zone' => $stock->zone]) }}" 
                            class="flex-1 text-center bg-primary text-white px-3 py-1 rounded-lg text-sm hover:bg-secondary">
                             <i class="fas fa-chart-line mr-1"></i>Gérer
                         </a>

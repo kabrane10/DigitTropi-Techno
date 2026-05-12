@@ -22,10 +22,10 @@
             </div>
             <select id="typeFilter" class="px-4 py-2 border rounded-lg">
                 <option value="all">Tous les types</option>
-                <option value="engrais">🌱 Engrais</option>
-                <option value="pesticide">🐛 Pesticide</option>
-                <option value="herbicide">🌿 Herbicide</option>
-                <option value="semence">🌾 Semence</option>
+                <option value="engrais"> Engrais</option>
+                <option value="pesticide"> Pesticide</option>
+                <option value="herbicide"> Herbicide</option>
+                <option value="semence"> Semence</option>
             </select>
         </div>
     </div>
@@ -60,7 +60,7 @@
             @foreach($zones as $zone)
             <div class="zone-section" data-zone="{{ $zone }}" style="display: {{ $loop->first ? 'block' : 'none' }}">
                 <div class="mb-4">
-                    <h3 class="text-lg font-semibold text-dark">📍 Zone {{ $zone }}</h3>
+                    <h3 class="text-lg font-semibold text-dark"> Zone {{ $zone }}</h3>
                     <p class="text-sm text-gray-500">Produits nécessitant une action immédiate</p>
                 </div>
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">

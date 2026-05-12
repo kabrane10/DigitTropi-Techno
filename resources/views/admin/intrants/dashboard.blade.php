@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('title', 'Dashboard intrants')
-@section('header', '📊 Tableau de bord des intrants')
+@section('header', ' Tableau de bord des intrants')
 
 @section('content')
 <!-- KPIs principaux -->
@@ -59,7 +59,7 @@
     <!-- Évolution de la valeur du stock -->
     <div class="bg-white rounded-xl shadow-sm p-6">
         <div class="flex justify-between items-center mb-4">
-            <h3 class="text-lg font-semibold">📈 Évolution de la valeur du stock</h3>
+            <h3 class="text-lg font-semibold"> Évolution de la valeur du stock</h3>
             <select id="periodeGraph" class="px-3 py-1 border rounded-lg text-sm">
                 <option value="6">6 derniers mois</option>
                 <option value="12">12 derniers mois</option>
@@ -97,7 +97,7 @@
     <!-- Stock par zone (cliquable) -->
     <div class="bg-white rounded-xl shadow-sm p-6">
         <div class="flex justify-between items-center mb-4">
-            <h3 class="text-lg font-semibold">📍 Stock par zone</h3>
+            <h3 class="text-lg font-semibold"> Stock par zone</h3>
             <button onclick="resetZoneFilter()" class="text-xs text-primary hover:underline">Réinitialiser</button>
         </div>
         <div class="space-y-4">
@@ -118,14 +118,14 @@
     
     <!-- Activité récente -->
     <div class="bg-white rounded-xl shadow-sm p-6">
-        <h3 class="text-lg font-semibold mb-4">🔔 Activité récente</h3>
+        <h3 class="text-lg font-semibold mb-4"> Activité récente</h3>
         <div class="space-y-3 max-h-80 overflow-y-auto">
             @forelse($activitesRecentes as $activite)
             <div class="flex items-center text-sm border-b pb-3">
                 <span class="w-20 text-gray-400 text-xs">{{ $activite->created_at->diffForHumans() }}</span>
                 <span class="flex-shrink-0 w-24">
                     <span class="px-2 py-1 text-xs rounded-full {{ $activite->type == 'entree' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                        {{ $activite->type == 'entree' ? '➕ Entrée' : '➖ Sortie' }}
+                        {{ $activite->type == 'entree' ? ' Entrée' : ' Sortie' }}
                     </span>
                 </span>
                 <span class="flex-1 font-medium">{{ number_format($activite->quantite) }} {{ $activite->stock->unite }}</span>

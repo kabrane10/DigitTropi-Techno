@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('title', 'Modifier intrant')
-@section('header', '✏️ Modifier l\'intrant - ' . $intrant->nom)
+@section('header', ' Modifier l\'intrant - ' . $intrant->nom)
 
 @section('content')
 <div class="bg-white rounded-xl shadow-sm p-6">
@@ -41,11 +41,11 @@
                     <i class="fas fa-folder text-primary mr-1"></i> Type *
                 </label>
                 <select name="type" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-primary">
-                    <option value="engrais" {{ $intrant->type == 'engrais' ? 'selected' : '' }}>🌱 Engrais</option>
-                    <option value="pesticide" {{ $intrant->type == 'pesticide' ? 'selected' : '' }}>🐛 Pesticide</option>
-                    <option value="herbicide" {{ $intrant->type == 'herbicide' ? 'selected' : '' }}>🌿 Herbicide</option>
-                    <option value="semence" {{ $intrant->type == 'semence' ? 'selected' : '' }}>🌾 Semence</option>
-                    <option value="autre" {{ $intrant->type == 'autre' ? 'selected' : '' }}>📦 Autre</option>
+                    <option value="engrais" {{ $intrant->type == 'engrais' ? 'selected' : '' }}> Engrais</option>
+                    <option value="pesticide" {{ $intrant->type == 'pesticide' ? 'selected' : '' }}> Pesticide</option>
+                    <option value="herbicide" {{ $intrant->type == 'herbicide' ? 'selected' : '' }}> Herbicide</option>
+                    <option value="semence" {{ $intrant->type == 'semence' ? 'selected' : '' }}> Semence</option>
+                    <option value="autre" {{ $intrant->type == 'autre' ? 'selected' : '' }}> Autre</option>
                 </select>
                 @error('type')
                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
@@ -83,8 +83,8 @@
                     <i class="fas fa-toggle-on text-primary mr-1"></i> Statut
                 </label>
                 <select name="est_actif" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-primary">
-                    <option value="1" {{ $intrant->est_actif ? 'selected' : '' }}>✅ Actif</option>
-                    <option value="0" {{ !$intrant->est_actif ? 'selected' : '' }}>⛔ Inactif</option>
+                    <option value="1" {{ $intrant->est_actif ? 'selected' : '' }}> Actif</option>
+                    <option value="0" {{ !$intrant->est_actif ? 'selected' : '' }}> Inactif</option>
                 </select>
                 @error('est_actif')
                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>

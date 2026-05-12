@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('title', 'Nouvel intrant')
-@section('header', '➕ Ajouter un intrant')
+@section('header', ' Ajouter un intrant')
 
 @section('content')
 <div class="bg-white rounded-xl shadow-sm p-6">
@@ -34,11 +34,11 @@
                 </label>
                 <select name="type" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-primary">
                     <option value="">-- Sélectionnez --</option>
-                    <option value="engrais" {{ old('type') == 'engrais' ? 'selected' : '' }}>🌱 Engrais</option>
-                    <option value="pesticide" {{ old('type') == 'pesticide' ? 'selected' : '' }}>🐛 Pesticide</option>
-                    <option value="herbicide" {{ old('type') == 'herbicide' ? 'selected' : '' }}>🌿 Herbicide</option>
-                    <option value="semence" {{ old('type') == 'semence' ? 'selected' : '' }}>🌾 Semence</option>
-                    <option value="autre" {{ old('type') == 'autre' ? 'selected' : '' }}>📦 Autre</option>
+                    <option value="engrais" {{ old('type') == 'engrais' ? 'selected' : '' }}> Engrais</option>
+                    <option value="pesticide" {{ old('type') == 'pesticide' ? 'selected' : '' }}> Pesticide</option>
+                    <option value="herbicide" {{ old('type') == 'herbicide' ? 'selected' : '' }}> Herbicide</option>
+                    <option value="semence" {{ old('type') == 'semence' ? 'selected' : '' }}> Semence</option>
+                    <option value="autre" {{ old('type') == 'autre' ? 'selected' : '' }}> Autre</option>
                 </select>
                 @error('type')
                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>

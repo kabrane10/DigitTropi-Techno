@@ -23,7 +23,7 @@
                 <ul class="space-y-2">
                     <li><a href="{{ route ('welcome') }}" class="text-gray-300 hover:text-secondary transition-colors">Accueil</a></li>
                     <li><a href="{{ route ('actualites') }}" class="text-gray-300 hover:text-secondary transition-colors">Actualités</a></li>
-                    <li><a href="{{ route ('galerie') }}" class="text-gray-300 hover:text-secondary transition-colors">Galerie</a></li>
+                    <li><a href="{{ route ('galerie') }}" class="text-gray-300 hover:text-secondary transition-colors">Activités</a></li>
                     <li><a href="{{ route ('contact') }}" class="text-gray-300 hover:text-secondary transition-colors">Contact</a></li>
                 </ul>
             </div>

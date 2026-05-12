@@ -50,7 +50,7 @@
     <div class="bg-white rounded-xl shadow-sm">
      《 <div class="p-6 border-b">
             <div class="flex justify-between items-center flex-wrap gap-4">
-                <h3 class="text-lg font-semibold">📜 Historique des mouvements</h3>
+                <h3 class="text-lg font-semibold">Historique des mouvements</h3>
                 <div class="flex gap-2">
                     <select id="filterType" class="px-3 py-1 border rounded-lg text-sm">
                         <option value="all">Tous les mouvements</option>
@@ -154,7 +154,7 @@
             <h3 class="text-xl font-bold">Transférer du stock</h3>
             <button onclick="closeTransferModal()" class="text-gray-400 hover:text-gray-600">&times;</button>
         </div>
-        <form action="{{ route('admin.intrants.transferer', ['intrant' => $stock->intrant_id]) }}" method="POST">
+        <form action="{{ route('admin.intrants.transferer', ['id' => $stock->intrant_id]) }}" method="POST">
             @csrf
             <div class="space-y-4">
                 <div>
@@ -201,13 +201,13 @@
         
         if (type === 'entree') {
             title.textContent = '➕ Ajouter du stock';
-            form.action = "{{ route('admin.intrants.ajouter-stock', ['intrant' => $stock->intrant_id, 'zone' => $stock->zone]) }}";
+            form.action = "{{ route('admin.intrants.ajouter-stock', ['id' => $stock->intrant_id, 'zone' => $stock->zone]) }}";
             motifSelect.innerHTML = '<option value="">Sélectionnez</option><option value="Achat">Achat</option><option value="Réapprovisionnement">Réapprovisionnement</option><option value="Don">Don</option><option value="Transfert">Transfert</option><option value="Inventaire">Inventaire</option>';
             submitBtn.className = 'bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600';
             submitBtn.textContent = 'Ajouter';
         } else {
             title.textContent = '➖ Retirer du stock';
-            form.action = "{{ route('admin.intrants.retirer-stock', ['intrant' => $stock->intrant_id, 'zone' => $stock->zone]) }}";
+            form.action = "{{ route('admin.intrants.retirer-stock', ['id' => $stock->intrant_id, 'zone' => $stock->zone]) }}";
             motifSelect.innerHTML = '<option value="">Sélectionnez</option><option value="Utilisation">Utilisation terrain</option><option value="Distribution">Distribution producteurs</option><option value="Péremption">Péremption</option><option value="Perte">Perte</option><option value="Transfert">Transfert</option>';
             submitBtn.className = 'bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600';
             submitBtn.textContent = 'Retirer';

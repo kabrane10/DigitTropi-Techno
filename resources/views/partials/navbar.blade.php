@@ -15,7 +15,7 @@
                 <a href="{{ route('welcome') }}" class="text-dark hover:bg-primary px-3 py-1 hover:text-white rounded-full transition-colors duration-300 font-medium">Accueil</a>
                 <a href="{{ route('actualites') }}" class="text-dark hover:bg-primary px-3 py-1 hover:text-white rounded-full transition-colors duration-300 font-medium">Actualités</a>
                 <a href="#about" class="text-dark hover:bg-primary px-3 py-1 hover:text-white rounded-full transition-colors duration-300 font-medium">À Propos</a>
-                <a href="{{ route('galerie') }}" class="text-dark hover:bg-primary px-3 py-1 hover:text-white rounded-full transition-colors duration-300 font-medium">Galerie</a>
+                <a href="{{ route('galerie') }}" class="text-dark hover:bg-primary px-3 py-1 hover:text-white rounded-full transition-colors duration-300 font-medium">Activités</a>
                 <a href="{{ route('contact') }}" class="text-dark hover:bg-primary px-3 py-1 hover:text-white rounded-full transition-colors duration-300 font-medium">Contact</a>
             </div>
             
@@ -41,7 +41,7 @@
             <a href="{{ route('welcome') }}" class="block px-4 py-3 text-lg font-bold text-gray-900 hover:bg-gray-100 rounded-lg">Accueil</a>
             <a href="{{ route('actualites') }}" class="block px-4 py-3 text-lg font-bold text-gray-900 hover:bg-gray-100 rounded-lg">Actualités</a>
             <a href="#about" class="block px-4 py-3 text-lg font-bold text-gray-900 hover:bg-gray-100 rounded-lg">À Propos</a>
-            <a href="{{ route('galerie') }}" class="block px-4 py-3 text-lg font-bold text-gray-900 hover:bg-gray-100 rounded-lg">Galerie</a>
+            <a href="{{ route('galerie') }}" class="block px-4 py-3 text-lg font-bold text-gray-900 hover:bg-gray-100 rounded-lg">Activités</a>
             <a href="{{ route('contact') }}" class="block px-4 py-3 text-lg font-bold text-gray-900 hover:bg-gray-100 rounded-lg">Contact</a>
             
             <div class="pt-4 mt-2 border-t border-gray-200">
