@@ -12,8 +12,8 @@
                 <p class="text-gray-500 text-sm">Stock total</p>
                 <p class="text-3xl font-bold">{{ number_format($stats['total_stock']) }} <span class="text-lg">kg</span></p>
                 <div class="flex gap-3 mt-2 text-xs">
-                    <span class="text-green-600"><i class="fas fa-arrow-up mr-1"></i>Entrées: +{{ number_format($stats['entrees_mois']) }} kg</span>
-                    <span class="text-red-600"><i class="fas fa-arrow-down mr-1"></i>Sorties: -{{ number_format($stats['sorties_mois']) }} kg</span>
+                    <span class="text-green-600"><i class="fas fa-arrow-up mr-1"></i>Entrées: +{{ number_format($stats['entrees_mois'] ?? 0) }} kg</span>
+                    <span class="text-red-600"><i class="fas fa-arrow-down mr-1"></i>Sorties: -{{ number_format($stats['sorties_mois'] ?? 0) }} kg</span>
                 </div>
             </div>
             <i class="fas fa-boxes text-primary text-3xl opacity-50"></i>
@@ -71,33 +71,32 @@
     
     <!-- Top 5 des sorties -->
     <div class="bg-white rounded-xl shadow-sm p-6">
-        <h3 class="text-lg font-semibold mb-4">🏆 Top 5 des intrants les plus utilisés</h3>
+        <h3 class="text-lg font-semibold mb-4"> Top 5 des intrants les plus utilisés</h3>
         <div class="space-y-4">
-            @foreach($topSorties as $item)
+            @forelse($topSorties as $item)
             <div>
                 <div class="flex justify-between text-sm mb-1">
-                    <span class="font-medium">{{ $item->intrant->nom }}</span>
-                    <span class="text-gray-500">{{ number_format($item->total_quantite) }} {{ $item->intrant->unite }}</span>
+                    <span class="font-medium">{{ $item->stock->intrant->nom ?? 'N/A' }}</span>
+                    <span class="text-gray-500">{{ number_format($item->total_quantite) }} {{ $item->stock->intrant->unite ?? 'kg' }}</span>
                 </div>
                 <div class="w-full bg-gray-200 rounded-full h-2">
                     @php $max = $topSorties->first()->total_quantite ?? 1; @endphp
                     <div class="bg-orange-500 h-2 rounded-full" style="width: {{ ($item->total_quantite / $max) * 100 }}%"></div>
                 </div>
             </div>
-            @endforeach
+            @empty
+            <p class="text-gray-500 text-center py-6">Aucune donnée de sortie disponible</p>
+            @endforelse
         </div>
-        @if($topSorties->isEmpty())
-        <p class="text-gray-500 text-center py-6">Aucune donnée de sortie disponible</p>
-        @endif
     </div>
 </div>
 
 <!-- Zones interactives -->
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-    <!-- Stock par zone (cliquable) -->
+    <!-- Stock par zone -->
     <div class="bg-white rounded-xl shadow-sm p-6">
         <div class="flex justify-between items-center mb-4">
-            <h3 class="text-lg font-semibold"> Stock par zone</h3>
+            <h3 class="text-lg font-semibold">📍 Stock par zone</h3>
             <button onclick="resetZoneFilter()" class="text-xs text-primary hover:underline">Réinitialiser</button>
         </div>
         <div class="space-y-4">
@@ -118,19 +117,19 @@
     
     <!-- Activité récente -->
     <div class="bg-white rounded-xl shadow-sm p-6">
-        <h3 class="text-lg font-semibold mb-4"> Activité récente</h3>
+        <h3 class="text-lg font-semibold mb-4">🔔 Activité récente</h3>
         <div class="space-y-3 max-h-80 overflow-y-auto">
             @forelse($activitesRecentes as $activite)
             <div class="flex items-center text-sm border-b pb-3">
                 <span class="w-20 text-gray-400 text-xs">{{ $activite->created_at->diffForHumans() }}</span>
                 <span class="flex-shrink-0 w-24">
                     <span class="px-2 py-1 text-xs rounded-full {{ $activite->type == 'entree' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                        {{ $activite->type == 'entree' ? ' Entrée' : ' Sortie' }}
+                        {{ $activite->type == 'entree' ? '➕ Entrée' : '➖ Sortie' }}
                     </span>
                 </span>
-                <span class="flex-1 font-medium">{{ number_format($activite->quantite) }} {{ $activite->stock->unite }}</span>
-                <span class="flex-1 text-gray-600">{{ $activite->stock->intrant->nom }}</span>
-                <span class="text-gray-400 text-xs w-24 truncate">{{ $activite->stock->zone }}</span>
+                <span class="flex-1 font-medium">{{ number_format($activite->quantite) }} {{ $activite->stock->unite ?? 'kg' }}</span>
+                <span class="flex-1 text-gray-600">{{ $activite->stock->intrant->nom ?? 'N/A' }}</span>
+                <span class="text-gray-400 text-xs w-24 truncate">{{ $activite->stock->zone ?? '-' }}</span>
                 <span class="text-gray-400 text-xs italic w-20 truncate">{{ $activite->user->nom ?? 'Système' }}</span>
             </div>
             @empty
@@ -140,7 +139,7 @@
     </div>
 </div>
 
-<!-- Actions rapides intelligentes -->
+<!-- Actions rapides -->
 <div class="bg-white rounded-xl shadow-sm p-6">
     <h3 class="text-lg font-semibold mb-4">⚡ Actions rapides</h3>
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -213,10 +212,11 @@
                         }
                     }
                 });
-            });
+            })
+            .catch(error => console.error('Erreur:', error));
     }
     
-    document.getElementById('periodeGraph').addEventListener('change', function() {
+    document.getElementById('periodeGraph')?.addEventListener('change', function() {
         loadEvolutionChart(this.value);
     });
     
@@ -233,6 +233,8 @@
     }
     
     // Chargement initial
-    loadEvolutionChart(6);
+    if (document.getElementById('evolutionChart')) {
+        loadEvolutionChart(6);
+    }
 </script>
 @endsection

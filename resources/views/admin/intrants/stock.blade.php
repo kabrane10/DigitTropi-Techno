@@ -154,7 +154,7 @@
             <h3 class="text-xl font-bold">Transférer du stock</h3>
             <button onclick="closeTransferModal()" class="text-gray-400 hover:text-gray-600">&times;</button>
         </div>
-        <form action="{{ route('admin.intrants.transferer', ['id' => $stock->intrant_id]) }}" method="POST">
+        <form action="{{ route('admin.intrants.transferer', ['intrant' => $stock->intrant_id]) }}" method="POST">
             @csrf
             <div class="space-y-4">
                 <div>

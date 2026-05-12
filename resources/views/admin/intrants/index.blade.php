@@ -72,12 +72,7 @@
                     $valeurTotale = $intrant->stocks->sum(function($s) use ($intrant) {
                         return $s->stock_actuel * $intrant->prix_unitaire;
                     });
-                    $stocksData = $intrant->stocks->map(fn($s) => [
-                        'zone' => $s->zone,
-                        'stock' => $s->stock_actuel,
-                        'unite' => $s->unite,
-                        'critique' => $s->est_critique
-                    ])->toJson();
+                    $zonesCritiques = $intrant->stocks->filter->est_critique->pluck('zone')->implode(', ');
                 @endphp
                 <tr class="hover:bg-gray-50">
                     <td class="px-6 py-4 text-sm font-mono">{{ $intrant->code_intrant }}</td>
@@ -94,10 +89,7 @@
                     </td>
                     <td class="px-6 py-4 text-right">{{ number_format($intrant->prix_unitaire, 0, ',', ' ') }} CFA/{{ $intrant->unite }}</td>
                     <td class="px-6 py-4 text-right">
-                        <span class="stock-hover-trigger font-bold cursor-help {{ $stockTotal <= 100 ? 'text-red-600' : 'text-green-600' }}"
-                              data-stocks='{{ $stocksData }}'
-                              data-nom="{{ $intrant->nom }}"
-                              data-unite="{{ $intrant->unite }}">
+                        <span class="font-bold {{ $stockTotal <= 100 ? 'text-red-600' : 'text-green-600' }}">
                             {{ number_format($stockTotal) }} {{ $intrant->unite }}
                         </span>
                     </td>
@@ -105,24 +97,51 @@
                         {{ number_format($valeurTotale, 0, ',', ' ') }} CFA
                     </td>
                     <td class="px-6 py-4">
-                        @php $zonesCritiques = $intrant->stocks->filter->est_critique->pluck('zone')->implode(', '); @endphp
                         @if($zonesCritiques)
                             <div class="flex items-center">
                                 <span class="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
                                 <span class="text-sm text-red-600">Stock critique</span>
+                                <div class="relative ml-2 group">
+                                    <i class="fas fa-info-circle text-gray-400 cursor-help"></i>
+                                    <div class="absolute bottom-full left-0 mb-2 w-48 bg-gray-800 text-white text-xs rounded-lg p-2 hidden group-hover:block z-10">
+                                        Zones critiques: {{ $zonesCritiques }}
+                                    </div>
+                                </div>
                             </div>
-                        @elseif($stockTotal <= ($intrant->seuil_alerte_global ?? 100))
+                        @elseif($stockTotal <= $intrant->seuil_alerte_global ?? 100)
                             <span class="text-sm text-orange-600">⚠️ Stock faible</span>
                         @else
-                            <span class="text-sm text-green-600">✅ Normal</span>
+                            <span class="text-sm text-green-600"> Normal</span>
                         @endif
                     </td>
                     <td class="px-6 py-4 text-center space-x-2">
-                        <a href="{{ route('admin.intrants.show', $intrant) }}" class="text-blue-600 hover:text-blue-800"><i class="fas fa-eye"></i></a>
-                        <a href="{{ route('admin.intrants.edit', $intrant) }}" class="text-green-600 hover:text-green-800"><i class="fas fa-edit"></i></a>
+                        <a href="{{ route('admin.intrants.show', $intrant) }}" class="text-blue-600 hover:text-blue-800" title="Voir">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                        <a href="{{ route('admin.intrants.edit', $intrant) }}" class="text-green-600 hover:text-green-800" title="Modifier">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <div class="relative inline-block group">
+                            <button class="text-primary hover:text-secondary" title="Détail des stocks">
+                                <i class="fas fa-chart-pie"></i>
+                            </button>
+                            <div class="absolute bottom-full left-0 mb-2 w-64 bg-white shadow-xl rounded-lg p-3 hidden group-hover:block z-20 border">
+                                <p class="font-semibold text-dark mb-2">Stock par zone</p>
+                                @foreach($intrant->stocks as $stock)
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span>{{ $stock->zone }}:</span>
+                                    <span class="{{ $stock->est_critique ? 'text-red-600 font-bold' : 'text-green-600' }}">
+                                        {{ number_format($stock->stock_actuel) }} {{ $stock->unite }}
+                                    </span>
+                                </div>
+                                @endforeach
+                            </div>
+                        </div>
                         <form action="{{ route('admin.intrants.destroy', $intrant) }}" method="POST" class="inline delete-confirm">
                             @csrf @method('DELETE')
-                            <button type="submit" class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
+                            <button type="submit" class="text-red-600 hover:text-red-800" title="Supprimer">
+                                <i class="fas fa-trash"></i>
+                            </button>
                         </form>
                     </td>
                 </tr>
