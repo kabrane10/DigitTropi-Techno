@@ -79,8 +79,6 @@ Route::get('/actualites/api/data', [ActualiteController::class, 'apiData'])->nam
 Route::get('/galerie/api/photos', [GalerieController::class, 'getPhotos'])->name('galerie.api.photos');
 Route::get('/galerie/api/data', [GalerieController::class, 'apiData'])->name('galerie.api');
 
-//route api pour intrants
-Route::get('/admin/intrants/{id}', [IntrantController::class, 'apiShow'])->name('intrants.api.show');
 
 // API pour la galerie publique
 Route::get('/galerie/api/albums', [GalerieController::class, 'getAlbums']);
@@ -165,7 +163,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('/collectes/{id}', [CollecteController::class, 'destroy'])->name('collectes.destroy');
         Route::get('/collectes/export', [CollecteController::class, 'export'])->name('collectes.export');
         
-
+        
         // Achats
         Route::resource('achats', AchatController::class);
         Route::get('/achats-dashboard', [AchatController::class, 'dashboard'])->name('achats.dashboard');
@@ -187,15 +185,17 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/estimations/{id}/print', [EstimationBesoinController::class, 'print'])->name('estimations.print');
 
          // Intrants
-        Route::get('/intrants/dashboard', [IntrantController::class, 'dashboard'])->name('intrants.dashboard');
-        Route::get('/intrants/alertes', [IntrantController::class, 'alerte'])->name('intrants.alertes');
-        Route::resource('intrants', IntrantController::class);
-        Route::get('/intrants/{id}/stock/{zone}', [IntrantController::class, 'stock'])->name('intrants.stock');
-        Route::post('/intrants/{id}/stock/{zone}/ajouter', [IntrantController::class, 'ajouterStock'])->name('intrants.ajouter-stock');
-        Route::post('/intrants/{id}/stock/{zone}/retirer', [IntrantController::class, 'retirerStock'])->name('intrants.retirer-stock');
-        Route::post('/intrants/transferer/{intrant}', [IntrantController::class, 'transferer'])->name('intrants.transferer');
-        Route::get('/intrants/evolution-data', [IntrantController::class, 'evolutionData'])->name('intrants.evolution-data');
-        Route::get('/intrants/rapport-pdf', [IntrantController::class, 'rapportPdf'])->name('intrants.rapport-pdf');
+         Route::get('/intrants/dashboard', [IntrantController::class, 'dashboard'])->name('intrants.dashboard');
+         Route::get('/intrants/alertes', [IntrantController::class, 'alerte'])->name('intrants.alertes');
+         Route::get('/intrants/evolution-data', [IntrantController::class, 'evolutionData'])->name('intrants.evolution-data');
+         Route::get('/intrants/rapport-pdf', [IntrantController::class, 'rapportPdf'])->name('intrants.rapport-pdf');
+         Route::get('/intrants/{id}/stock/{zone}', [IntrantController::class, 'stock'])->name('intrants.stock');
+         Route::post('/intrants/{id}/stock/{zone}/ajouter', [IntrantController::class, 'ajouterStock'])->name('intrants.ajouter-stock');
+         Route::post('/intrants/{id}/stock/{zone}/retirer', [IntrantController::class, 'retirerStock'])->name('intrants.retirer-stock');
+         Route::post('/intrants/transferer/{intrant}', [IntrantController::class, 'transferer'])->name('intrants.transferer');
+         //route api pour intrants
+         Route::get('/admin/intrants/{id}', [IntrantController::class, 'apiShow'])->name('intrants.api.show');
+         Route::resource('intrants', IntrantController::class);
 
         // Stocks
         Route::resource('stocks', StockController::class);
