@@ -1,220 +1,192 @@
 @extends('layouts.admin')
 
 @section('title', 'Gestion des intrants')
-@section('header', ' Gestion des intrants')
+@section('header', 'Gestion des intrants')
 
 @section('content')
-<div class="bg-white rounded-xl shadow-sm">
+<div class="bg-white rounded-xl shadow-sm overflow-hidden">
     <div class="p-6 border-b flex justify-between items-center flex-wrap gap-4">
         <div>
             <h2 class="text-xl font-semibold">Liste des intrants</h2>
-            <p class="text-sm text-gray-500 mt-1">Gestion centralisée des stocks, valeur financière et alertes</p>
+            <p class="text-sm text-gray-500 mt-1">Suivi des stocks par zone et valeur financière</p>
         </div>
-        <div class="flex space-x-3">
-            <a href="{{ route('admin.intrants.dashboard') }}" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
+        <div class="flex flex-wrap gap-2">
+            <a href="{{ route('admin.intrants.dashboard') }}" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
                 <i class="fas fa-chart-line mr-2"></i>Dashboard
             </a>
-            <a href="{{ route('admin.intrants.alertes') }}" class="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600">
+            <a href="{{ route('admin.intrants.alertes') }}" class="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition relative">
                 <i class="fas fa-exclamation-triangle mr-2"></i>Alertes
                 @php $nbAlertes = \App\Models\IntrantStock::whereRaw('stock_actuel <= seuil_alerte')->count(); @endphp
                 @if($nbAlertes > 0)
-                <span class="ml-2 bg-red-500 text-white px-2 py-0.5 rounded-full text-xs">{{ $nbAlertes }}</span>
+                <span class="absolute -top-2 -right-2 bg-red-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white">{{ $nbAlertes }}</span>
                 @endif
             </a>
-            <a href="{{ route('admin.intrants.create') }}" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-secondary">
+            <a href="{{ route('admin.intrants.create') }}" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-secondary transition">
                 <i class="fas fa-plus mr-2"></i>Nouvel intrant
             </a>
         </div>
     </div>
     
-    <!-- Filtres avancés -->
-    <div class="p-6 border-b bg-gray-50">
-        <form method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <input type="text" name="search" placeholder="Rechercher..." value="{{ request('search') }}"
-                   class="px-4 py-2 border rounded-lg focus:outline-none focus:border-primary">
-            <select name="type" class="px-4 py-2 border rounded-lg focus:outline-none focus:border-primary">
+    <div class="p-4 border-b bg-gray-50/50">
+        <form method="GET" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="relative">
+                <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                <input type="text" name="search" placeholder="Nom ou code..." value="{{ request('search') }}"
+                       class="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition">
+            </div>
+            <select name="type" class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 outline-none">
                 <option value="">Tous les types</option>
-                <option value="engrais" {{ request('type') == 'engrais' ? 'selected' : '' }}> Engrais</option>
-                <option value="pesticide" {{ request('type') == 'pesticide' ? 'selected' : '' }}> Pesticide</option>
-                <option value="herbicide" {{ request('type') == 'herbicide' ? 'selected' : '' }}> Herbicide</option>
-                <option value="semence" {{ request('type') == 'semence' ? 'selected' : '' }}> Semence</option>
+                @foreach(['engrais', 'pesticide', 'herbicide', 'semence'] as $t)
+                    <option value="{{ $t }}" {{ request('type') == $t ? 'selected' : '' }}>{{ ucfirst($t) }}</option>
+                @endforeach
             </select>
-            <select name="zone" class="px-4 py-2 border rounded-lg focus:outline-none focus:border-primary">
+            <select name="zone" class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 outline-none">
                 <option value="">Toutes les zones</option>
-                <option value="Centrale" {{ request('zone') == 'Centrale' ? 'selected' : '' }}> Centrale</option>
-                <option value="Kara" {{ request('zone') == 'Kara' ? 'selected' : '' }}> Kara</option>
-                <option value="Savanes" {{ request('zone') == 'Savanes' ? 'selected' : '' }}> Savanes</option>
+                @foreach(['Centrale', 'Kara', 'Savanes'] as $z)
+                    <option value="{{ $z }}" {{ request('zone') == $z ? 'selected' : '' }}>{{ $z }}</option>
+                @endforeach
             </select>
-            <button type="submit" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-secondary">
-                <i class="fas fa-search mr-2"></i>Filtrer
+            <button type="submit" class="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-black transition text-center font-medium">
+                Appliquer les filtres
             </button>
         </form>
     </div>
     
-    <div class="overflow-x-auto">
-        <table class="w-full min-w-[800px]">
-            <thead class="bg-gray-50">
+    <div class="overflow-x-auto relative">
+        <table class="w-full text-left border-collapse">
+            <thead class="bg-gray-50 text-gray-600 uppercase text-[11px] font-bold tracking-wider">
                 <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500">Code</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500">Intrant</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500">Type</th>
-                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500">Prix unitaire</th>
-                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500">Stock total</th>
-                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500">Valeur totale</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500">Statut global</th>
-                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500">Actions</th>
+                    <th class="px-6 py-4 border-b">Intrant</th>
+                    <th class="px-6 py-4 border-b">Type</th>
+                    <th class="px-6 py-4 border-b text-right">Prix Unit.</th>
+                    <th class="px-6 py-4 border-b text-right">Stock Global</th>
+                    <th class="px-6 py-4 border-b text-right text-primary">Valeur</th>
+                    <th class="px-6 py-4 border-b">Statut</th>
+                    <th class="px-6 py-4 border-b text-center">Actions</th>
                 </tr>
             </thead>
-            <tbody class="divide-y">
+            <tbody class="divide-y divide-gray-100 text-sm">
                 @forelse($intrants as $intrant)
                 @php
                     $stockTotal = $intrant->stocks->sum('stock_actuel');
-                    $valeurTotale = $intrant->stocks->sum(function($s) use ($intrant) {
-                        return $s->stock_actuel * $intrant->prix_unitaire;
+                    $valeurTotale = $stockTotal * $intrant->prix_unitaire;
+                    $critique = $intrant->stocks->contains('est_critique', true);
+                    
+                    // Préparation des données pour le tooltip JS
+                    $dataStocks = $intrant->stocks->map(function($s) {
+                        return [
+                            'zone' => $s->zone,
+                            'stock' => $s->stock_actuel,
+                            'critique' => $s->est_critique
+                        ];
                     });
-                    $zonesCritiques = $intrant->stocks->filter->est_critique->pluck('zone')->implode(', ');
                 @endphp
-                <tr class="hover:bg-gray-50">
-                    <td class="px-6 py-4 text-sm font-mono">{{ $intrant->code_intrant }}</td>
-                    <td class="px-6 py-4 font-medium">{{ $intrant->nom }}</td>
+                <tr class="hover:bg-blue-50/30 transition">
                     <td class="px-6 py-4">
-                        <span class="px-2 py-1 text-xs rounded-full 
-                            @if($intrant->type == 'engrais') bg-green-100 text-green-800
-                            @elseif($intrant->type == 'pesticide') bg-red-100 text-red-800
-                            @elseif($intrant->type == 'herbicide') bg-yellow-100 text-yellow-800
-                            @else bg-gray-100 text-gray-800
-                            @endif">
+                        <div class="font-bold text-gray-800">{{ $intrant->nom }}</div>
+                        <div class="text-[10px] font-mono text-gray-400">{{ $intrant->code_intrant }}</div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase
+                            @if($intrant->type == 'engrais') bg-green-100 text-green-700
+                            @elseif($intrant->type == 'pesticide') bg-red-100 text-red-700
+                            @elseif($intrant->type == 'herbicide') bg-yellow-100 text-yellow-700
+                            @else bg-gray-100 text-gray-700 @endif">
                             {{ $intrant->type_label }}
                         </span>
                     </td>
-                    <td class="px-6 py-4 text-right">{{ number_format($intrant->prix_unitaire, 0, ',', ' ') }} CFA/{{ $intrant->unite }}</td>
+                    <td class="px-6 py-4 text-right font-medium">{{ number_format($intrant->prix_unitaire, 0, ',', ' ') }} <small>CFA</small></td>
                     <td class="px-6 py-4 text-right">
-                        <span class="font-bold {{ $stockTotal <= 100 ? 'text-red-600' : 'text-green-600' }}">
-                            {{ number_format($stockTotal) }} {{ $intrant->unite }}
-                        </span>
+                        <div class="flex items-center justify-end group">
+                            <span class="font-bold {{ $stockTotal <= 100 ? 'text-red-600' : 'text-gray-700' }}">
+                                {{ number_format($stockTotal) }} {{ $intrant->unite }}
+                            </span>
+                            <i class="fas fa-info-circle ml-2 text-gray-300 cursor-help hover:text-primary transition stock-hover-trigger"
+                               data-nom="{{ $intrant->nom }}"
+                               data-unite="{{ $intrant->unite }}"
+                               data-stocks='@json($dataStocks)'></i>
+                        </div>
                     </td>
-                    <td class="px-6 py-4 text-right font-semibold text-blue-600">
-                        {{ number_format($valeurTotale, 0, ',', ' ') }} CFA
+                    <td class="px-6 py-4 text-right font-bold text-primary">
+                        {{ number_format($valeurTotale, 0, ',', ' ') }} <small>CFA</small>
                     </td>
-                    <td class="px-6 py-4">
-                        @if($zonesCritiques)
-                            <div class="flex items-center">
-                                <span class="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
-                                <span class="text-sm text-red-600">Stock critique</span>
-                                <div class="relative ml-2 group">
-                                    <i class="fas fa-info-circle text-gray-400 cursor-help"></i>
-                                    <div class="absolute bottom-full left-0 mb-2 w-48 bg-gray-800 text-white text-xs rounded-lg p-2 hidden group-hover:block z-10">
-                                        Zones critiques: {{ $zonesCritiques }}
-                                    </div>
-                                </div>
-                            </div>
-                        @elseif($stockTotal <= $intrant->seuil_alerte_global ?? 100)
-                            <span class="text-sm text-orange-600">⚠️ Stock faible</span>
+                    <td class="px-6 py-4 text-xs font-semibold">
+                        @if($critique)
+                            <span class="flex items-center text-red-600">
+                                <span class="w-1.5 h-1.5 bg-red-600 rounded-full mr-1.5 animate-pulse"></span>
+                                Critique
+                            </span>
                         @else
-                            <span class="text-sm text-green-600"> Normal</span>
+                            <span class="text-green-600 flex items-center">
+                                <span class="w-1.5 h-1.5 bg-green-600 rounded-full mr-1.5"></span>
+                                Optimal
+                            </span>
                         @endif
                     </td>
-                    <td class="px-6 py-4 text-center space-x-2">
-                        <a href="{{ route('admin.intrants.show', $intrant) }}" class="text-blue-600 hover:text-blue-800" title="Voir">
-                            <i class="fas fa-eye"></i>
-                        </a>
-                        <a href="{{ route('admin.intrants.edit', $intrant) }}" class="text-green-600 hover:text-green-800" title="Modifier">
-                            <i class="fas fa-edit"></i>
-                        </a>
-                        <div class="relative inline-block group">
-                            <button class="text-primary hover:text-secondary" title="Détail des stocks">
-                                <i class="fas fa-chart-pie"></i>
-                            </button>
-                            <div class="absolute bottom-full left-0 mb-2 w-64 bg-white shadow-xl rounded-lg p-3 hidden group-hover:block z-20 border">
-                                <p class="font-semibold text-dark mb-2">Stock par zone</p>
-                                @foreach($intrant->stocks as $stock)
-                                <div class="flex justify-between text-sm mb-1">
-                                    <span>{{ $stock->zone }}:</span>
-                                    <span class="{{ $stock->est_critique ? 'text-red-600 font-bold' : 'text-green-600' }}">
-                                        {{ number_format($stock->stock_actuel) }} {{ $stock->unite }}
-                                    </span>
-                                </div>
-                                @endforeach
-                            </div>
+                    <td class="px-6 py-4 text-center">
+                        <div class="flex justify-center gap-3">
+                            <a href="{{ route('admin.intrants.show', $intrant) }}" class="text-gray-400 hover:text-blue-600 transition"><i class="fas fa-eye"></i></a>
+                            <a href="{{ route('admin.intrants.edit', $intrant) }}" class="text-gray-400 hover:text-green-600 transition"><i class="fas fa-edit"></i></a>
+                            <form action="{{ route('admin.intrants.destroy', $intrant) }}" method="POST" class="inline delete-confirm">
+                                @csrf @method('DELETE')
+                                <button type="submit" class="text-gray-400 hover:text-red-600 transition"><i class="fas fa-trash"></i></button>
+                            </form>
                         </div>
-                        <form action="{{ route('admin.intrants.destroy', $intrant) }}" method="POST" class="inline delete-confirm">
-                            @csrf @method('DELETE')
-                            <button type="submit" class="text-red-600 hover:text-red-800" title="Supprimer">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </form>
                     </td>
                 </tr>
                 @empty
-                <tr><td colspan="8" class="px-6 py-8 text-center text-gray-500">Aucun intrant trouvé</td></tr>
+                <tr><td colspan="7" class="px-6 py-12 text-center text-gray-400">Aucun résultat trouvé...</td></tr>
                 @endforelse
             </tbody>
         </table>
     </div>
-    <div class="p-6">{{ $intrants->links() }}</div>
 </div>
 
-<!-- Indicateur de performance des stocks -->
-<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mt-6">
-    <div class="bg-white rounded-xl shadow-sm p-4">
-        <p class="text-gray-500 text-sm">Valeur totale du stock</p>
-        <p class="text-2xl font-bold text-primary" id="valeurTotaleStock">
-            @php
-                $valeurGlobale = \App\Models\Intrant::with('stocks')->get()->sum(function($i) {
-                    return $i->stocks->sum('stock_actuel') * $i->prix_unitaire;
-                });
-            @endphp
-            {{ number_format($valeurGlobale, 0, ',', ' ') }} CFA
-        </p>
-    </div>
-    <div class="bg-white rounded-xl shadow-sm p-4">
-        <p class="text-gray-500 text-sm">Produits en stock</p>
-        <p class="text-2xl font-bold text-primary">{{ \App\Models\Intrant::count() }}</p>
-    </div>
-    <div class="bg-white rounded-xl shadow-sm p-4">
-        <p class="text-gray-500 text-sm">Alertes actives</p>
-        <p class="text-2xl font-bold text-red-600">{{ \App\Models\IntrantStock::whereRaw('stock_actuel <= seuil_alerte')->count() }}</p>
-    </div>
-    <div class="bg-white rounded-xl shadow-sm p-4">
-        <p class="text-gray-500 text-sm">Rotation estimée</p>
-        <p class="text-2xl font-bold text-primary">-</p>
-    </div>
+<div id="floatingTooltip" class="fixed hidden z-[9999] pointer-events-none bg-gray-900 text-white p-3 rounded-xl shadow-2xl border border-white/10 w-64">
+    <p id="tooltipTitle" class="text-xs font-bold border-b border-white/20 pb-2 mb-2 uppercase tracking-tighter text-blue-300"></p>
+    <div id="tooltipContent" class="space-y-1.5 text-xs"></div>
 </div>
+
 <script>
-    // Tooltip flottant qui suit la souris
-    const tooltip = document.getElementById('floatingTooltip');
-    const tooltipTitle = document.getElementById('tooltipTitle');
-    const tooltipContent = document.getElementById('tooltipContent');
-    let currentTimeout = null;
-    
-    document.querySelectorAll('.stock-hover-trigger').forEach(trigger => {
-        trigger.addEventListener('mouseenter', (e) => {
-            const stocks = JSON.parse(trigger.dataset.stocks);
-            const nom = trigger.dataset.nom;
-            const unite = trigger.dataset.unite;
-            
-            tooltipTitle.innerHTML = `📊 ${nom} - Stock par zone`;
-            tooltipContent.innerHTML = stocks.map(s => `
-                <div class="flex justify-between items-center gap-4 py-1">
-                    <span class="font-medium">📍 ${s.zone}:</span>
-                    <span class="${s.critique ? 'text-red-300 font-bold' : 'text-green-300'}">
-                        ${Number(s.stock).toLocaleString()} ${unite}
-                    </span>
-                </div>
-            `).join('');
-            
-            tooltip.classList.remove('hidden');
-            tooltip.style.left = (e.clientX + 15) + 'px';
-            tooltip.style.top = (e.clientY + 15) + 'px';
-        });
+    document.addEventListener('DOMContentLoaded', () => {
+        const tooltip = document.getElementById('floatingTooltip');
+        const tooltipTitle = document.getElementById('tooltipTitle');
+        const tooltipContent = document.getElementById('tooltipContent');
         
-        trigger.addEventListener('mousemove', (e) => {
-            tooltip.style.left = (e.clientX + 15) + 'px';
-            tooltip.style.top = (e.clientY + 15) + 'px';
-        });
-        
-        trigger.addEventListener('mouseleave', () => {
-            tooltip.classList.add('hidden');
+        document.querySelectorAll('.stock-hover-trigger').forEach(trigger => {
+            trigger.addEventListener('mouseenter', (e) => {
+                const stocks = JSON.parse(trigger.dataset.stocks);
+                const nom = trigger.dataset.nom;
+                const unite = trigger.dataset.unite;
+                
+                tooltipTitle.innerHTML = `📊 ${nom}`;
+                tooltipContent.innerHTML = stocks.map(s => `
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-400">${s.zone}</span>
+                        <span class="font-bold ${s.critique ? 'text-red-400' : 'text-green-400'}">
+                            ${Number(s.stock).toLocaleString()} ${unite}
+                        </span>
+                    </div>
+                `).join('');
+                
+                tooltip.classList.remove('hidden');
+            });
+            
+            trigger.addEventListener('mousemove', (e) => {
+                // Positionnement intelligent pour éviter de sortir de l'écran
+                let x = e.clientX + 15;
+                let y = e.clientY + 15;
+                
+                if (x + 256 > window.innerWidth) x = e.clientX - 270;
+                if (y + 150 > window.innerHeight) y = e.clientY - 160;
+                
+                tooltip.style.left = x + 'px';
+                tooltip.style.top = y + 'px';
+            });
+            
+            trigger.addEventListener('mouseleave', () => {
+                tooltip.classList.add('hidden');
+            });
         });
     });
 </script>

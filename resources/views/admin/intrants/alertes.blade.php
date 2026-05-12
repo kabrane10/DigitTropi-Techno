@@ -285,24 +285,26 @@
             </button>
         </div>
         
-        <form id="transferForm" method="POST" action="{{ route('admin.intrants.transferer', $stock->intrant_id) }}">
+        {{-- On vérifie si $stock existe pour éviter une erreur si la liste est vide --}}
+        @if($stocksCritiques->count() > 0)
+        @php $firstStock = $stocksCritiques->first(); @endphp
+        
+        <form id="transferForm" method="POST" action="{{ route('admin.intrants.transferer', $firstStock->intrant_id) }}">
             @csrf
-            <input type="hidden" name="source_zone" value="{{ $stock->zone }}">
+            <input type="hidden" name="source_zone" id="hidden_source_zone" value="">
             
             <div class="space-y-4">
                 <div>
                     <label class="block text-sm font-semibold mb-2">De (zone source)</label>
-                    <input type="text" value="{{ $stock->zone }}" class="w-full px-4 py-2 border rounded-lg bg-gray-100" disabled>
+                    <input type="text" id="display_source_zone" class="w-full px-4 py-2 border rounded-lg bg-gray-100" disabled>
                 </div>
                 
                 <div>
                     <label class="block text-sm font-semibold mb-2">Vers (zone destination) *</label>
                     <select name="destination_zone" id="destination_zone" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-primary">
                         <option value="">-- Sélectionnez une zone --</option>
-                        @foreach($zones as $zone)
-                        <option value="{{ $zone->zone }}" data-stock="{{ $zone->stock_actuel }}">
-                            {{ $zone->zone }} (stock actuel: {{ number_format($zone->stock_actuel) }} {{ $zone->unite }})
-                        </option>
+                        @foreach(['Centrale', 'Kara', 'Savanes'] as $z)
+                            <option value="{{ $z }}">{{ $z }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -310,9 +312,7 @@
                 <div>
                     <label class="block text-sm font-semibold mb-2">Quantité à transférer *</label>
                     <input type="number" step="0.01" name="quantite" id="transferQuantite" required 
-                           max="{{ $stock->stock_actuel }}" 
                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-primary">
-                    <p class="text-xs text-gray-500 mt-1">Maximum disponible: {{ number_format($stock->stock_actuel) }} {{ $stock->unite }}</p>
                 </div>
                 
                 <div>
@@ -331,9 +331,9 @@
                 </button>
             </div>
         </form>
+        @endif
     </div>
 </div>
-
 <script>
     let currentView = 'cards';
     let currentZone = 'Centrale';
@@ -470,14 +470,19 @@
         }
     }
     
-    function openTransferModal() {
+        function openTransferModal(intrantId, zone) {
         const modal = document.getElementById('transferModal');
+        const form = document.getElementById('transferForm');
+    
+        // Mise à jour de l'action du formulaire avec l'ID de l'intrant
+        form.action = `/admin/intrants/transferer/${intrantId}`;
+    
+        // Mise à jour de la zone source
+        document.getElementById('display_source_zone').value = zone;
+        document.getElementById('hidden_source_zone').value = zone;
+    
         modal.classList.remove('hidden');
         modal.classList.add('flex');
-        
-        // Réinitialiser le formulaire
-        document.getElementById('destination_zone').value = '';
-        document.getElementById('transferQuantite').value = '';
     }
     
     function closeTransferModal() {
