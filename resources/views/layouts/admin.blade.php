@@ -173,10 +173,10 @@
                         <i class="fas fa-hand-holding-usd w-5"></i>
                         <span>Gestion crédits</span>
                     </a>
-                    <!-- <a href="{{ route('admin.credits.create') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg transition text-white/80 hover:bg-white/10">
+                    <a href="{{ route('admin.credits.create') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg transition text-white/80 hover:bg-white/10">
                         <i class="fas fa-plus-circle w-5"></i>
                         <span>Nouveau crédit</span>
-                    </a> -->
+                    </a>
                 </div>
                 
                 <!-- ========== ESTIMATIONS ========== -->

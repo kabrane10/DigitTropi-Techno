@@ -214,7 +214,10 @@ class IntrantController extends Controller
             ->whereRaw('stock_actuel <= seuil_alerte')
             ->get();
         
-        return view('admin.intrants.alertes', compact('stocksCritiques'));
+        // Récupérer les zones distinctes pour le filtre
+        $zones = IntrantStock::distinct()->pluck('zone');
+        
+        return view('admin.intrants.alertes', compact('stocksCritiques', 'zones'));
     }
 
     public function dashboard()
