@@ -233,46 +233,48 @@
 </div>
 
 <!-- Modal réapprovisionnement rapide -->
-<div id="reapproModal" class="fixed inset-0 bg-black/50 z-50 hidden items-center justify-center">
+<div id="reapproModal" class="fixed inset-0 bg-black/50 z-[9999] hidden items-center justify-center">
     <div class="bg-white rounded-xl p-6 max-w-md w-full">
         <div class="flex justify-between items-center mb-4">
             <h3 class="text-xl font-bold">Réapprovisionnement rapide</h3>
-            <button onclick="closeReapproModal()" class="text-gray-400 hover:text-gray-600">&times;</button>
+            <button type="button" onclick="closeReapproModal()" class="text-gray-400 hover:text-gray-600">&times;</button>
         </div>
+        
         <form id="reapproForm" method="POST" action="">
             @csrf
             <div class="space-y-4">
-            <div>
-                <label class="block text-sm font-semibold mb-2">Intrant</label>
-                <input type="text" id="reapproIntrant" class="w-full px-4 py-2 border rounded-lg bg-gray-100" readonly>
-            </div>
-            <div>
-                <label class="block text-sm font-semibold mb-2">Zone</label>
-                <input type="text" id="reapproZoneDisplay" class="w-full px-4 py-2 border rounded-lg bg-gray-100" readonly>
-                <input type="hidden" name="zone" id="reapproZone">
-            </div>
-            <div>
-                <label class="block text-sm font-semibold mb-2">Quantité recommandée *</label>
-                <input type="number" step="0.01" name="quantite" id="reapproQuantite" required class="w-full px-4 py-2 border rounded-lg">
-                <p class="text-xs text-gray-500 mt-1" id="reapproInfo"></p>
-            </div>
-            <div>
-            <label class="block text-sm font-semibold mb-2">Motif</label>
-            <select name="motif" id="reapproMotif" class="w-full px-4 py-2 border rounded-lg">
-                <option value="Achat">Achat</option>
-                <option value="Réapprovisionnement">Réapprovisionnement urgent</option>
-            </select>
-            </div>
-            <div>
-                <label class="block text-sm font-semibold mb-2">Référence facture</label>
-                <input type="text" name="reference" id="reapproReference" required readonly
-                       class="w-full px-4 py-2 border rounded-lg bg-gray-50 font-mono text-sm" 
-                       placeholder="Génération automatique...">
-            </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-2">Intrant</label>
+                    <input type="text" id="reapproIntrant" class="w-full px-4 py-2 border rounded-lg bg-gray-100" readonly>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-2">Zone</label>
+                    <input type="text" id="reapproZone" class="w-full px-4 py-2 border rounded-lg bg-gray-100" readonly>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-2">Quantité recommandée *</label>
+                    <input type="number" step="0.01" name="quantite" id="reapproQuantite" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/50 outline-none">
+                    <p class="text-xs text-gray-500 mt-1" id="reapproInfo"></p>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-2">Motif</label>
+                    <select name="motif" id="reapproMotif" onchange="generateReapproRef()" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary/50 outline-none">
+                        <option value="Achat">Achat</option>
+                        <option value="Réapprovisionnement">Réapprovisionnement urgent</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-2">Référence facture</label>
+                    <input type="text" name="reference" id="reapproReference" required readonly
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 font-mono text-sm text-gray-700" 
+                           placeholder="Génération automatique...">
+                </div>
             </div>
             <div class="mt-6 flex justify-end gap-3">
-                <button type="button" onclick="closeReapproModal()" class="px-4 py-2 border rounded-lg">Annuler</button>
-                <button type="submit" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-secondary">Confirmer la commande</button>
+                <button type="button" onclick="closeReapproModal()" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition">Annuler</button>
+                <button type="submit" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-secondary transition shadow-md">
+                    <i class="fas fa-check mr-2"></i>Confirmer
+                </button>
             </div>
         </form>
     </div>
@@ -420,90 +422,72 @@
     }
 
     // Réapprovisionnement rapide
-    function quickReappro(intrantId, zone, quantiteSuggeree) {
-    const modal = document.getElementById('reapproModal');
-    const form = document.getElementById('reapproForm');
-    const intrantInput = document.getElementById('reapproIntrant');
-    const zoneDisplay = document.getElementById('reapproZoneDisplay');
-    const zoneHidden = document.getElementById('reapproZone');
-    const quantiteInput = document.getElementById('reapproQuantite');
-    const infoSpan = document.getElementById('reapproInfo');
-    
-    // 1. Reset du formulaire avant chargement
-    form.reset();
-
-    // 2. Récupérer le nom de l'intrant
-    fetch(`/admin/intrants/${intrantId}`)
-        .then(response => response.json())
-        .then(data => {
-            intrantInput.value = data.nom;
-            zoneDisplay.value = zone; // Affichage
-            zoneHidden.value = zone;  // Valeur envoyée
-            quantiteInput.value = quantiteSuggeree;
-            infoSpan.textContent = `Quantité suggérée pour remonter au seuil d'alerte`;
-            
-            // Définir l'URL d'action
-            form.action = `/admin/intrants/${intrantId}/stock/store`; 
-            
-            // 3. Générer la référence automatique (la fonction que nous avons créée précédemment)
-            if (typeof generateReapproRef === "function") {
-                generateReapproRef();
-            }
-
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        })
-        .catch(error => {
-            console.error('Erreur:', error);
-            alert("Erreur lors du chargement des données");
-        });
-}
-    
-    function closeReapproModal() {
-        const modal = document.getElementById('reapproModal');
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
-    }
-
-    function generateReapproRef() {
+   // 1. Fonction pour générer la référence automatiquement
+function generateReapproRef() {
     const motif = document.getElementById('reapproMotif').value;
-    const now = new Date();
-    
-    // Définition du préfixe selon le motif
     const prefix = (motif === 'Achat') ? 'ACH' : 'REAP';
     
-    // Formatage Date : YYYYMMDD
-    const date = now.getFullYear().toString() + 
-                 (now.getMonth() + 1).toString().padStart(2, '0') + 
-                 now.getDate().toString().padStart(2, '0');
+    const now = new Date();
+    // Format YYYYMMDD
+    const dateStr = now.getFullYear().toString() + 
+                   (now.getMonth() + 1).toString().padStart(2, '0') + 
+                   now.getDate().toString().padStart(2, '0');
+    // Format HHMMSS
+    const timeStr = now.getHours().toString().padStart(2, '0') + 
+                   now.getMinutes().toString().padStart(2, '0') + 
+                   now.getSeconds().toString().padStart(2, '0');
+    // 4 chiffres aléatoires
+    const randomStr = Math.floor(1000 + Math.random() * 9000);
     
-    // Formatage Heure : HHMMSS
-    const time = now.getHours().toString().padStart(2, '0') + 
-                 now.getMinutes().toString().padStart(2, '0') + 
-                 now.getSeconds().toString().padStart(2, '0');
-    
-    // Code aléatoire 4 chiffres
-    const random = Math.floor(1000 + Math.random() * 9000);
-    
-    const reference = `${prefix}-${date}-${time}-${random}`;
-    document.getElementById('reapproReference').value = reference;
+    // Assigner la valeur au champ
+    document.getElementById('reapproReference').value = `${prefix}-${dateStr}-${timeStr}-${randomStr}`;
 }
 
-    // Écouteur pour changer la ref si le motif change
-    document.getElementById('reapproMotif').addEventListener('change', generateReapproRef);
-
-    // Modifier votre fonction existante qui ouvre le modal pour inclure l'appel :
-    function openReapproModal(intrantId, intrantNom, zone, quantite) {
-    // ... vos assignations existantes (action du form, etc.) ...
+// 2. Fonction principale (Celle qui est appelée par votre bouton "Commander")
+function quickReappro(intrantId, zone, quantiteSuggeree) {
+    const modal = document.getElementById('reapproModal');
+    const form = document.getElementById('reapproForm');
     
-    document.getElementById('reapproIntrant').value = intrantNom;
-    document.getElementById('reapproZone').value = zone;
-    
-    // Générer la référence au moment de l'ouverture
+    // Générer la référence immédiatement à l'ouverture
     generateReapproRef();
-    
-    document.getElementById('reapproModal').classList.remove('hidden');
-    document.getElementById('reapproModal').classList.add('flex');
+
+    // Définir la route POST du formulaire
+    form.action = `/admin/intrants/${intrantId}/stock/${zone}/ajouter`;
+
+    // Fetch avec les BONS HEADERS pour que Laravel comprenne que c'est de l'AJAX
+    fetch(`/admin/intrants/${intrantId}`, {
+        method: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest', // CRUCIAL : Déclenche request()->ajax() côté serveur
+            'Accept': 'application/json'          // CRUCIAL : Demande du JSON explicite
+        }
+    })
+    .then(response => {
+        if (!response.ok) throw new Error('Erreur de requête SQL ou Route introuvable');
+        return response.json();
+    })
+    .then(data => {
+        // Remplir les champs
+        document.getElementById('reapproIntrant').value = data.nom;
+        document.getElementById('reapproZone').value = zone;
+        document.getElementById('reapproQuantite').value = quantiteSuggeree;
+        document.getElementById('reapproInfo').textContent = `Quantité suggérée pour combler l'alerte.`;
+        
+        // Afficher le modal
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    })
+    .catch(error => {
+        console.error("Erreur détaillée:", error);
+        alert("Impossible de charger les données de l'intrant. Vérifiez votre connexion.");
+    });
+}
+
+// 3. Fonction pour fermer
+function closeReapproModal() {
+    const modal = document.getElementById('reapproModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
 }
 
     // Transfert rapide

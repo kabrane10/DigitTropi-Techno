@@ -10,7 +10,10 @@
             <div class="text-center mb-6">
                 <div class="relative inline-block">
                     <div class="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                        <i class="fas fa-user-farmer text-primary text-4xl"></i>
+                        <span class="text-primary text-3xl font-bold uppercase">
+                            <!-- {{ Str::limit($producteur->prenom, 1, '') }}{{ Str::limit($producteur->nom, 1, '') }} -->
+                            {{ collect(explode(' ', $producteur->nom_complet))->map(fn($n) => Str::limit($n, 1, ''))->join('') }}
+                        </span>
                     </div>
                     <span class="absolute bottom-4 right-0 w-5 h-5 rounded-full border-2 border-white {{ $producteur->statut == 'actif' ? 'bg-green-500' : 'bg-red-500' }}"></span>
                 </div>
@@ -52,7 +55,7 @@
                     </div>
                 </div>
                 <div class="flex items-start">
-                    <i class="fas fa-tractor w-8 text-gray-400 mt-1"></i>
+                <i class="fas fa-map-marker-alt w-8 text-gray-400 mt-1"></i>
                     <div>
                         <p class="text-xs text-gray-500 uppercase font-bold">Position exacte</p>
                         <p class="text-sm">{{ $producteur->localisation ?? 'Non renseigné' }} </p>
