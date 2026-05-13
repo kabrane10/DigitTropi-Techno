@@ -235,16 +235,47 @@
         </div>
         
         <div class="section">
-            <div class="section-title"> RÉCAPITULATIF FINANCIER</div>
-            <div class="section-content">
-                <div class="info-grid">
-                    <div><div class="info-label">Coût des semences</div><div class="info-value">{{ number_format($estimation->cout_semences ?? 0, 0, ',', ' ') }} CFA</div></div>
-                    <div><div class="info-label">Coût des intrants</div><div class="info-value">{{ number_format(collect($intrants)->sum('cout_estime') ?? 0, 0, ',', ' ') }} CFA</div></div>
-                    <div><div class="info-label">Autres frais</div><div class="info-value">{{ number_format($estimation->autres_frais ?? 0, 0, ',', ' ') }} CFA</div></div>
-                    <div><div class="info-label">Total estimation</div><div class="info-value highlight">{{ number_format(($estimation->cout_semences ?? 0) + (collect($intrants)->sum('cout_estime') ?? 0) + ($estimation->autres_frais ?? 0), 0, ',', ' ') }} CFA</div></div>
-                </div>
-            </div>
-        </div>
+           <div class="section-title"> RÉCAPITULATIF FINANCIER</div>
+           <div class="section-content">
+               @php
+                   // Calculer une seule fois pour éviter les répétitions
+                   $totalIntrants = collect($intrants ?? [])->sum('cout_estime');
+                   $totalSemences = $estimation->cout_semences ?? 0;
+                   $totalAutresFrais = $estimation->autres_frais ?? 0;
+                   $totalGeneral = $totalSemences + $totalIntrants + $totalAutresFrais;
+               @endphp
+        
+               <div class="info-grid">
+                   <div>
+                       <div class="info-label"> Coût des semences</div>
+                       <div class="info-value">{{ number_format($totalSemences, 0, ',', ' ') }} CFA</div>
+                   </div>
+                   <div>
+                       <div class="info-label"> Coût des intrants</div>
+                       <div class="info-value">{{ number_format($totalIntrants, 0, ',', ' ') }} CFA</div>
+                   </div>
+                   <div>
+                       <div class="info-label"> Montant crédit estimé</div>
+                       <div class="info-value">{{ number_format($estimation->credit_montant ?? 0, 0, ',', ' ') }} CFA</div>
+                   </div>
+                   <div>
+                       <div class="info-label"> Autres frais</div>
+                       <div class="info-value">{{ number_format($totalAutresFrais, 0, ',', ' ') }} CFA</div>
+                   </div>
+                   <div>
+                       <div class="info-label"> Total estimation</div>
+                       <div class="info-value highlight">{{ number_format($totalGeneral, 0, ',', ' ') }} CFA</div>
+                   </div>
+               </div>
+        
+               @if($estimation->credit_montant && $totalGeneral > $estimation->credit_montant)
+                   <div class="mt-3 p-2 bg-yellow-50 text-yellow-700 rounded text-sm">
+                       ⚠️ Le montant du crédit estimé ({{ number_format($estimation->credit_montant, 0, ',', ' ') }} CFA) 
+                       est inférieur au coût total estimé ({{ number_format($totalGeneral, 0, ',', ' ') }} CFA).
+                   </div>
+               @endif
+           </div>
+       </div>
         
         <div class="section">
             <div class="section-title"> STATUT DE L'ESTIMATION</div>

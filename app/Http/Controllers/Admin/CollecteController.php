@@ -123,6 +123,45 @@ class CollecteController extends Controller
         return redirect()->route('admin.collectes.index')
             ->with('success', 'Collecte enregistrée avec succès');
     }
+    
+    public function destroy($id)
+{
+    $collecte = Collecte::findOrFail($id);
+
+    DB::transaction(function () use ($collecte) {
+        // 1. Inverser la mise à jour du stock
+        $stock = Stock::where('produit', $collecte->produit)
+                      ->where('zone', $collecte->zone_collecte)
+                      ->first();
+
+        if ($stock) {
+            $stock->quantite_entree -= $collecte->quantite_nette;
+            $stock->stock_actuel -= $collecte->quantite_nette;
+            $stock->dernier_mouvement = now();
+            $stock->save();
+        }
+
+        // 2. Inverser la déduction sur le crédit (si applicable)
+        if ($collecte->credit_id && $collecte->montant_deduict > 0) {
+            $credit = CreditAgricole::find($collecte->credit_id);
+            if ($credit) {
+                $credit->montant_restant += $collecte->montant_deduict;
+                
+                // Si le crédit était marqué comme remboursé, il repasse en actif
+                if ($credit->statut === 'rembourse' && $credit->montant_restant > 0) {
+                    $credit->statut = 'actif';
+                }
+                $credit->save();
+            }
+        }
+
+        // 3. Supprimer la collecte
+        $collecte->delete();
+    });
+
+    return redirect()->route('admin.collectes.index')
+        ->with('success', 'Collecte supprimée et stocks/crédits mis à jour.');
+}
 
     /**
      * Afficher les détails d'une collecte

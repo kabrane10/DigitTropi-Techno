@@ -51,6 +51,7 @@
                 <div class="grid grid-cols-2 md:grid-cols-3 gap-4 p-4 bg-blue-50 rounded-lg">
                     <div><label class="text-gray-500 text-sm">Coût semences</label><p class="font-semibold">{{ number_format($estimation->cout_semences ?? 0, 0, ',', ' ') }} CFA</p></div>
                     <div><label class="text-gray-500 text-sm">Coût intrants</label><p class="font-semibold">{{ number_format($estimation->cout_intrants ?? 0, 0, ',', ' ') }} CFA</p></div>
+                    
                     <div><label class="text-gray-500 text-sm">Autres frais</label><p class="font-semibold">{{ number_format($estimation->autres_frais ?? 0, 0, ',', ' ') }} CFA</p></div>
                     <div class="col-span-2 md:col-span-3 mt-2 pt-2 border-t">
                         <label class="text-gray-600 text-sm">Montant Crédit Estimé</label>

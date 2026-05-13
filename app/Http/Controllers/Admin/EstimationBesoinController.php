@@ -24,26 +24,28 @@ class EstimationBesoinController extends Controller
     {
         $producteurs = Producteur::where('statut', 'actif')->get();
         $semences = Semence::all();
+        $intrants_disponibles = Intrant::orderBy('nom')->get();
         
-        return view('admin.estimations.create', compact('producteurs', 'semences'));
+        return view('admin.estimations.create', compact('producteurs', 'semences', 'intrants_disponibles'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'code_estimation' => 'required|unique:estimations',
             'producteur_id' => 'required|exists:producteurs,id',
             'semence_id' => 'required|exists:semences,id',
             'quantite_estimee' => 'required|numeric|min:0',
             'superficie_prevue' => 'required|numeric|min:0',
             'credit_montant' => 'nullable|numeric|min:0',
-            'intrants' => 'nullable|array',
             'date_estimation' => 'required|date',
             'statut' => 'required|in:en_attente,approuve,rejete',
+            'cout_semences' => 'nullable|numeric',
+            'cout_intrants' => 'nullable|numeric',
+            'autres_frais' => 'nullable|numeric',
+            'total_estimation' => 'nullable|numeric',
             'observations' => 'nullable|string',
-            'cout_semences' => 'nullable|numeric|min:0',
-            'cout_intrants' => 'nullable|numeric|min:0',
-            'autres_frais' => 'nullable|numeric|min:0',
-            'total_estimation' => 'nullable|numeric|min:0',
+            'intrants' => 'nullable|array',
         ]);
 
         // Traiter les intrants
@@ -70,8 +72,9 @@ class EstimationBesoinController extends Controller
         $estimation = EstimationBesoin::findOrFail($id);
         $producteurs = Producteur::where('statut', 'actif')->get();
         $semences = Semence::all();
+        $intrants_disponibles = Intrant::orderBy('nom')->get();
         
-        return view('admin.estimations.edit', compact('estimation', 'producteurs', 'semences'));
+        return view('admin.estimations.edit', compact('estimation', 'producteurs', 'semences', 'intrants_disponibles'));
     }
 
     public function update(Request $request, $id)
@@ -79,18 +82,20 @@ class EstimationBesoinController extends Controller
         $estimation = EstimationBesoin::findOrFail($id);
 
         $validated = $request->validate([
-            'semence_id' => 'required|exists:semences,id',
-            'quantite_estimee' => 'required|numeric|min:0',
-            'superficie_prevue' => 'required|numeric|min:0',
-            'credit_montant' => 'nullable|numeric|min:0',
-            'intrants' => 'nullable|array',
-            'date_estimation' => 'required|date',
-            'statut' => 'required|in:en_attente,approuve,rejete',
-            'observations' => 'nullable|string',
-            'cout_semences' => 'nullable|numeric|min:0',
-            'cout_intrants' => 'nullable|numeric|min:0',
-            'autres_frais' => 'nullable|numeric|min:0',
-            'total_estimation' => 'nullable|numeric|min:0',
+           'code_estimation' => 'required|unique:estimations',
+           'producteur_id' => 'required|exists:producteurs,id',
+           'semence_id' => 'required|exists:semences,id',
+           'quantite_estimee' => 'required|numeric|min:0',
+           'superficie_prevue' => 'required|numeric|min:0',
+           'credit_montant' => 'nullable|numeric|min:0',
+           'date_estimation' => 'required|date',
+           'statut' => 'required|in:en_attente,approuve,rejete',
+           'cout_semences' => 'nullable|numeric',
+           'cout_intrants' => 'nullable|numeric',
+           'autres_frais' => 'nullable|numeric',
+           'total_estimation' => 'nullable|numeric',
+           'observations' => 'nullable|string',
+           'intrants' => 'nullable|array',
         ]);
 
         // Traiter les intrants

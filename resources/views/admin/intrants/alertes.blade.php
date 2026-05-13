@@ -256,16 +256,18 @@
                     <p class="text-xs text-gray-500 mt-1" id="reapproInfo"></p>
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold mb-2">Motif</label>
-                    <select name="motif" class="w-full px-4 py-2 border rounded-lg">
-                        <option value="Achat">Achat</option>
-                        <option value="Réapprovisionnement">Réapprovisionnement urgent</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold mb-2">Référence facture</label>
-                    <input type="text" name="reference" class="w-full px-4 py-2 border rounded-lg" placeholder="N° commande / facture">
-                </div>
+                <label class="block text-sm font-semibold mb-2">Motif</label>
+                <select name="motif" id="reapproMotif" class="w-full px-4 py-2 border rounded-lg">
+                    <option value="Achat">Achat</option>
+                    <option value="Réapprovisionnement">Réapprovisionnement urgent</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-semibold mb-2">Référence facture</label>
+                <input type="text" name="reference" id="reapproReference" required readonly
+                       class="w-full px-4 py-2 border rounded-lg bg-gray-50 font-mono text-sm" 
+                       placeholder="Génération automatique...">
+            </div>
             </div>
             <div class="mt-6 flex justify-end gap-3">
                 <button type="button" onclick="closeReapproModal()" class="px-4 py-2 border rounded-lg">Annuler</button>
@@ -444,6 +446,47 @@
         modal.classList.add('hidden');
         modal.classList.remove('flex');
     }
+
+    function generateReapproRef() {
+    const motif = document.getElementById('reapproMotif').value;
+    const now = new Date();
+    
+    // Définition du préfixe selon le motif
+    const prefix = (motif === 'Achat') ? 'ACH' : 'REAP';
+    
+    // Formatage Date : YYYYMMDD
+    const date = now.getFullYear().toString() + 
+                 (now.getMonth() + 1).toString().padStart(2, '0') + 
+                 now.getDate().toString().padStart(2, '0');
+    
+    // Formatage Heure : HHMMSS
+    const time = now.getHours().toString().padStart(2, '0') + 
+                 now.getMinutes().toString().padStart(2, '0') + 
+                 now.getSeconds().toString().padStart(2, '0');
+    
+    // Code aléatoire 4 chiffres
+    const random = Math.floor(1000 + Math.random() * 9000);
+    
+    const reference = `${prefix}-${date}-${time}-${random}`;
+    document.getElementById('reapproReference').value = reference;
+}
+
+    // Écouteur pour changer la ref si le motif change
+    document.getElementById('reapproMotif').addEventListener('change', generateReapproRef);
+
+    // Modifier votre fonction existante qui ouvre le modal pour inclure l'appel :
+    function openReapproModal(intrantId, intrantNom, zone, quantite) {
+    // ... vos assignations existantes (action du form, etc.) ...
+    
+    document.getElementById('reapproIntrant').value = intrantNom;
+    document.getElementById('reapproZone').value = zone;
+    
+    // Générer la référence au moment de l'ouverture
+    generateReapproRef();
+    
+    document.getElementById('reapproModal').classList.remove('hidden');
+    document.getElementById('reapproModal').classList.add('flex');
+}
 
     // Transfert rapide
     function quickTransfer(intrantId, sourceZone, destZone, quantite) {

@@ -12,9 +12,20 @@ class EstimationBesoin extends Model
     protected $table = 'estimation_besoins';
 
     protected $fillable = [
-        'code_estimation', 'producteur_id', 'semence_id', 'quantite_estimee',
-        'superficie_prevue', 'credit_montant', 'intrants', 'date_estimation', 'statut', 'observations',
-        'cout_semences', 'cout_intrants', 'autres_frais', 'total_estimation'
+        'code_estimation',
+        'producteur_id',
+        'semence_id',
+        'quantite_estimee',
+        'superficie_prevue',
+        'credit_montant',
+        'date_estimation',
+        'statut',
+        'intrants',
+        'cout_semences',
+        'cout_intrants',
+        'autres_frais',
+        'total_estimation',
+        'observations'
     ];
 
     protected $casts = [
