@@ -3,9 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Intrant;
+use App\Models\Collecte;
+use App\Models\Stock;
 use App\Models\Producteur;
 use App\Models\Semence;
 use App\Models\EstimationBesoin;
+use App\Traits\DatabaseCompatibility;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 

@@ -42,7 +42,7 @@
                        placeholder="Ex: Tchaoudjo 1, Kozah 2...">
             </div>
 
-            {{-- Village / Quartier }}
+            {{-- Village / Quartier --}}
             <div>
                 <label class="block text-sm font-semibold mb-2">Village / Quartier</label>
                 <input type="text" name="localisation" required value="{{ old('localisation', $producteur->localisation) }}"

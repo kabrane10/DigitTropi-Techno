@@ -42,7 +42,7 @@
                     <i class="fas fa-map-marked-alt w-8 text-gray-400 mt-1"></i>
                     <div>
                         <p class="text-xs text-gray-500 uppercase font-bold">Localisation</p>
-                        <p class="text-sm">{{ $producteur->commune ?? 'Non renseigné' }}, {{ $producteur->region ?? 'Non renseigné' }}</p>
+                        <p class="text-sm">{{ $producteur->region ?? 'Non renseigné' }}, {{ $producteur->commune ?? 'Non renseigné' }}</p>
                         @if($producteur->latitude && $producteur->longitude)
                             <a href="https://www.google.com/maps?q={{ $producteur->latitude }},{{ $producteur->longitude }}" 
                                target="_blank" class="text-xs text-primary hover:underline mt-1 inline-block">
@@ -50,6 +50,30 @@
                             </a>
                         @endif
                     </div>
+                </div>
+                <div class="flex items-start">
+                    <i class="fas fa-tractor w-8 text-gray-400 mt-1"></i>
+                    <div>
+                        <p class="text-xs text-gray-500 uppercase font-bold">Position exacte</p>
+                        <p class="text-sm">{{ $producteur->localisation ?? 'Non renseigné' }} </p>
+                        @if($producteur->latitude && $producteur->longitude)
+                            <p id="geo-location-name" class="text-xs text-gray-600 italic mt-1">
+                                <i class="fas fa-spinner fa-spin mr-1"></i> Recherche du lieu...
+                            </p>
+
+                            <script>
+                                fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat={{ $producteur->latitude }}&lon={{ $producteur->longitude }}`)
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        const displayName = data.display_name || "Lieu inconnu";
+                                        document.getElementById('geo-location-name').innerHTML = `<i class="fas fa-location-dot text-red-500 mr-1"></i> ${displayName}`;
+                                    })
+                                    .catch(err => {
+                                        document.getElementById('geo-location-name').innerText = "Position GPS enregistrée";
+                                    });
+                            </script>
+                        @endif
+                    </div>    
                 </div>
                 <div class="flex items-start">
                     <i class="fas fa-tractor w-8 text-gray-400 mt-1"></i>

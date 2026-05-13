@@ -242,25 +242,26 @@
         <form id="reapproForm" method="POST" action="">
             @csrf
             <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-semibold mb-2">Intrant</label>
-                    <input type="text" id="reapproIntrant" class="w-full px-4 py-2 border rounded-lg bg-gray-100" disabled>
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold mb-2">Zone</label>
-                    <input type="text" id="reapproZone" class="w-full px-4 py-2 border rounded-lg bg-gray-100" disabled>
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold mb-2">Quantité recommandée *</label>
-                    <input type="number" step="0.01" name="quantite" id="reapproQuantite" required class="w-full px-4 py-2 border rounded-lg">
-                    <p class="text-xs text-gray-500 mt-1" id="reapproInfo"></p>
-                </div>
-                <div>
-                <label class="block text-sm font-semibold mb-2">Motif</label>
-                <select name="motif" id="reapproMotif" class="w-full px-4 py-2 border rounded-lg">
-                    <option value="Achat">Achat</option>
-                    <option value="Réapprovisionnement">Réapprovisionnement urgent</option>
-                </select>
+            <div>
+                <label class="block text-sm font-semibold mb-2">Intrant</label>
+                <input type="text" id="reapproIntrant" class="w-full px-4 py-2 border rounded-lg bg-gray-100" readonly>
+            </div>
+            <div>
+                <label class="block text-sm font-semibold mb-2">Zone</label>
+                <input type="text" id="reapproZoneDisplay" class="w-full px-4 py-2 border rounded-lg bg-gray-100" readonly>
+                <input type="hidden" name="zone" id="reapproZone">
+            </div>
+            <div>
+                <label class="block text-sm font-semibold mb-2">Quantité recommandée *</label>
+                <input type="number" step="0.01" name="quantite" id="reapproQuantite" required class="w-full px-4 py-2 border rounded-lg">
+                <p class="text-xs text-gray-500 mt-1" id="reapproInfo"></p>
+            </div>
+            <div>
+            <label class="block text-sm font-semibold mb-2">Motif</label>
+            <select name="motif" id="reapproMotif" class="w-full px-4 py-2 border rounded-lg">
+                <option value="Achat">Achat</option>
+                <option value="Réapprovisionnement">Réapprovisionnement urgent</option>
+            </select>
             </div>
             <div>
                 <label class="block text-sm font-semibold mb-2">Référence facture</label>
@@ -420,26 +421,43 @@
 
     // Réapprovisionnement rapide
     function quickReappro(intrantId, zone, quantiteSuggeree) {
-        const modal = document.getElementById('reapproModal');
-        const form = document.getElementById('reapproForm');
-        const intrantInput = document.getElementById('reapproIntrant');
-        const zoneInput = document.getElementById('reapproZone');
-        const quantiteInput = document.getElementById('reapproQuantite');
-        const infoSpan = document.getElementById('reapproInfo');
-        
-        // Récupérer le nom de l'intrant
-        fetch(`/admin/intrants/${intrantId}`)
-            .then(response => response.json())
-            .then(data => {
-                intrantInput.value = data.nom;
-                zoneInput.value = zone;
-                quantiteInput.value = quantiteSuggeree;
-                infoSpan.textContent = `Quantité suggérée pour remonter au seuil d'alerte`;
-                form.action = `/admin/intrants/${intrantId}/stock/${zone}/ajouter`;
-                modal.classList.remove('hidden');
-                modal.classList.add('flex');
-            });
-    }
+    const modal = document.getElementById('reapproModal');
+    const form = document.getElementById('reapproForm');
+    const intrantInput = document.getElementById('reapproIntrant');
+    const zoneDisplay = document.getElementById('reapproZoneDisplay');
+    const zoneHidden = document.getElementById('reapproZone');
+    const quantiteInput = document.getElementById('reapproQuantite');
+    const infoSpan = document.getElementById('reapproInfo');
+    
+    // 1. Reset du formulaire avant chargement
+    form.reset();
+
+    // 2. Récupérer le nom de l'intrant
+    fetch(`/admin/intrants/${intrantId}`)
+        .then(response => response.json())
+        .then(data => {
+            intrantInput.value = data.nom;
+            zoneDisplay.value = zone; // Affichage
+            zoneHidden.value = zone;  // Valeur envoyée
+            quantiteInput.value = quantiteSuggeree;
+            infoSpan.textContent = `Quantité suggérée pour remonter au seuil d'alerte`;
+            
+            // Définir l'URL d'action
+            form.action = `/admin/intrants/${intrantId}/stock/store`; 
+            
+            // 3. Générer la référence automatique (la fonction que nous avons créée précédemment)
+            if (typeof generateReapproRef === "function") {
+                generateReapproRef();
+            }
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        })
+        .catch(error => {
+            console.error('Erreur:', error);
+            alert("Erreur lors du chargement des données");
+        });
+}
     
     function closeReapproModal() {
         const modal = document.getElementById('reapproModal');
