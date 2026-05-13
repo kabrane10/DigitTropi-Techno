@@ -54,11 +54,22 @@ class IntrantController extends Controller
             ->with('success', 'Intrant créé avec succès');
     }
 
+    // public function show($id)
+    // {
+    //     $intrant = Intrant::with(['stocks.mouvements'])->findOrFail($id);
+    //     return view('admin.intrants.show', compact('intrant'));
+    // }
     public function show($id)
-    {
-        $intrant = Intrant::with(['stocks.mouvements'])->findOrFail($id);
-        return view('admin.intrants.show', compact('intrant'));
+{
+    $intrant = Intrant::with(['stocks.mouvements'])->findOrFail($id);
+    
+    // Ajout pour supporter les appels AJAX du modal de réapprovisionnement
+    if (request()->ajax() || request()->wantsJson()) {
+        return response()->json($intrant);
     }
+
+    return view('admin.intrants.show', compact('intrant'));
+}
 
     public function edit($id)
     {
@@ -408,5 +419,15 @@ public function rapportPdf()
         'unite' => $intrant->unite,
         'prix_unitaire' => $intrant->prix_unitaire
     ]);
+    }
+
+    /**
+ * Liste des intrants au format JSON pour les formulaires dynamiques
+ */
+    public function getJson()
+    {
+
+       $intrants = Intrant::where('est_actif', true)->get();
+       return response()->json($intrants);
     }
 }

@@ -20,7 +20,8 @@ class ProducteursExport implements FromCollection, WithHeadings, WithMapping, Sh
     public function headings(): array
     {
         return [
-            'Code', 'Nom', 'Contact', 'Email', 'Région', 'Localisation',
+            'Code', 'Nom', 'Contact', 'Email', 'Région', 'Commune', 'Localisation',
+            'Latitude', 'Longitude', 
             'Culture', 'Superficie (ha)', 'Statut', 'Date enregistrement', 'Coopérative'
         ];
     }
@@ -33,6 +34,10 @@ class ProducteursExport implements FromCollection, WithHeadings, WithMapping, Sh
             $producteur->contact,
             $producteur->email ?? '-',
             $producteur->region,
+            $producteur->commune ?? '-',
+            $producteur->localisation ?? '-',
+            $producteur->latitude ?? '-',
+            $producteur->longitude ?? '-',
             $producteur->localisation,
             $producteur->culture_pratiquee,
             $producteur->superficie_totale,
