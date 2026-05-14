@@ -280,28 +280,89 @@
             </div>
         </div>
         
-        <!-- Informations producteur -->
+        <!-- Informations Bénéficiaire (Producteur ou Coopérative) -->
         <div class="section">
-            <div class="section-title">INFORMATIONS PRODUCTEUR</div>
+            <div class="section-title">
+                @if($credit->beneficiaire_type === 'App\\Models\\Cooperative' || $credit->cooperative_id)
+                     INFORMATIONS COOPÉRATIVE
+                @else
+                     INFORMATIONS PRODUCTEUR
+                @endif
+            </div>
             <div class="section-content">
-                <div class="info-grid">
-                    <div class="info-item">
-                        <div class="info-label">Nom complet</div>
-                        <div class="info-value">{{ $credit->producteur->nom_complet }}</div>
+                @if($credit->beneficiaire_type === 'App\\Models\\Cooperative' || $credit->cooperative_id)
+                    {{-- Cas Coopérative --}}
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Nom de la coopérative</div>
+                            <div class="info-value">{{ $credit->cooperative->nom ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Code coopérative</div>
+                            <div class="info-value">{{ $credit->cooperative->code_cooperative ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Contact</div>
+                            <div class="info-value">{{ $credit->cooperative->contact ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Email</div>
+                            <div class="info-value">{{ $credit->cooperative->email ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Région</div>
+                            <div class="info-value">{{ $credit->cooperative->region ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Localisation</div>
+                            <div class="info-value">{{ $credit->cooperative->localisation ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Nombre de membres</div>
+                            <div class="info-value">{{ number_format($credit->cooperative->nombre_membres ?? 0) }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Date de création</div>
+                            <div class="info-value">{{ $credit->cooperative->date_creation ? $credit->cooperative->date_creation->format('d/m/Y') : 'N/A' }}</div>
+                        </div>
                     </div>
-                    <div class="info-item">
-                        <div class="info-label">Code producteur</div>
-                        <div class="info-value">{{ $credit->producteur->code_producteur }}</div>
+                @else
+                    {{-- Cas Producteur Individuel --}}
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Nom complet</div>
+                            <div class="info-value">{{ $credit->producteur->nom_complet }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Code producteur</div>
+                            <div class="info-value">{{ $credit->producteur->code_producteur }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Contact</div>
+                            <div class="info-value">{{ $credit->producteur->contact }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Email</div>
+                            <div class="info-value">{{ $credit->producteur->email ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Région</div>
+                            <div class="info-value">{{ $credit->producteur->region }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Localisation</div>
+                            <div class="info-value">{{ $credit->producteur->localisation }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Culture pratiquée</div>
+                            <div class="info-value">{{ $credit->producteur->culture_pratiquee ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Superficie totale</div>
+                            <div class="info-value">{{ number_format($credit->producteur->superficie_totale ?? 0, 2) }} ha</div>
+                        </div>
                     </div>
-                    <div class="info-item">
-                        <div class="info-label">Contact</div>
-                        <div class="info-value">{{ $credit->producteur->contact }}</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Localisation</div>
-                        <div class="info-value">{{ $credit->producteur->localisation }}</div>
-                    </div>
-                </div>
+                @endif
             </div>
         </div>
         
@@ -326,19 +387,27 @@
                         <div class="info-label">Mensualité</div>
                         <div class="info-value">{{ number_format($mensualite, 0, ',', ' ') }} CFA/mois</div>
                     </div>
+                    <div class="info-item">
+                        <div class="info-label">Type d'intrant</div>
+                        <div class="info-value">{{ ucfirst($credit->type_intrant) }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Quantité intrant</div>
+                        <div class="info-value">{{ number_format($credit->quantite_intrant, 2) }} {{ $credit->unite_intrant }}</div>
+                    </div>
                 </div>
                 
                 <div class="totals">
                     <div class="total-row">
-                        <span class="total-label">Déjà remboursé :</span>
+                        <span class="total-label"> Déjà remboursé :</span>
                         <span class="total-value">{{ number_format($montantRembourse, 0, ',', ' ') }} CFA</span>
                     </div>
                     <div class="total-row">
-                        <span class="total-label">Reste à payer :</span>
+                        <span class="total-label"> Reste à payer :</span>
                         <span class="total-value">{{ number_format($resteAPayer, 0, ',', ' ') }} CFA</span>
                     </div>
                     <div class="total-row">
-                        <span class="total-label">Taux de remboursement :</span>
+                        <span class="total-label"> Taux de remboursement :</span>
                         <span class="total-value">{{ number_format($tauxRemboursement, 1) }}%</span>
                     </div>
                 </div>
@@ -383,7 +452,7 @@
         
         <!-- Tableau d'amortissement -->
         <div class="section">
-            <div class="section-title">TABLEAU D'AMORTISSEMENT</div>
+            <div class="section-title"> TABLEAU D'AMORTISSEMENT</div>
             <div class="section-content">
                 <div class="table-section">
                     <table>
@@ -427,8 +496,14 @@
         <div class="signatures">
             <div class="signature-box">
                 <div class="signature-line">
-                    <p>Signature du producteur</p>
-                    <p style="font-size: 10px; color: #999; margin-top: 5px;">{{ $credit->producteur->nom_complet }}</p>
+                    <p>Signature du bénéficiaire</p>
+                    <p style="font-size: 10px; color: #999; margin-top: 5px;">
+                        @if($credit->beneficiaire_type === 'App\\Models\\Cooperative' || $credit->cooperative_id)
+                            {{ $credit->cooperative->nom ?? 'N/A' }}
+                        @else
+                            {{ $credit->producteur->nom_complet }}
+                        @endif
+                    </p>
                 </div>
             </div>
             <div class="signature-box">

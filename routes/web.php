@@ -142,13 +142,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('cooperatives', CooperativeController::class);
         Route::get('/cooperatives-export', [CooperativeController::class, 'export'])->name('cooperatives.export');
         
-        // Routes pour les opérations coopératives
+       // Routes pour les opérations coopératives
         Route::prefix('admin/cooperatives/{cooperative}/operations')->name('admin.cooperatives.operations.')->group(function () {
-        Route::get('/dashboard', [CooperativeOperationController::class, 'dashboard'])->name('cooperatives.operations.dashboard');
     
-       // Semences
+        // Dashboard - CORRIGÉ
+        Route::get('/dashboard', [CooperativeOperationController::class, 'dashboard'])->name('dashboard');  // ← Changé ici
+    
+        // Semences
         Route::get('/distribution-semence', [CooperativeOperationController::class, 'createDistributionSemence'])->name('distribution-semence.create');
-        Route::post('/distribution-semence', [CooperativeOperationController::class, 'storeDistributionSemence'])->name('distribution-semence.store');
+        Route::post('/distribution-semence', [CooperativeOperationController::class, 'storeDistributionSemence']) ->name('distribution-semence.store');
     
         // Intrants
         Route::get('/distribution-intrant', [CooperativeOperationController::class, 'createDistributionIntrant'])->name('distribution-intrant.create');

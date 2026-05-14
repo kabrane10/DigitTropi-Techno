@@ -15,6 +15,7 @@
                 <i class="fas fa-print mr-2"></i>Imprimer la fiche
             </a>
         </div>
+        
         <!-- 1. Informations générales -->
         <div class="bg-white rounded-xl shadow-sm p-6">
             <div class="flex justify-between items-start mb-4">
@@ -55,8 +56,12 @@
                     <p>{{ $credit->taux_interet }}%</p>
                 </div>
                 <div>
-                    <label class="text-gray-500 text-sm">Producteur</label>
-                    <p class="font-semibold">{{ $credit->producteur->nom_complet }}</p>
+                    <label class="text-gray-500 text-sm">Type d'intrant</label>
+                    <p>{{ ucfirst($credit->type_intrant) }}</p>
+                </div>
+                <div>
+                    <label class="text-gray-500 text-sm">Quantité intrant</label>
+                    <p>{{ number_format($credit->quantite_intrant, 2) }} {{ $credit->unite_intrant }}</p>
                 </div>
                 <div>
                     <label class="text-gray-500 text-sm">Capital emprunté</label>
@@ -176,6 +181,77 @@
     <!-- ============================================================ -->
     <div class="space-y-6">
         
+        <!-- Carte Bénéficiaire -->
+        <div class="bg-white rounded-xl shadow-sm p-6">
+            <h4 class="font-semibold text-dark mb-3">
+                <i class="fas fa-user-circle text-primary mr-2"></i> Bénéficiaire
+            </h4>
+            
+            @if($credit->beneficiaire_type === 'App\\Models\\Cooperative' || $credit->cooperative_id)
+                {{-- Cas Coopérative --}}
+                <div class="bg-purple-50 rounded-lg p-4">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 bg-purple-200 rounded-full flex items-center justify-center mr-3">
+                            <i class="fas fa-handshake text-purple-600"></i>
+                        </div>
+                        <div>
+                            <p class="font-bold text-purple-800">{{ $credit->cooperative->nom ?? 'N/A' }}</p>
+                            <p class="text-xs text-purple-600">Code: {{ $credit->cooperative->code_cooperative ?? 'N/A' }}</p>
+                        </div>
+                    </div>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Contact :</span>
+                            <span>{{ $credit->cooperative->contact ?? 'N/A' }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Région :</span>
+                            <span>{{ $credit->cooperative->region ?? 'N/A' }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Localisation :</span>
+                            <span>{{ $credit->cooperative->localisation ?? 'N/A' }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Membres :</span>
+                            <span>{{ number_format($credit->cooperative->nombre_membres ?? 0) }}</span>
+                        </div>
+                    </div>
+                </div>
+            @else
+                {{-- Cas Producteur Individuel --}}
+                <div class="bg-green-50 rounded-lg p-4">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 bg-green-200 rounded-full flex items-center justify-center mr-3">
+                            <i class="fas fa-user text-green-600"></i>
+                        </div>
+                        <div>
+                            <p class="font-bold text-green-800">{{ $credit->producteur->nom_complet }}</p>
+                            <p class="text-xs text-green-600">Code: {{ $credit->producteur->code_producteur }}</p>
+                        </div>
+                    </div>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Contact :</span>
+                            <span>{{ $credit->producteur->contact }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Région :</span>
+                            <span>{{ $credit->producteur->region }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Localisation :</span>
+                            <span>{{ $credit->producteur->localisation }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Culture :</span>
+                            <span>{{ $credit->producteur->culture_pratiquee ?? 'N/A' }}</span>
+                        </div>
+                    </div>
+                </div>
+            @endif
+        </div>
+        
         <!-- Carte capital emprunté -->
         <div class="bg-gradient-to-r from-primary to-secondary rounded-xl p-6 text-white">
             <p class="text-sm opacity-90">Capital emprunté</p>
@@ -253,7 +329,7 @@
                 </div>
                 <div class="flex justify-between text-sm">
                     <span class="text-gray-600">Mensualité calculée</span>
-                    <span class="font-semibold text-red-600 ">{{ number_format($mensualite, 0, ',', ' ') }} CFA</span>
+                    <span class="font-semibold text-red-600">{{ number_format($mensualite, 0, ',', ' ') }} CFA</span>
                 </div>
                 <div class="flex justify-between text-sm">
                     <span class="text-gray-600">Paiements effectués</span>
@@ -269,7 +345,7 @@
 </div>
 
 <!-- ============================================================ -->
-<!-- TABLEAU D'AMORTISSEMENT     -->
+<!-- TABLEAU D'AMORTISSEMENT                                       -->
 <!-- ============================================================ -->
 <div class="mt-6">
     <div class="bg-white rounded-xl shadow-sm p-6">
@@ -314,7 +390,7 @@
                             <td class="px-3 py-2 text-right">{{ number_format($montantAvecInterets - $credit->montant_total, 0, ',', ' ') }} CFA</td>
                             <td class="px-3 py-2 text-right">{{ number_format($credit->montant_total, 0, ',', ' ') }} CFA</td>
                             <td class="px-3 py-2 text-right">-</td>
-                        </tr>
+                         </tr>
                     </tfoot>
                 </table>
             </div>

@@ -73,13 +73,14 @@
         }
         
         .logo-img {
-           height: 70px;
-           width: auto;
-           background: white;
-           border-radius: 12px;
-           padding: 8px;
-           box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-       }
+            height: 70px;
+            width: auto;
+            background: white;
+            border-radius: 12px;
+            padding: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
         .section-content {
             padding: 15px;
         }
@@ -88,6 +89,12 @@
         .info-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .info-grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
             gap: 15px;
         }
         
@@ -164,7 +171,7 @@
             color: #2d6a4f;
         }
         
-        /* Badge */
+        /* Badges */
         .badge {
             display: inline-block;
             padding: 3px 8px;
@@ -243,17 +250,23 @@
         <!-- Bouton d'impression -->
         <div style="text-align: center; margin-bottom: 20px;">
             <button onclick="window.print()" class="btn-print">
-                 Imprimer / Télécharger PDF
+                Imprimer / Télécharger PDF
             </button>
         </div>
         
         <!-- En-tête -->
         <div class="header">
-        <img src="{{ asset('images/img6.png') }}"  class="logo-img">
-            <div class="title">FICHE DE DISTRIBUTION DE SEMENCES</div>
+            <img src="{{ asset('images/img6.png') }}" class="logo-img">
+            <div class="title"> FICHE DE DISTRIBUTION DE SEMENCES</div>
             <div class="subtitle">Tropi-Techno Sarl - Agriculture Biologique au Togo</div>
             <div class="code">N° {{ $distribution->code_distribution }}</div>
         </div>
+        
+        @php
+            // Déterminer le type de bénéficiaire
+            $isCooperative = ($distribution->cooperative_id || $distribution->beneficiaire_type === 'App\\Models\\Cooperative');
+            $beneficiaire = $isCooperative ? $distribution->cooperative : $distribution->producteur;
+        @endphp
         
         <!-- Informations générales -->
         <div class="section">
@@ -268,7 +281,10 @@
                         <div class="info-label">Saison</div>
                         <div class="info-value">
                             <span class="badge badge-{{ $distribution->saison }}">
-                                {{ ucfirst($distribution->saison) }}
+                                @if($distribution->saison == 'principale')  Principale
+                                @elseif($distribution->saison == 'contre-saison') ☀️ Contre-saison
+                                @else  Hivernage
+                                @endif
                             </span>
                         </div>
                     </div>
@@ -276,36 +292,89 @@
             </div>
         </div>
         
-        <!-- Informations producteur -->
+        <!-- Informations Bénéficiaire (Producteur ou Coopérative) -->
         <div class="section">
-            <div class="section-title"> INFORMATIONS PRODUCTEUR</div>
+            <div class="section-title">
+                @if($isCooperative)
+                    INFORMATIONS COOPÉRATIVE
+                @else
+                     INFORMATIONS PRODUCTEUR
+                @endif
+            </div>
             <div class="section-content">
-                <div class="info-grid">
-                    <div class="info-item">
-                        <div class="info-label">Nom complet</div>
-                        <div class="info-value">{{ $distribution->producteur->nom_complet }}</div>
+                @if($isCooperative)
+                    {{-- Affichage Coopérative --}}
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Nom de la coopérative</div>
+                            <div class="info-value highlight">{{ $beneficiaire->nom ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Code coopérative</div>
+                            <div class="info-value">{{ $beneficiaire->code_cooperative ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Contact</div>
+                            <div class="info-value">{{ $beneficiaire->contact ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Email</div>
+                            <div class="info-value">{{ $beneficiaire->email ?? 'Non renseigné' }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Région</div>
+                            <div class="info-value">{{ $beneficiaire->region ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Localisation</div>
+                            <div class="info-value">{{ $beneficiaire->localisation ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Nombre de membres</div>
+                            <div class="info-value">{{ number_format($beneficiaire->nombre_membres ?? 0) }} producteurs</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Date de création</div>
+                            <div class="info-value">{{ $beneficiaire->date_creation ? $beneficiaire->date_creation->format('d/m/Y') : 'N/A' }}</div>
+                        </div>
                     </div>
-                    <div class="info-item">
-                        <div class="info-label">Code producteur</div>
-                        <div class="info-value">{{ $distribution->producteur->code_producteur }}</div>
+                @else
+                    {{-- Affichage Producteur Individuel --}}
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Nom complet</div>
+                            <div class="info-value highlight">{{ $beneficiaire->nom_complet ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Code producteur</div>
+                            <div class="info-value">{{ $beneficiaire->code_producteur ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Contact</div>
+                            <div class="info-value">{{ $beneficiaire->contact ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Localisation</div>
+                            <div class="info-value">{{ $beneficiaire->localisation ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Région</div>
+                            <div class="info-value">{{ $beneficiaire->region ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Culture pratiquée</div>
+                            <div class="info-value">{{ $beneficiaire->culture_pratiquee ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Superficie totale</div>
+                            <div class="info-value">{{ number_format($beneficiaire->superficie_totale ?? 0, 2) }} hectares</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Coopérative</div>
+                            <div class="info-value">{{ $beneficiaire->cooperative->nom ?? 'Indépendant' }}</div>
+                        </div>
                     </div>
-                    <div class="info-item">
-                        <div class="info-label">Contact</div>
-                        <div class="info-value">{{ $distribution->producteur->contact }}</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Localisation</div>
-                        <div class="info-value">{{ $distribution->producteur->localisation }}</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Région</div>
-                        <div class="info-value">{{ $distribution->producteur->region }}</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Culture pratiquée</div>
-                        <div class="info-value">{{ $distribution->producteur->culture_pratiquee }}</div>
-                    </div>
-                </div>
+                @endif
             </div>
         </div>
         
@@ -316,19 +385,19 @@
                 <div class="info-grid">
                     <div class="info-item">
                         <div class="info-label">Semence</div>
-                        <div class="info-value">{{ $distribution->semence->nom }}</div>
+                        <div class="info-value">{{ $distribution->semence->nom ?? 'N/A' }}</div>
                     </div>
                     <div class="info-item">
                         <div class="info-label">Variété</div>
-                        <div class="info-value">{{ $distribution->semence->variete }}</div>
+                        <div class="info-value">{{ $distribution->semence->variete ?? 'N/A' }}</div>
                     </div>
                     <div class="info-item">
                         <div class="info-label">Type</div>
-                        <div class="info-value">{{ ucfirst($distribution->semence->type) }}</div>
+                        <div class="info-value">{{ ucfirst($distribution->semence->type ?? 'N/A') }}</div>
                     </div>
                     <div class="info-item">
                         <div class="info-label">Unité</div>
-                        <div class="info-value">{{ $distribution->semence->unite }}</div>
+                        <div class="info-value">{{ $distribution->semence->unite ?? 'kg' }}</div>
                     </div>
                 </div>
             </div>
@@ -341,7 +410,15 @@
                 <div class="info-grid">
                     <div class="info-item">
                         <div class="info-label">Quantité distribuée</div>
-                        <div class="info-value highlight">{{ number_format($distribution->quantite) }} {{ $distribution->semence->unite }}</div>
+                        <div class="info-value highlight">{{ number_format($distribution->quantite) }} {{ $distribution->semence->unite ?? 'kg' }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Prix unitaire</div>
+                        <div class="info-value">{{ number_format($distribution->prix_unitaire ?? $distribution->semence->prix_unitaire ?? 0, 0, ',', ' ') }} CFA / {{ $distribution->semence->unite ?? 'kg' }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Montant total</div>
+                        <div class="info-value highlight">{{ number_format($distribution->montant_total ?? ($distribution->quantite * ($distribution->prix_unitaire ?? $distribution->semence->prix_unitaire ?? 0)), 0, ',', ' ') }} CFA</div>
                     </div>
                     <div class="info-item">
                         <div class="info-label">Superficie emblavée</div>
@@ -373,7 +450,7 @@
                 <div class="totals">
                     <div class="total-row">
                         <span class="total-label"> Ratio semence/superficie :</span>
-                        <span class="total-value">{{ number_format($distribution->quantite / $distribution->superficie_emblevee, 2) }} {{ $distribution->semence->unite }}/ha</span>
+                        <span class="total-value">{{ number_format($distribution->quantite / $distribution->superficie_emblevee, 2) }} {{ $distribution->semence->unite ?? 'kg' }}/ha</span>
                     </div>
                     <div class="total-row">
                         <span class="total-label"> Objectif de production :</span>
@@ -395,12 +472,26 @@
                         <div class="info-value">{{ $distribution->credit->code_credit }}</div>
                     </div>
                     <div class="info-item">
+                        <div class="info-label">Bénéficiaire du crédit</div>
+                        <div class="info-value">
+                            @if($distribution->credit->cooperative_id)
+                                {{ $distribution->credit->cooperative->nom ?? 'N/A' }}
+                            @else
+                                 {{ $distribution->credit->producteur->nom_complet ?? 'N/A' }}
+                            @endif
+                        </div>
+                    </div>
+                    <div class="info-item">
                         <div class="info-label">Montant total</div>
                         <div class="info-value">{{ number_format($distribution->credit->montant_total, 0, ',', ' ') }} CFA</div>
                     </div>
                     <div class="info-item">
                         <div class="info-label">Reste à payer</div>
                         <div class="info-value">{{ number_format($distribution->credit->montant_restant, 0, ',', ' ') }} CFA</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Taux d'intérêt</div>
+                        <div class="info-value">{{ $distribution->credit->taux_interet }}%</div>
                     </div>
                     <div class="info-item">
                         <div class="info-label">Statut</div>
@@ -429,8 +520,21 @@
         <div class="signatures">
             <div class="signature-box">
                 <div class="signature-line">
-                    <p>Signature du producteur</p>
-                    <p style="font-size: 10px; color: #999; margin-top: 5px;">{{ $distribution->producteur->nom_complet }}</p>
+                    <p>
+                        Signature du 
+                        @if($isCooperative)
+                            représentant de la coopérative
+                        @else
+                            producteur
+                        @endif
+                    </p>
+                    <p style="font-size: 10px; color: #999; margin-top: 5px;">
+                        @if($isCooperative)
+                            {{ $beneficiaire->nom ?? 'N/A' }}
+                        @else
+                            {{ $beneficiaire->nom_complet ?? 'N/A' }}
+                        @endif
+                    </p>
                 </div>
             </div>
             <div class="signature-box">
@@ -446,6 +550,7 @@
             <p>Document généré automatiquement - Tropi-Techno Sarl</p>
             <p>RN:17, Bamabodolo, Sokodé-Togo | Tel: +228 25 50 63 12 | Email: tropitechno@admin.com</p>
             <p>Ce document est une preuve officielle de distribution de semences</p>
+            <p style="margin-top: 5px;">Généré le {{ now()->format('d/m/Y à H:i') }}</p>
         </div>
     </div>
 </body>

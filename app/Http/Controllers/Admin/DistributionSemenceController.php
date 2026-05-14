@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\DistributionSemence;
 use App\Models\Producteur;
+use App\Models\Cooperative;
+use App\Models\CooperativeOperation;
 use App\Models\Semence;
 use App\Models\CreditAgricole;
 use Illuminate\Http\Request;
