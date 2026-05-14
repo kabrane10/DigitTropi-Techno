@@ -37,6 +37,7 @@ use App\Http\Controllers\Admin\GalerieAdminController;
 use App\Http\Controllers\Admin\AlbumAdminController;
 use App\Http\Controllers\Admin\ProducteurController;
 use App\Http\Controllers\Admin\CooperativeController;
+use App\Http\Controllers\Admin\CooperativeOperationController;
 use App\Http\Controllers\Admin\DistributionSemenceController;
 use App\Http\Controllers\Admin\SemenceController;
 use App\Http\Controllers\Admin\EstimationBesoinController;
@@ -140,6 +141,27 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Coopératives
         Route::resource('cooperatives', CooperativeController::class);
         Route::get('/cooperatives-export', [CooperativeController::class, 'export'])->name('cooperatives.export');
+        
+        // Routes pour les opérations coopératives
+        Route::prefix('admin/cooperatives/{cooperative}/operations')->name('admin.cooperatives.operations.')->group(function () {
+        Route::get('/dashboard', [CooperativeOperationController::class, 'dashboard'])->name('dashboard');
+    
+       // Semences
+        Route::get('/distribution-semence', [CooperativeOperationController::class, 'createDistributionSemence'])->name('distribution-semence.create');
+        Route::post('/distribution-semence', [CooperativeOperationController::class, 'storeDistributionSemence'])->name('distribution-semence.store');
+    
+        // Intrants
+        Route::get('/distribution-intrant', [CooperativeOperationController::class, 'createDistributionIntrant'])->name('distribution-intrant.create');
+        Route::post('/distribution-intrant', [CooperativeOperationController::class, 'storeDistributionIntrant'])->name('distribution-intrant.store');
+    
+        // Collectes
+        Route::get('/collecte', [CooperativeOperationController::class, 'createCollecte'])->name('collecte.create');
+        Route::post('/collecte', [CooperativeOperationController::class, 'storeCollecte'])->name('collecte.store');
+    
+        // Crédits
+        Route::get('/credit', [CooperativeOperationController::class, 'createCredit'])->name('credit.create');
+        Route::post('/credit', [CooperativeOperationController::class, 'storeCredit'])->name('credit.store');
+    });
         
         // Distributions
         Route::resource('distributions', DistributionSemenceController::class);

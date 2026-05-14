@@ -133,7 +133,7 @@
                                 <div class="flex items-start gap-2">
                                     <i class="fas fa-lightbulb text-blue-500 mt-0.5"></i>
                                     <div>
-                                        <p class="text-xs text-blue-700 font-semibold">💡 Suggestion de transfert</p>
+                                        <p class="text-xs text-blue-700 font-semibold"> Suggestion de transfert</p>
                                         <p class="text-sm text-blue-800">
                                             Transférer <strong>{{ number_format(min($autreZoneStock->stock_actuel - $autreZoneStock->seuil_alerte, $besoinReappro)) }} {{ $stock->unite }}</strong> 
                                             depuis la zone <strong>{{ $autreZoneStock->zone }}</strong> 

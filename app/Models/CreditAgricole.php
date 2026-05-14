@@ -13,7 +13,7 @@ class CreditAgricole extends Model
 
     protected $fillable = [
         'code_credit', 'producteur_id', 'cooperative_id', 'montant_total',
-        'type_intrant', 'quantite_intrant', 'unite_intrant',
+        'type_intrant', 'quantite_intrant', 'unite_intrant', 'montant_sans_interets', 'montant_interets',
         'montant_restant', 'taux_interet', 'duree_mois', 'date_octroi',
         'date_echeance', 'statut', 'conditions', 'observations'
     ];
@@ -73,4 +73,14 @@ class CreditAgricole extends Model
         if ($this->montant_total == 0) return 0;
         return ($this->montant_rembourse / $this->montant_total) * 100;
     }
+
+    public function distributionsIntrantsCooperative()
+{
+    return $this->hasMany(DistributionIntrantCooperative::class, 'credit_id');
+}
+
+public function collectesCooperative()
+{
+    return $this->hasMany(CollecteCooperative::class, 'credit_id');
+}
 }

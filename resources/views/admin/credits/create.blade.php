@@ -36,42 +36,13 @@
         @endif
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Producteur -->
-            <div>
-                <label class="block text-sm font-semibold mb-2">
-                    <i class="fas fa-user text-primary mr-1"></i> Producteur *
-                </label>
-                @if($producteur_id)
-                    <input type="hidden" name="producteur_id" value="{{ $producteur_id }}">
-                    <input type="text" value="{{ \App\Models\Producteur::find($producteur_id)->nom_complet ?? 'Producteur trouvé' }} - {{ \App\Models\Producteur::find($producteur_id)->code_producteur ?? '' }}" 
-                           class="w-full px-4 py-2 border rounded-lg bg-gray-100" disabled>
-                @else
-                    <select name="producteur_id" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-primary">
-                        <option value="">-- Sélectionnez un producteur --</option>
-                        @foreach($producteurs as $producteur)
-                        <option value="{{ $producteur->id }}" {{ old('producteur_id', $producteur_id) == $producteur->id ? 'selected' : '' }}>
-                            {{ $producteur->nom_complet }} ({{ $producteur->code_producteur }}) - {{ $producteur->region }}
-                        </option>
-                        @endforeach
-                    </select>
-                @endif
-            </div>
-            
-            <!-- Coopérative -->
-            <div>
-                <label class="block text-sm font-semibold mb-2">
-                    <i class="fas fa-handshake text-primary mr-1"></i> Coopérative *
-                </label>
-                <select name="cooperative_id" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-primary">
-                    <option value="">-- Sélectionnez une coopérative --</option>
-                    @foreach($cooperatives as $cooperative)
-                    <option value="{{ $cooperative->id }}" {{ old('cooperative_id') == $cooperative->id ? 'selected' : '' }}>
-                        {{ $cooperative->nom }}
-                    </option>
-                    @endforeach
-                </select>
-            </div>
-            
+            <!-- Sélecteur bénéficiaire (Producteur ou Coopérative) -->
+            @include('admin.partials._beneficiaire_selector', [
+                'producteurs' => $producteurs,
+                'cooperatives' => $cooperatives,
+                'beneficiaire_type' => old('beneficiaire_type', 'producteur')
+            ])
+        
             <!-- Montant total -->
             <div>
                 <label class="block text-sm font-semibold mb-2">

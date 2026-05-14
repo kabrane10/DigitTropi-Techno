@@ -45,7 +45,7 @@
             <thead class="bg-gray-50">
                 <tr>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500">Code</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500">Producteur</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500">Bénéficiaire</th>
                     <th class="px-6 py-3 text-right text-xs font-medium text-gray-500">Montant total</th>
                     <th class="px-6 py-3 text-right text-xs font-medium text-gray-500">Reste à payer</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500">Échéance</th>
@@ -57,15 +57,33 @@
                 @foreach($credits as $credit)
                 <tr>
                     <td class="px-6 py-4 text-sm font-mono">{{ $credit->code_credit }}</td>
-                    <td class="px-6 py-4 font-medium">{{ $credit->producteur->nom_complet }}</td>
+                    <td class="px-6 py-4">
+                        @if($credit->beneficiaire_type === 'App\\Models\\Cooperative' || $credit->cooperative_id)
+                            <div class="flex items-center">
+                                <i class="fas fa-handshake text-purple-600 mr-2"></i>
+                                <div>
+                                    <p class="font-medium">{{ $credit->cooperative?->nom ?? $credit->beneficiaire_nom }}</p>
+                                    <p class="text-xs text-gray-500">Coopérative</p>
+                                </div>
+                            </div>
+                        @else
+                            <div class="flex items-center">
+                                <i class="fas fa-user text-green-600 mr-2"></i>
+                                <div>
+                                    <p class="font-medium">{{ $credit->producteur?->nom_complet }}</p>
+                                    <p class="text-xs text-gray-500">Producteur</p>
+                                </div>
+                            </div>
+                        @endif
+                    </td>
                     <td class="px-6 py-4 text-right text-sm">{{ number_format($credit->montant_total, 0, ',', ' ') }} CFA</td>
                     <td class="px-6 py-4 text-right text-sm {{ $credit->montant_restant > 0 ? 'text-red-600 font-semibold' : 'text-green-600' }}">
                         {{ number_format($credit->montant_restant, 0, ',', ' ') }} CFA
                     </td>
                     <td class="px-6 py-4 text-sm {{ $credit->est_en_retard ? 'text-red-600 font-semibold' : '' }}">
-                        {{ $credit->date_echeance->format('d/m/Y') }}
+                        {{ $credit->date_echeance?->format('d/m/Y') ?? 'N/A' }}
                         @if($credit->est_en_retard)
-                            <span class="ml-1 text-xs bg-red-100 text-red-800 px-1 py-0.5 rounded">Retard</span>
+                <span class="ml-1 text-xs bg-red-100 text-red-800 px-1 py-0.5 rounded">Retard</span>
                         @endif
                     </td>
                     <td class="px-6 py-4">

@@ -105,8 +105,11 @@ class CreditController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'producteur_id' => 'required|exists:producteurs,id',
-            'cooperative_id' => 'required|exists:cooperatives,id',
+            'beneficiaire_type' => 'required|in:producteur,cooperative',
+            'producteur_id' => 'required_if:beneficiaire_type,producteur|nullable|exists:producteurs,id',
+            'cooperative_id' => 'required_if:beneficiaire_type,cooperative|nullable|exists:cooperatives,id',
+            // 'producteur_id' => 'required|exists:producteurs,id',
+            // 'cooperative_id' => 'required|exists:cooperatives,id',
             'montant_total' => 'required|numeric|min:1000',
             'type_intrant' => 'required|string|max:255',  
             'quantite_intrant' => 'required|numeric|min:0',  
@@ -116,6 +119,17 @@ class CreditController extends Controller
             'date_octroi' => 'required|date',
             'conditions' => 'nullable|string'
         ]);
+
+         // Déterminer le bénéficiaire
+    if ($validated['beneficiaire_type'] === 'producteur') {
+        $validated['beneficiaire_type'] = 'App\\Models\\Producteur';
+        $validated['beneficiaire_id'] = $validated['producteur_id'];
+        $validated['cooperative_id'] = null;
+    } else {
+        $validated['beneficiaire_type'] = 'App\\Models\\Cooperative';
+        $validated['beneficiaire_id'] = $validated['cooperative_id'];
+        $validated['producteur_id'] = null;
+    }
         
         // Calculer le montant total avec intérêts
         $montantAvecInterets = $this->calculerMontantTotal(

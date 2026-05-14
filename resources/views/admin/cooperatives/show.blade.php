@@ -55,6 +55,13 @@
                 <p class="text-sm mt-1">{{ $cooperative->description }}</p>
             </div>
             @endif
+            <!-- Opérations coopératives -->
+            <div class="mt-4 pt-4 border-t">
+                <a href="{{ route('admin.cooperatives.operations.dashboard', $cooperative) }}" 
+                   class="w-full bg-primary text-white text-center py-2 rounded-lg hover:bg-secondary inline-block">
+                    <i class="fas fa-chart-line mr-2"></i>Gérer les opérations
+                </a>
+            </div>
             
             <div class="mt-6 pt-4 border-t flex justify-between">
                 <a href="{{ route('admin.cooperatives.edit', $cooperative) }}" class="text-green-600 hover:underline">

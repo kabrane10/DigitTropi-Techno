@@ -9,20 +9,12 @@
         @csrf
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Producteur -->
-            <div>
-                <label class="block text-sm font-semibold mb-2">
-                    <i class="fas fa-user text-primary mr-1"></i> Producteur *
-                </label>
-                <select name="producteur_id" id="producteur_id" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-primary">
-                    <option value="">-- Sélectionnez un producteur --</option>
-                    @foreach($producteurs as $producteur)
-                    <option value="{{ $producteur->id }}" {{ old('producteur_id') == $producteur->id ? 'selected' : '' }}>
-                        {{ $producteur->nom_complet }} ({{ $producteur->code_producteur }}) - {{ $producteur->region }}
-                    </option>
-                    @endforeach
-                </select>
-            </div>
+          <!-- Sélecteur bénéficiaire -->
+        @include('admin.partials._beneficiaire_selector', [
+            'producteurs' => $producteurs,
+            'cooperatives' => $cooperatives,
+            'beneficiaire_type' => old('beneficiaire_type', 'producteur')
+        ])
             
             <!-- Semence -->
             <div>
@@ -35,6 +27,7 @@
                     <option value="{{ $semence->id }}" 
                             data-stock="{{ $semence->stock_disponible }}"
                             data-unite="{{ $semence->unite }}"
+                            data-prix="{{ $semence->prix_unitaire }}"
                             {{ old('semence_id') == $semence->id ? 'selected' : '' }}>
                         {{ $semence->nom }} ({{ $semence->variete }}) - Stock: {{ number_format($semence->stock_disponible) }} {{ $semence->unite }}
                     </option>
@@ -59,6 +52,24 @@
                     <span class="px-3 py-2 bg-gray-100 border border-l-0 rounded-r-lg" id="unite_label">kg</span>
                 </div>
                 <p id="stock_info" class="text-xs text-gray-500 mt-1"></p>
+            </div>
+               <!-- PRIX UNITAIRE (Nouveau - automatique) -->
+               <div>
+                <label class="block text-sm font-semibold mb-2">
+                    <i class="fas fa-tag text-primary mr-1"></i> Prix unitaire (CFA)
+                </label>
+                <input type="number" name="prix_unitaire" id="prix_unitaire" readonly
+                       class="w-full px-4 py-2 border rounded-lg bg-gray-100">
+                <p class="text-xs text-gray-500 mt-1">Prix automatique selon la semence sélectionnée</p>
+            </div>
+            
+            <!-- MONTANT TOTAL (Nouveau - calculé) -->
+            <div>
+                <label class="block text-sm font-semibold mb-2">
+                    <i class="fas fa-calculator text-primary mr-1"></i> Montant total (CFA)
+                </label>
+                <input type="number" name="montant_total" id="montant_total" readonly
+                       class="w-full px-4 py-2 border rounded-lg bg-gray-100">
             </div>
             
             <!-- Superficie -->
@@ -146,6 +157,10 @@
                     <p class="font-semibold text-primary" id="recap_quantite">0 kg</p>
                 </div>
                 <div>
+                    <p class="text-sm text-gray-500">Montant total</p>
+                    <p class="font-semibold text-blue-600" id="recap_montant">0 CFA</p>
+                </div>
+                <div>
                     <p class="text-sm text-gray-500">Superficie</p>
                     <p class="font-semibold" id="recap_superficie">0 ha</p>
                 </div>
@@ -177,14 +192,19 @@
 <script>
     const semenceSelect = document.getElementById('semence_id');
     const quantiteInput = document.getElementById('quantite');
+    const prixUnitaireInput = document.getElementById('prix_unitaire');
+    const montantTotalInput = document.getElementById('montant_total'); // Corrigé : Déclaration manquante
     const uniteLabel = document.getElementById('unite_label');
     const stockInfo = document.getElementById('stock_info');
+    
     const recapProducteur = document.getElementById('recap_producteur');
     const recapSemence = document.getElementById('recap_semence');
     const recapQuantite = document.getElementById('recap_quantite');
+    const recapMontant = document.getElementById('recap_montant'); // Corrigé : Déclaration manquante
     const recapSuperficie = document.getElementById('recap_superficie');
     const recapRendement = document.getElementById('recap_rendement');
     const recapProductionTotale = document.getElementById('recap_production_totale');
+    
     const producteurSelect = document.getElementById('producteur_id');
     const superficieInput = document.getElementById('superficie');
     const rendementInput = document.getElementById('rendement_estime');
@@ -192,28 +212,44 @@
     // Mettre à jour les infos quand on sélectionne une semence
     semenceSelect.addEventListener('change', function() {
         const selected = this.options[this.selectedIndex];
+        
+        if (!selected.value) {
+            prixUnitaireInput.value = '';
+            calculateMontant();
+            return;
+        }
+
         const stock = selected.dataset.stock;
         const unite = selected.dataset.unite || 'kg';
+        const prix = parseFloat(selected.dataset.prix) || 0;
+        
+        // Corrigé : Mise à jour automatique du champ prix unitaire
+        prixUnitaireInput.value = prix;
         
         if (stock) {
             stockInfo.textContent = `Stock disponible: ${Number(stock).toLocaleString()} ${unite}`;
             uniteLabel.textContent = unite;
             
-            if (quantiteInput.value > stock) {
+            if (quantiteInput.value > parseFloat(stock)) {
                 quantiteInput.setCustomValidity('Quantité supérieure au stock disponible');
+                stockInfo.classList.add('text-red-500');
             } else {
                 quantiteInput.setCustomValidity('');
+                stockInfo.classList.remove('text-red-500');
             }
         }
         
         recapSemence.textContent = selected.textContent.split('-')[0].trim();
         updateProductionTotale();
+        calculateMontant(); // Corrigé : Appel direct du calcul
     });
     
-    // Vérifier la quantité
+    // Vérifier la quantité et recalculer le total
     quantiteInput.addEventListener('input', function() {
         const selected = semenceSelect.options[semenceSelect.selectedIndex];
-        const stock = selected.dataset.stock;
+        if (!selected || !selected.value) return;
+
+        const stock = parseFloat(selected.dataset.stock);
         
         if (stock && this.value > stock) {
             this.setCustomValidity('Quantité supérieure au stock disponible');
@@ -223,14 +259,18 @@
             stockInfo.classList.remove('text-red-500');
         }
         
-        recapQuantite.textContent = `${Number(this.value).toLocaleString()} ${uniteLabel.textContent}`;
+        calculateMontant(); // Corrigé : Appel direct du calcul
     });
     
-    // Mettre à jour le récapitulatif producteur
-    producteurSelect.addEventListener('change', function() {
-        const selected = this.options[this.selectedIndex];
-        recapProducteur.textContent = selected.textContent.split('-')[0].trim();
-    });
+    // Mettre à jour le récapitulatif producteur (Sécurisé au cas où la partial utilise un autre ID)
+    if (producteurSelect) {
+        producteurSelect.addEventListener('change', function() {
+            if (this.selectedIndex > 0) {
+                const selected = this.options[this.selectedIndex];
+                recapProducteur.textContent = selected.textContent.split('-')[0].trim();
+            }
+        });
+    }
     
     // Mettre à jour le récapitulatif superficie
     superficieInput.addEventListener('input', function() {
@@ -259,7 +299,19 @@
             recapProductionTotale.classList.add('text-green-600');
         } else {
             recapProductionTotale.textContent = '0 kg';
+            recapProductionTotale.classList.remove('text-green-600');
         }
+    }
+
+    // Calcul du montant total
+    function calculateMontant() {
+        const quantite = parseFloat(quantiteInput.value) || 0;
+        const prix = parseFloat(prixUnitaireInput.value) || 0;
+        const montant = quantite * prix;
+        
+        montantTotalInput.value = montant > 0 ? montant : '';
+        recapQuantite.textContent = `${quantite.toLocaleString()} ${uniteLabel.textContent}`;
+        recapMontant.textContent = `${montant.toLocaleString()} CFA`;
     }
 </script>
 @endsection

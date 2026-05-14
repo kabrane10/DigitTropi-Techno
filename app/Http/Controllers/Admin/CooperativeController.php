@@ -48,7 +48,10 @@ class CooperativeController extends Controller
             'contact' => 'required|string|max:20',
             'email' => 'nullable|email|unique:cooperatives',
             'localisation' => 'required|string',
+            'commune' => 'required|string|max:255',
             'region' => 'required|in:Centrale,Kara,Savanes',
+            'latitude' => 'nullable|numeric|between:-90,90', 
+            'longitude' => 'nullable|numeric|between:-180,180',
             'date_creation' => 'required|date',
             'description' => 'nullable|string'
         ]);
@@ -101,7 +104,10 @@ class CooperativeController extends Controller
             'contact' => 'required|string|max:20',
             'email' => 'nullable|email|unique:cooperatives,email,' . $id,
             'localisation' => 'required|string',
+            'commune' => 'required|string|max:255',
             'region' => 'required|in:Centrale,Kara,Savanes',
+            'latitude' => 'nullable|numeric|between:-90,90', 
+            'longitude' => 'nullable|numeric|between:-180,180',
             'date_creation' => 'required|date',
             'statut' => 'required|in:active,suspendue',
             'description' => 'nullable|string'

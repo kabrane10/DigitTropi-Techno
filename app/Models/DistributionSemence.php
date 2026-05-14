@@ -14,6 +14,7 @@ class DistributionSemence extends Model
 
     protected $fillable = [
         'code_distribution', 'producteur_id', 'semence_id', 'credit_id',
+        'cooperative_id', 'prix_unitaire', 'montant_total',
         'quantite', 'superficie_emblevee', 'date_distribution', 'saison',
         'rendement_estime', 'observations'
     ];
@@ -38,4 +39,16 @@ class DistributionSemence extends Model
     {
         return $this->belongsTo(CreditAgricole::class, 'credit_id');
     }
+
+    public function cooperative()
+{
+    return $this->belongsTo(Cooperative::class);
+}
+
+
+ public function getMontantTotalAttribute($value)
+{
+    if ($value) return $value;
+    return $this->quantite * $this->prix_unitaire;
+}
 }

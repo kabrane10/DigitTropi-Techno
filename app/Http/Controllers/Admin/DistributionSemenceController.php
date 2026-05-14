@@ -39,10 +39,11 @@ class DistributionSemenceController extends Controller
     public function create()
     {
         $producteurs = Producteur::where('statut', 'actif')->get();
+        $cooperatives = Cooperative::where('statut', 'active')->get();
         $semences = Semence::where('stock_disponible', '>', 0)->get();
         $credits = CreditAgricole::where('statut', 'actif')->get();
         
-        return view('admin.distributions.create', compact('producteurs', 'semences', 'credits'));
+        return view('admin.distributions.create', compact('producteurs', 'cooperatives', 'semences', 'credits'));
     }
 
     /**
@@ -51,7 +52,10 @@ class DistributionSemenceController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'producteur_id' => 'required|exists:producteurs,id',
+            'beneficiaire_type' => 'required|in:producteur,cooperative',
+            'producteur_id' => 'required_if:beneficiaire_type,producteur|nullable|exists:producteurs,id',
+            'cooperative_id' => 'required_if:beneficiaire_type,cooperative|nullable|exists:cooperatives,id',
+            // 'producteur_id' => 'required|exists:producteurs,id',
             'semence_id' => 'required|exists:semences,id',
             'quantite' => 'required|numeric|min:1',
             'superficie_emblevee' => 'required|numeric|min:0',
