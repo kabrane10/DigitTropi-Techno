@@ -1,5 +1,4 @@
 <?php
-// database/migrations/2024_01_01_000005_add_beneficiaire_fields_to_existing_tables.php
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;

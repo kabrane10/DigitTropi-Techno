@@ -25,12 +25,14 @@ return new class extends Migration
             $table->text('notes')->nullable();
             $table->timestamps();
             
-            // Index pour optimiser les recherches
+            // Index simples (Laravel s'en sortira car les noms sont plus courts)
             $table->index('cooperative_id');
             $table->index('intrant_id');
             $table->index('date_distribution');
             $table->index('zone');
-            $table->index(['cooperative_id', 'date_distribution']);
+            
+            // CORRECTION ICI : On donne un nom court explicitement
+            $table->index(['cooperative_id', 'date_distribution'], 'dist_coop_date_idx');
         });
     }
 
