@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use SignableTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Producteur extends Model
 {
     use HasFactory;
+    use SignableTrait;
 
     protected $table = 'producteurs';
 

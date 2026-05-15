@@ -294,6 +294,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/backup/download/{filename}', [BackupController::class, 'download'])->name('backup.download');
     Route::delete('/backup/delete/{filename}', [BackupController::class, 'delete'])->name('backup.delete');
     });
+
+    //Routes pour la signature
+    Route::post('/signatures/save', [SignatureController::class, 'save'])->name('signatures.save');
+    Route::get('/signatures/{id}/{type}', [SignatureController::class, 'get'])->name('signatures.get');
 });
 
 // ========== ESPACE ANIMATEUR ==========
