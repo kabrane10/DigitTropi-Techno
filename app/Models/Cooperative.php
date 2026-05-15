@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\SignableTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Cooperative extends Model
 {
     use HasFactory;
+    use SignableTrait;
 
     protected $fillable = [
         'nom', 'code_cooperative', 'nom_responsable', 'contact', 'email', 'region',

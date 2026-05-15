@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use SignableTrait;
+use App\Traits\SignableTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 

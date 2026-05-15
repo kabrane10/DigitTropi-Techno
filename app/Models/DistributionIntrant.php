@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\SignableTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class DistributionIntrant extends Model
 {
     use HasFactory;
+    use SignableTrait;
 
     protected $table = 'distributions_intrants';
 
