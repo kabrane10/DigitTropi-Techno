@@ -12,9 +12,9 @@ class Collecte extends Model
     protected $table = 'collectes';
 
     protected $fillable = [
-        'code_collecte', 'producteur_id', 'credit_id', 'date_collecte',
-        'produit', 'quantite_brute', 'quantite_nette', 'prix_unitaire',
-        'montant_total', 'montant_deduict', 'montant_a_payer',
+        'code_collecte', 'producteur_id', 'cooperative_id', 'beneficiaire_type', 'beneficiaire_id',
+        'credit_id', 'date_collecte', 'produit', 'quantite_brute', 'quantite_nette', 
+        'prix_unitaire', 'montant_total', 'montant_deduict', 'montant_a_payer',
         'statut_paiement', 'zone_collecte', 'observations'
     ];
 
@@ -28,20 +28,68 @@ class Collecte extends Model
         'montant_a_payer' => 'decimal:2'
     ];
 
-    public function producteur()
+    // Relation polymorphique
+    public function beneficiaire()
     {
-        return $this->belongsTo(Producteur::class);
+        return $this->morphTo();
     }
 
-
-    public function credit()
+    // Accesseurs pour le bénéficiaire
+    public function getBeneficiaireNomAttribute()
     {
-        return $this->belongsTo(CreditAgricole::class, 'credit_id');
+        if ($this->beneficiaire_type === 'App\\Models\\Cooperative' || $this->cooperative_id) {
+            return $this->cooperative?->nom ?? 'N/A';
+        }
+        return $this->producteur?->nom_complet ?? 'N/A';
     }
 
-    
-    public function achat()
+    public function getBeneficiaireCodeAttribute()
     {
-        return $this->hasOne(Achat::class, 'collecte_id');
+        if ($this->beneficiaire_type === 'App\\Models\\Cooperative' || $this->cooperative_id) {
+            return $this->cooperative?->code_cooperative ?? 'N/A';
+        }
+        return $this->producteur?->code_producteur ?? 'N/A';
     }
+
+    public function getBeneficiaireTypeLabelAttribute()
+    {
+        return ($this->beneficiaire_type === 'App\\Models\\Cooperative' || $this->cooperative_id) ? 'Coopérative' : 'Producteur';
+    }
+
+     // Relations 
+     public function producteur()
+     {
+         return $this->belongsTo(Producteur::class);
+     }
+ 
+     public function cooperative()
+     {
+         return $this->belongsTo(Cooperative::class);
+     }
+ 
+     public function credit()
+     {
+         return $this->belongsTo(CreditAgricole::class, 'credit_id');
+     }
+ 
+     public function achat()
+     {
+         return $this->hasOne(Achat::class, 'collecte_id');
+     }
+ 
+     // Boot method pour définir automatiquement le beneficiaire_type
+     protected static function boot()
+     {
+         parent::boot();
+ 
+         static::creating(function ($model) {
+             if ($model->producteur_id && !$model->beneficiaire_type) {
+                 $model->beneficiaire_type = 'App\\Models\\Producteur';
+                 $model->beneficiaire_id = $model->producteur_id;
+             } elseif ($model->cooperative_id && !$model->beneficiaire_type) {
+                 $model->beneficiaire_type = 'App\\Models\\Cooperative';
+                 $model->beneficiaire_id = $model->cooperative_id;
+             }
+         });
+     }
 }

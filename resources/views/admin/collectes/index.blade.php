@@ -14,26 +14,31 @@
             <a href="{{ route('admin.collectes.create') }}" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-secondary">
                 <i class="fas fa-plus mr-2"></i>Nouvelle collecte
             </a>
-              <a href="{{ route('admin.rapports.export-collectes', request()->all()) }}" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600">
-      <i class="fas fa-file-excel mr-2"></i>Exporter Excel
-  </a>
+            <a href="{{ route('admin.rapports.export-collectes', request()->all()) }}" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600">
+                <i class="fas fa-file-excel mr-2"></i>Exporter Excel
+            </a>
         </div>
     </div>
     
     <!-- Filtres -->
     <div class="p-6 border-b bg-gray-50">
         <form method="GET" class="flex flex-wrap gap-4">
-            <select name="produit" class="px-4 py-2 border rounded-lg focus:outline-none focus:border-primary">
+            <select name="produit" class="px-4 py-2 border rounded-lg">
                 <option value="">Tous les produits</option>
                 @foreach($produits as $produit)
                 <option value="{{ $produit }}" {{ request('produit') == $produit ? 'selected' : '' }}>{{ $produit }}</option>
                 @endforeach
             </select>
+            <select name="beneficiaire_type" class="px-4 py-2 border rounded-lg">
+                <option value="">Tous les bénéficiaires</option>
+                <option value="producteur" {{ request('beneficiaire_type') == 'producteur' ? 'selected' : '' }}>Producteurs</option>
+                <option value="cooperative" {{ request('beneficiaire_type') == 'cooperative' ? 'selected' : '' }}> Coopératives</option>
+            </select>
             <input type="date" name="date_debut" value="{{ request('date_debut') }}" placeholder="Date début"
-                   class="px-4 py-2 border rounded-lg focus:outline-none focus:border-primary">
+                   class="px-4 py-2 border rounded-lg">
             <input type="date" name="date_fin" value="{{ request('date_fin') }}" placeholder="Date fin"
-                   class="px-4 py-2 border rounded-lg focus:outline-none focus:border-primary">
-            <button type="submit" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-secondary">
+                   class="px-4 py-2 border rounded-lg">
+            <button type="submit" class="bg-primary text-white px-4 py-2 rounded-lg">
                 <i class="fas fa-search mr-2"></i>Filtrer
             </button>
         </form>
@@ -45,23 +50,41 @@
                 <tr>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500">Code</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500">Date</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500">Producteur</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500">Bénéficiaire</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500">Produit</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500">Quantité</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500">Montant</th>
+                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500">Quantité</th>
+                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500">Montant</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500">Paiement</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500">Actions</th>
+                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500">Actions</th>
                 </tr>
             </thead>
             <tbody class="divide-y">
                 @foreach($collectes as $collecte)
                 <tr>
-                    <td class="px-6 py-4 text-sm">{{ $collecte->code_collecte }}</td>
+                    <td class="px-6 py-4 text-sm font-mono">{{ $collecte->code_collecte }}</td>
                     <td class="px-6 py-4 text-sm">{{ $collecte->date_collecte->format('d/m/Y') }}</td>
-                    <td class="px-6 py-4">{{ $collecte->producteur->nom_complet }}</td>
+                    <td class="px-6 py-4">
+                        @if($collecte->cooperative_id || $collecte->beneficiaire_type === 'App\\Models\\Cooperative')
+                            <div class="flex items-center">
+                                <i class="fas fa-handshake text-purple-600 mr-2"></i>
+                                <div>
+                                    <p class="font-medium">{{ $collecte->cooperative->nom ?? 'N/A' }}</p>
+                                    <p class="text-xs text-gray-500">Coopérative</p>
+                                </div>
+                            </div>
+                        @else
+                            <div class="flex items-center">
+                                <i class="fas fa-user text-green-600 mr-2"></i>
+                                <div>
+                                    <p class="font-medium">{{ $collecte->producteur->nom_complet }}</p>
+                                    <p class="text-xs text-gray-500">Producteur</p>
+                                </div>
+                            </div>
+                        @endif
+                    </td>
                     <td class="px-6 py-4 text-sm">{{ $collecte->produit }}</td>
-                    <td class="px-6 py-4 text-sm">{{ number_format($collecte->quantite_nette) }} kg</td>
-                    <td class="px-6 py-4 text-sm">{{ number_format($collecte->montant_total, 0, ',', ' ') }} CFA</td>
+                    <td class="px-6 py-4 text-right text-sm">{{ number_format($collecte->quantite_nette) }} kg</td>
+                    <td class="px-6 py-4 text-right text-sm">{{ number_format($collecte->montant_total, 0, ',', ' ') }} CFA</td>
                     <td class="px-6 py-4">
                         <span class="px-2 py-1 text-xs rounded-full 
                             @if($collecte->statut_paiement == 'paye') bg-green-100 text-green-800
@@ -71,12 +94,16 @@
                             {{ $collecte->statut_paiement }}
                         </span>
                     </td>
-                    <td class="px-6 py-4 space-x-2">
-                        <a href="{{ route('admin.collectes.show', $collecte) }}" class="text-blue-600"><i class="fas fa-eye"></i></a>
+                    <td class="px-6 py-4 text-center space-x-2">
+                        <a href="{{ route('admin.collectes.show', $collecte) }}" class="text-blue-600" title="Voir">
+                            <i class="fas fa-eye"></i>
+                        </a>
                         <form action="{{ route('admin.collectes.destroy', $collecte) }}" method="POST" class="inline delete-confirm">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="text-red-600"><i class="fas fa-trash"></i></button>
+                            <button type="submit" class="text-red-600" title="Supprimer">
+                                <i class="fas fa-trash"></i>
+                            </button>
                         </form>
                     </td>
                 </tr>

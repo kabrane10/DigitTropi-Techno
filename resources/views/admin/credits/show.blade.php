@@ -99,14 +99,15 @@
                     <div>
                         <label class="block text-sm font-semibold mb-2">Montant (CFA) *</label>
                         <input type="number" name="montant" id="montant_remboursement" required 
-                               min="100" max="{{ $resteAPayer }}"
-                               class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-primary"
-                               placeholder="Montant à rembourser">
+                                min="100" max="{{ $resteAPayer }}"
+                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-primary"
+                                placeholder="Montant à rembourser">
                         <p class="text-xs text-gray-500 mt-1">Maximum : {{ number_format($resteAPayer, 0, ',', ' ') }} CFA</p>
                     </div>
                     <div>
                         <label class="block text-sm font-semibold mb-2">Mode de paiement *</label>
-                        <select name="mode_paiement" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-primary">
+                        <select name="mode_paiement" id="mode_paiement" required 
+                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-primary">
                             <option value="especes">Espèces</option>
                             <option value="virement">Virement bancaire</option>
                             <option value="mobile_money">Mobile Money</option>
@@ -115,15 +116,15 @@
                     </div>
                     <div>
                         <label class="block text-sm font-semibold mb-2">Référence</label>
-                        <input type="text" name="reference" 
-                               class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-primary"
-                               placeholder="Numéro de transaction">
+                        <input type="text" name="reference" id="reference_input" required
+                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-primary bg-gray-50"
+                                placeholder="Numéro de transaction">
                     </div>
                     <div class="md:col-span-2">
                         <label class="block text-sm font-semibold mb-2">Notes</label>
                         <textarea name="notes" rows="2" 
-                                  class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-primary"
-                                  placeholder="Observations..."></textarea>
+                                    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-primary"
+                                    placeholder="Observations..."></textarea>
                     </div>
                 </div>
                 <div class="mt-4 flex justify-end">
@@ -434,6 +435,42 @@
             btn.innerHTML = '<i class="fas fa-chevron-down mr-1"></i> Afficher le tableau';
         }
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+    const modeSelect = document.getElementById('mode_paiement');
+    const refInput = document.getElementById('reference_input');
+
+    function updateReference() {
+        const mode = modeSelect.value;
+        const timestamp = Date.now().toString().slice(-6); // 6 derniers chiffres du timestamp pour l'unicité
+        const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+
+        if (mode === 'especes') {
+            refInput.value = 'ESP-' + timestamp + random;
+            refInput.readOnly = true;
+            refInput.classList.add('bg-gray-50'); // Aspect grisé
+        } 
+        else if (mode === 'prelevement_sur_collecte') {
+            refInput.value = 'COL-' + timestamp + random;
+            refInput.readOnly = true;
+            refInput.classList.add('bg-gray-50');
+        } 
+        else {
+            // Pour Virement ou Mobile Money
+            refInput.value = '';
+            refInput.readOnly = false;
+            refInput.placeholder = "Saisir le numéro de transaction...";
+            refInput.classList.remove('bg-gray-50');
+            refInput.focus();
+        }
+    }
+
+    // Écouter les changements
+    modeSelect.addEventListener('change', updateReference);
+
+    // Initialiser au chargement (pour le mode espèces par défaut)
+    updateReference();
+});
 </script>
 
 <style>

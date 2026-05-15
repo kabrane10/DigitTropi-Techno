@@ -10,15 +10,38 @@ class Cooperative extends Model
     use HasFactory;
 
     protected $fillable = [
-        'nom', 'code_cooperative', 'contact', 'email', 'localisation',
-        'region', 'nombre_membres', 'date_creation', 'statut', 'description'
+        'nom', 'code_cooperative', 'nom_responsable', 'contact', 'email', 'region',
+        'commune', 'adresse', 'latitude','longitude',
+        'nombre_membres', 'date_creation', 'statut', 'description'
     ];
 
     protected $casts = [
         'date_creation' => 'date',
-        'nombre_membres' => 'integer'
+        'nombre_membres' => 'integer',
+        'latitude' => 'decimal:7',
+        'longitude' => 'decimal:7'
     ];
 
+    // Accesseur pour obtenir l'adresse complète
+    public function getAdresseCompleteAttribute()
+    {
+        $parts = array_filter([
+            $this->adresse,
+            $this->commune,
+            $this->region
+        ]);
+        return implode(', ', $parts);
+    }
+
+    // Accesseur pour obtenir les coordonnées GPS formatées
+    public function getCoordinatesAttribute()
+    {
+        if ($this->latitude && $this->longitude) {
+            return $this->latitude . '°N, ' . $this->longitude . '°E';
+        }
+        return 'Non renseignées';
+    }
+    
     public function producteurs()
     {
         return $this->hasMany(Producteur::class);

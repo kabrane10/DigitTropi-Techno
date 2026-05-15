@@ -16,13 +16,29 @@
         </div>
         
         <div class="p-6">
+            <!-- Bénéficiaire -->
+            <div class="mb-6">
+                <label class="text-gray-500 text-sm">Bénéficiaire</label>
+                @if($collecte->cooperative_id || $collecte->beneficiaire_type === 'App\\Models\\Cooperative')
+                    <div class="flex items-center mt-1 p-3 bg-purple-50 rounded-lg">
+                        <i class="fas fa-handshake text-purple-600 text-2xl mr-3"></i>
+                        <div>
+                            <p class="font-semibold text-lg">{{ $collecte->cooperative->nom ?? 'N/A' }}</p>
+                            <p class="text-sm text-gray-500">Code: {{ $collecte->cooperative->code_cooperative ?? 'N/A' }} - Coopérative</p>
+                        </div>
+                    </div>
+                @else
+                    <div class="flex items-center mt-1 p-3 bg-green-50 rounded-lg">
+                        <i class="fas fa-user text-green-600 text-2xl mr-3"></i>
+                        <div>
+                            <p class="font-semibold text-lg">{{ $collecte->producteur->nom_complet }}</p>
+                            <p class="text-sm text-gray-500">Code: {{ $collecte->producteur->code_producteur }} - Producteur</p>
+                        </div>
+                    </div>
+                @endif
+            </div>
+            
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label class="text-gray-500 text-sm">Producteur</label>
-                    <p class="font-semibold text-lg">{{ $collecte->producteur->nom_complet }}</p>
-                    <p class="text-sm text-gray-500">{{ $collecte->producteur->code_producteur }}</p>
-                </div>
-                
                 <div>
                     <label class="text-gray-500 text-sm">Zone de collecte</label>
                     <p class="font-semibold">{{ $collecte->zone_collecte }}</p>
@@ -35,7 +51,9 @@
                 
                 <div>
                     <label class="text-gray-500 text-sm">Quantité</label>
-                    <p class="font-semibold">{{ number_format($collecte->quantite_nette) }} kg (brut: {{ number_format($collecte->quantite_brute) }} kg)</p>
+                    <p class="font-semibold">{{ number_format($collecte->quantite_nette) }} kg 
+                        <span class="text-sm text-gray-500">(brut: {{ number_format($collecte->quantite_brute) }} kg)</span>
+                    </p>
                 </div>
                 
                 <div>
@@ -86,25 +104,27 @@
             </div>
             @endif
             
-            <div class="mt-6 pt-6 border-t flex justify-between">
+            <div class="mt-6 pt-6 border-t flex justify-between items-center">
                 <a href="{{ route('admin.collectes.index') }}" class="text-gray-600 hover:text-gray-800">
                     <i class="fas fa-arrow-left mr-1"></i>Retour
                 </a>
-                <form action="{{ route('admin.collectes.destroy', $collecte) }}" method="POST" class="inline delete-confirm">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="text-red-600 hover:text-red-800">
-                        <i class="fas fa-trash mr-1"></i>Supprimer
-                    </button>
-                </form>
+                <div class="flex space-x-3">
+                    <form action="{{ route('admin.bordereaux.generer-collecte', $collecte->id) }}" method="POST" class="inline">
+                        @csrf
+                        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
+                            <i class="fas fa-file-alt mr-2"></i>Générer bordereau
+                        </button>
+                    </form>
+                    <form action="{{ route('admin.collectes.destroy', $collecte) }}" method="POST" class="inline delete-confirm">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="text-red-600 hover:text-red-800">
+                            <i class="fas fa-trash mr-1"></i>Supprimer
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-    <form action="{{ route('admin.bordereaux.generer-collecte', $collecte->id) }}" method="POST" class="inline">
-    @csrf
-    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
-        <i class="fas fa-file-alt mr-2"></i>Générer bordereau
-    </button>
-</form>
 </div>
 @endsection
