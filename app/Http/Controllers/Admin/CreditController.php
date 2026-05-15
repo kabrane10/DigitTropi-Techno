@@ -92,12 +92,33 @@ class CreditController extends Controller
     /**
      * Formulaire de création
      */
-    public function create()
-    {
-        $producteurs = Producteur::where('statut', 'actif')->get();
-        $cooperatives = Cooperative::where('statut', 'active')->get();
-        return view('admin.credits.create', compact('producteurs', 'cooperatives'));
-    }
+    // public function create()
+    // {
+    //     $producteurs = Producteur::where('statut', 'actif')->get();
+    //     $cooperatives = Cooperative::where('statut', 'active')->get();
+    //     return view('admin.credits.create', compact('producteurs', 'cooperatives'));
+    // }
+    public function create(Request $request)
+{
+    // On récupère les IDs depuis l'URL s'ils existent
+    $selectedCooperativeId = $request->query('cooperative_id');
+    $selectedProducteurId = $request->query('producteur_id');
+    
+    // On détermine le type par défaut
+    $typeBeneficiaire = $selectedCooperativeId ? 'cooperative' : ($selectedProducteurId ? 'producteur' : null);
+
+    // Récupère tes listes pour les select
+    $cooperatives = Cooperative::all();
+    $producteurs = Producteur::all();
+
+    return view('admin.credits.create', compact(
+        'cooperatives', 
+        'producteurs', 
+        'selectedCooperativeId', 
+        'selectedProducteurId',
+        'typeBeneficiaire'
+    ));
+}
     
     /**
      * Enregistrer un nouveau crédit
