@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Collecte;
 use App\Models\Producteur;
+use App\Models\Cooperative;
 use App\Models\CreditAgricole;
 use App\Models\Stock;
 use App\Traits\DatabaseCompatibility;
