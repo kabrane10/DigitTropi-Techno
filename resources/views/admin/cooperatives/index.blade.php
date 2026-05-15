@@ -118,7 +118,7 @@
                            title="Voir">
                             <i class="fas fa-eye text-sm"></i>
                         </a>
-                        <a href="{{ route('admin.cooperatives.operations.dashboard', $cooperative) }}" 
+                        <a href="{{ route('admin.cooperatives.operations.test.dashboard', $cooperative) }}" 
                            class="inline-flex items-center justify-center w-8 h-8 bg-purple-50 text-purple-600 rounded-lg hover:bg-purple-100 transition" 
                            title="Opérations">
                             <i class="fas fa-chart-line text-sm"></i>
