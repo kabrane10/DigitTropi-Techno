@@ -2,6 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Estimation de besoin - {{ $estimation->code_estimation }}</title>
     <link rel="icon" href="{{ asset('images/favicon.png') }}">
     <style>
