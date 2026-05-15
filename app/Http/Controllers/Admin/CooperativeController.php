@@ -15,20 +15,31 @@ class CooperativeController extends Controller
     /**
      * Afficher la liste des coopératives
      */
-    public function index(Request $request)
-    {
-        $query = Cooperative::query();
+    // Dans CooperativeController.php, méthode index()
+public function index(Request $request)
+{
+    $query = Cooperative::withCount('producteurs');
 
-        if ($request->filled('region')) {
-            $query->where('region', $request->region);
-        }
-        if ($request->filled('statut')) {
-            $query->where('statut', $request->statut);
-        }
-
-        $cooperatives = $query->orderBy('nom')->paginate(15);
-        return view('admin.cooperatives.index', compact('cooperatives'));
+    if ($request->filled('region')) {
+        $query->where('region', $request->region);
     }
+    if ($request->filled('statut')) {
+        $query->where('statut', $request->statut);
+    }
+    if ($request->filled('search')) {
+        $search = $request->search;
+        $query->where(function($q) use ($search) {
+            $q->where('nom', 'like', "%{$search}%")
+              ->orWhere('nom_responsable', 'like', "%{$search}%")
+              ->orWhere('code_cooperative', 'like', "%{$search}%")
+              ->orWhere('contact', 'like', "%{$search}%");
+        });
+    }
+
+    $cooperatives = $query->orderBy('nom')->paginate(15);
+    
+    return view('admin.cooperatives.index', compact('cooperatives'));
+}
 
     /**
      * Formulaire de création

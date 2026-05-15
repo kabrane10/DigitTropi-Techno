@@ -146,7 +146,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::prefix('admin/cooperatives/{cooperative}/operations')->name('admin.cooperatives.operations.')->group(function () {
     
         // Dashboard - CORRIGÉ
-        Route::get('/dashboard', [CooperativeOperationController::class, 'dashboard'])->name('dashboard');  // ← Changé ici
+        Route::get('/dashboard', [CooperativeOperationController::class, 'dashboard'])->name('test.dashboard');  // ← Changé ici
     
         // Semences
         Route::get('/distribution-semence', [CooperativeOperationController::class, 'createDistributionSemence'])->name('distribution-semence.create');
