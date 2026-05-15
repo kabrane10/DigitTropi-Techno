@@ -92,33 +92,37 @@ class CreditController extends Controller
     /**
      * Formulaire de création
      */
-    // public function create()
-    // {
-    //     $producteurs = Producteur::where('statut', 'actif')->get();
-    //     $cooperatives = Cooperative::where('statut', 'active')->get();
-    //     return view('admin.credits.create', compact('producteurs', 'cooperatives'));
-    // }
-    public function create(Request $request)
+    public function create()
     {
-        // On récupère les IDs depuis l'URL s'ils existent
-        $selectedCooperativeId = $request->query('cooperative_id');
-        $selectedProducteurId = $request->query('producteur_id');
-        
-        // On détermine le type par défaut
-        $typeBeneficiaire = $selectedCooperativeId ? 'cooperative' : ($selectedProducteurId ? 'producteur' : null);
-    
-        // Récupère tes listes pour les select
-        $cooperatives = Cooperative::all();
-        $producteurs = Producteur::all();
+        $producteurs = Producteur::where('statut', 'actif')->get();
+        $cooperatives = Cooperative::where('statut', 'active')->get();
+
+        // Récupérer les paramètres d'URL
+        $cooperative_id = request()->input('cooperative_id');
+        $producteur_id = request()->input('producteur_id');
+        $montant_total = request()->input('montant_total');
+        $estimation_id = request()->input('estimation_id');
+        $type_intrant = request()->input('type_intrant', 'semences');
+        $quantite_intrant = request()->input('quantite_intrant');
+        $unite_intrant = request()->input('unite_intrant', 'kg');
+        $taux_interet = request()->input('taux_interet', 5);
+        $duree_mois = request()->input('duree_mois', 12);
     
         return view('admin.credits.create', compact(
-            'cooperatives', 
             'producteurs', 
-            'selectedCooperativeId', 
-            'selectedProducteurId',
-            'typeBeneficiaire'
+            'cooperatives', 
+            'cooperative_id',  
+            'producteur_id',   
+            'montant_total',
+            'estimation_id',
+            'type_intrant',
+            'quantite_intrant',
+            'unite_intrant',
+            'taux_interet',
+            'duree_mois'
         ));
     }
+    
     
     /**
      * Enregistrer un nouveau crédit

@@ -58,7 +58,17 @@ class CollecteController extends Controller
             ->where('montant_restant', '>', 0)
             ->get();
         
-        return view('admin.collectes.create', compact('producteurs', 'cooperatives', 'credits'));
+         // Récupérer les paramètres d'URL
+        $cooperative_id = request()->input('cooperative_id');
+        $producteur_id = request()->input('producteur_id');
+    
+        return view('admin.collectes.create', compact(
+        'producteurs', 
+        'cooperatives', 
+        'credits',
+        'cooperative_id',  
+        'producteur_id'   
+        ));
     }
 
     /**

@@ -45,7 +45,18 @@ class DistributionSemenceController extends Controller
         $semences = Semence::where('stock_disponible', '>', 0)->get();
         $credits = CreditAgricole::where('statut', 'actif')->get();
         
-        return view('admin.distributions.create', compact('producteurs', 'cooperatives', 'semences', 'credits'));
+       // Récupérer les paramètres d'URL
+       $cooperative_id = request()->input('cooperative_id');
+       $producteur_id = request()->input('producteur_id');
+    
+       return view('admin.distributions.create', compact(
+        'producteurs', 
+        'cooperatives', 
+        'semences', 
+        'credits',
+        'cooperative_id',  
+        'producteur_id'    
+       ));
     }
 
     /**
