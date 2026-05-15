@@ -99,15 +99,25 @@ class CreditController extends Controller
     //     return view('admin.credits.create', compact('producteurs', 'cooperatives'));
     // }
     public function create(Request $request)
-{
-        // On récupère les IDs depuis la requête (URL)
-        $producteur_id = $request->query('producteur_id');
-        $cooperative_id = $request->query('cooperative_id');
+    {
+        // On récupère les IDs depuis l'URL s'ils existent
+        $selectedCooperativeId = $request->query('cooperative_id');
+        $selectedProducteurId = $request->query('producteur_id');
         
-        // On définit le type par défaut selon l'ID présent
-        $beneficiaire_type = $cooperative_id ? 'cooperative' : 'producteur';
+        // On détermine le type par défaut
+        $typeBeneficiaire = $selectedCooperativeId ? 'cooperative' : ($selectedProducteurId ? 'producteur' : null);
     
-        return view('admin.credits.create', compact('producteur_id', 'cooperative_id', 'beneficiaire_type', 'producteurs', 'cooperatives'));
+        // Récupère tes listes pour les select
+        $cooperatives = Cooperative::all();
+        $producteurs = Producteur::all();
+    
+        return view('admin.credits.create', compact(
+            'cooperatives', 
+            'producteurs', 
+            'selectedCooperativeId', 
+            'selectedProducteurId',
+            'typeBeneficiaire'
+        ));
     }
     
     /**
