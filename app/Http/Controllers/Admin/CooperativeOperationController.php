@@ -57,7 +57,7 @@ class CooperativeOperationController extends Controller
             ->limit(5)
             ->get();
         
-        return view('admin.cooperatives.operations.test.dashboard', compact(
+        return view('admin.cooperatives.operations.dashboard', compact(
             'cooperative', 'stats', 'collectesParMois', 'topProduits'
         ));
     }
@@ -132,7 +132,7 @@ class CooperativeOperationController extends Controller
             
             DB::commit();
             
-            return redirect()->route('admin.cooperatives.operations.test.dashboard', $cooperative)
+            return redirect()->route('admin.cooperatives.operations.dashboard', $cooperative)
                 ->with('success', "Distribution de {$validated['quantite']} {$semence->unite} de {$semence->nom} effectuée avec succès");
                 
         } catch (\Exception $e) {
@@ -235,7 +235,7 @@ class CooperativeOperationController extends Controller
             
             DB::commit();
             
-            return redirect()->route('admin.cooperatives.operations.test.dashboard', $cooperative)
+            return redirect()->route('admin.cooperatives.operations.dashboard', $cooperative)
                 ->with('success', "Distribution de {$validated['quantite']} {$intrant->unite} de {$intrant->nom} effectuée avec succès");
                 
         } catch (\Exception $e) {
@@ -321,7 +321,7 @@ class CooperativeOperationController extends Controller
             
             DB::commit();
             
-            return redirect()->route('admin.cooperatives.operations.test.dashboard', $cooperative)
+            return redirect()->route('admin.cooperatives.operations.dashboard', $cooperative)
                 ->with('success', "Collecte de {$validated['quantite_nette']} kg de {$validated['produit']} enregistrée. Montant à payer: " . number_format($montantAPayer, 0, ',', ' ') . " CFA");
                 
         } catch (\Exception $e) {
@@ -381,7 +381,7 @@ class CooperativeOperationController extends Controller
             'conditions' => $validated['conditions']
         ]);
         
-        return redirect()->route('admin.cooperatives.operations.test.dashboard', $cooperative)
+        return redirect()->route('admin.cooperatives.operations.dashboard', $cooperative)
             ->with('success', "Crédit de " . number_format($validated['montant_total'], 0, ',', ' ') . " CFA accordé à {$cooperative->nom}");
     }
     

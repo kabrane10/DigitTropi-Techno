@@ -143,10 +143,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/cooperatives-export', [CooperativeController::class, 'export'])->name('cooperatives.export');
         
        // Routes pour les opérations coopératives
-        Route::prefix('admin/cooperatives/{cooperative}/operations')->name('admin.cooperatives.operations.')->group(function () {
+        Route::prefix('cooperatives/{cooperative}/operations')->name('cooperatives.operations.')->group(function () {
     
         // Dashboard - CORRIGÉ
-        Route::get('/dashboard', [CooperativeOperationController::class, 'dashboard'])->name('test.dashboard');  // ← Changé ici
+        Route::get('/dashboard', [CooperativeOperationController::class, 'dashboard'])->name('dashboard');  // ← Changé ici
     
         // Semences
         Route::get('/distribution-semence', [CooperativeOperationController::class, 'createDistributionSemence'])->name('distribution-semence.create');

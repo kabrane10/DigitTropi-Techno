@@ -114,7 +114,7 @@
         <div class="bg-gradient-to-r from-purple-600 to-purple-700 rounded-xl shadow-sm p-5 text-white">
             <h4 class="text-sm font-bold uppercase opacity-80 mb-3">Gestion des opérations</h4>
             <div class="space-y-2">
-                <a href="{{ route('admin.cooperatives.operations.test.dashboard', $cooperative) }}" 
+                <a href="{{ route('admin.cooperatives.operations.dashboard', $cooperative) }}" 
                    class="flex items-center justify-between w-full px-3 py-2 bg-white/10 rounded-lg hover:bg-white/20 transition">
                     <span><i class="fas fa-chart-line mr-2"></i> Tableau de bord</span>
                     <i class="fas fa-chevron-right text-xs"></i>
