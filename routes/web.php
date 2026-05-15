@@ -145,24 +145,19 @@ Route::prefix('admin')->name('admin.')->group(function () {
        // Routes pour les opérations coopératives
         Route::prefix('cooperatives/{cooperative}/operations')->name('cooperatives.operations.')->group(function () {
     
-        // Dashboard - CORRIGÉ
-        Route::get('/dashboard', [CooperativeOperationController::class, 'dashboard'])->name('dashboard');  // ← Changé ici
-    
-        // Semences
-        Route::get('/distribution-semence', [CooperativeOperationController::class, 'createDistributionSemence'])->name('distribution-semence.create');
-        Route::post('/distribution-semence', [CooperativeOperationController::class, 'storeDistributionSemence']) ->name('distribution-semence.store');
-    
-        // Intrants
-        Route::get('/distribution-intrant', [CooperativeOperationController::class, 'createDistributionIntrant'])->name('distribution-intrant.create');
-        Route::post('/distribution-intrant', [CooperativeOperationController::class, 'storeDistributionIntrant'])->name('distribution-intrant.store');
-    
-        // Collectes
-        Route::get('/collecte', [CooperativeOperationController::class, 'createCollecte'])->name('collecte.create');
-        Route::post('/collecte', [CooperativeOperationController::class, 'storeCollecte'])->name('collecte.store');
-    
-        // Crédits
-        Route::get('/credit', [CooperativeOperationController::class, 'createCredit'])->name('credit.create');
-        Route::post('/credit', [CooperativeOperationController::class, 'storeCredit'])->name('credit.store');
+        // Dashboard 
+        Route::get('/dashboard', [CooperativeOperationController::class, 'dashboard'])->name('dashboard'); 
+    });
+        // Routes pour les distributions d'intrants (unifiées)
+        Route::prefix('admin/distributions-intrants')->name('distributions-intrants.')->group(function () {
+        Route::get('/', [DistributionIntrantController::class, 'index'])->name('index');
+        Route::get('/create', [DistributionIntrantController::class, 'create'])->name('create');
+        Route::post('/', [DistributionIntrantController::class, 'store'])->name('store');
+        Route::get('/{id}', [DistributionIntrantController::class, 'show'])->name('show');
+        Route::get('/{id}/edit', [DistributionIntrantController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [DistributionIntrantController::class, 'update'])->name('update');
+        Route::get('/{id}/print', [DistributionIntrantController::class, 'print'])->name('print');
+        Route::delete('/{id}', [DistributionIntrantController::class, 'destroy'])->name('destroy');
     });
         
         // Distributions

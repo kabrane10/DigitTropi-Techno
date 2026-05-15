@@ -109,7 +109,7 @@
                     <p class="text-white/50 text-xs uppercase px-4 mb-2">Semences & Distributions</p>
                     <a href="{{ route('admin.distributions.index') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg transition {{ request()->routeIs('admin.distributions.*') ? 'bg-primary text-white' : 'text-white/80 hover:bg-white/10' }}">
                         <i class="fas fa-seedling w-5"></i>
-                        <span>Distributions</span>
+                        <span>Distributions Semence</span>
                     </a>
                     <!-- <a href="{{ route('admin.distributions.create') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg transition text-white/80 hover:bg-white/10">
                         <i class="fas fa-truck w-5"></i>
@@ -137,10 +137,10 @@
                         <i class="fas fa-boxes w-5"></i>
                         <span>Gestion intrants</span>
                     </a>
-                    <!-- <a href="{{ route('admin.intrants.create') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg transition text-white/80 hover:bg-white/10">
+                    <a href="{{ route('admin.distributions-intrants.index') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg transition text-white/80 hover:bg-white/10">
                         <i class="fas fa-plus-circle w-5"></i>
-                        <span>Nouvel intrant</span>
-                    </a> -->
+                        <span>Distribution intrant</span>
+                    </a>
                     <a href="{{ route('admin.intrants.alertes') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg transition text-white/80 hover:bg-white/10">
                         <i class="fas fa-exclamation-triangle w-5"></i>
                         <span>Alertes stock</span>
