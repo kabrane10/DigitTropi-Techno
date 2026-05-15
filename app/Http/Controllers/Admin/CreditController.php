@@ -109,7 +109,6 @@ class CreditController extends Controller
     
         return view('admin.credits.create', compact('producteur_id', 'cooperative_id', 'beneficiaire_type', 'producteurs', 'cooperatives'));
     }
-}
     
     /**
      * Enregistrer un nouveau crédit
