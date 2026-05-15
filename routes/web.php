@@ -38,6 +38,7 @@ use App\Http\Controllers\Admin\AlbumAdminController;
 use App\Http\Controllers\Admin\ProducteurController;
 use App\Http\Controllers\Admin\CooperativeController;
 use App\Http\Controllers\Admin\CooperativeOperationController;
+use App\Http\Controllers\Admin\DistributionIntrantController;
 use App\Http\Controllers\Admin\DistributionSemenceController;
 use App\Http\Controllers\Admin\SemenceController;
 use App\Http\Controllers\Admin\EstimationBesoinController;
