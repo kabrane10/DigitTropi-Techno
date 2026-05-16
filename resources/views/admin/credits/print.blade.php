@@ -332,15 +332,15 @@
                     <div class="info-grid">
                         <div class="info-item">
                             <div class="info-label">Nom complet</div>
-                            <div class="info-value">{{ $credit->producteur->nom_complet }}</div>
+                            <div class="info-value">{{ $credit->producteur->nom_complet ?? 'N/A' }}</div>
                         </div>
                         <div class="info-item">
                             <div class="info-label">Code producteur</div>
-                            <div class="info-value">{{ $credit->producteur->code_producteur }}</div>
+                            <div class="info-value">{{ $credit->producteur->code_producteur ?? 'N/A' }}</div>
                         </div>
                         <div class="info-item">
                             <div class="info-label">Contact</div>
-                            <div class="info-value">{{ $credit->producteur->contact }}</div>
+                            <div class="info-value">{{ $credit->producteur->contact ?? 'N/A' }}</div>
                         </div>
                         <div class="info-item">
                             <div class="info-label">Email</div>
@@ -348,11 +348,11 @@
                         </div>
                         <div class="info-item">
                             <div class="info-label">Région</div>
-                            <div class="info-value">{{ $credit->producteur->region }}</div>
+                            <div class="info-value">{{ $credit->producteur->region ?? 'N/A' }}</div>
                         </div>
                         <div class="info-item">
                             <div class="info-label">Localisation</div>
-                            <div class="info-value">{{ $credit->producteur->localisation }}</div>
+                            <div class="info-value">{{ $credit->producteur->localisation ?? 'N/A' }}</div>
                         </div>
                         <div class="info-item">
                             <div class="info-label">Culture pratiquée</div>
