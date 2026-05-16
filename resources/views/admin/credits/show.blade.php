@@ -188,7 +188,7 @@
                 <i class="fas fa-user-circle text-primary mr-2"></i> Bénéficiaire
             </h4>
             
-            @if($credit->beneficiaire_type === 'App\\Models\\Cooperative' || $credit->cooperative_id)
+            @if($credit->cooperative_id || $credit->beneficiaire_type === 'App\\Models\\Cooperative')
                 {{-- Cas Coopérative --}}
                 <div class="bg-purple-50 rounded-lg p-4">
                     <div class="flex items-center mb-3">
@@ -210,12 +210,8 @@
                             <span>{{ $credit->cooperative->region ?? 'N/A' }}</span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-gray-500">Localisation :</span>
-                            <span>{{ $credit->cooperative->localisation ?? 'N/A' }}</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-500">Membres :</span>
-                            <span>{{ number_format($credit->cooperative->nombre_membres ?? 0) }}</span>
+                            <span class="text-gray-500">Responsable :</span>
+                            <span>{{ $credit->cooperative->nom_responsable ?? 'N/A' }}</span>
                         </div>
                     </div>
                 </div>
@@ -244,14 +240,11 @@
                             <span class="text-gray-500">Localisation :</span>
                             <span>{{ $credit->producteur->localisation ?? 'N/A' }}</span>
                         </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-500">Culture :</span>
-                            <span>{{ $credit->producteur->culture_pratiquee ?? 'N/A' }}</span>
-                        </div>
                     </div>
                 </div>
             @endif
         </div>
+        
         
         <!-- Carte capital emprunté -->
         <div class="bg-gradient-to-r from-primary to-secondary rounded-xl p-6 text-white">
