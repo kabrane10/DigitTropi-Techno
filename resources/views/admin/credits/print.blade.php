@@ -494,7 +494,7 @@
         </div>
         
         <!-- Signatures -->
-        <div class="signatures">
+        <!-- <div class="signatures">
             <div class="signature-box">
                 <div class="signature-line">
                     <p>Signature du bénéficiaire</p>
@@ -513,7 +513,7 @@
                     <p style="font-size: 10px; color: #999; margin-top: 5px;">Tropi-Techno Sarl</p>
                 </div>
             </div>
-        </div>
+        </div> -->
         <!-- Bouton de signature -->
         <div class="no-print text-center mt-4">
             @if(!$credit->hasSignatureFrom('producteur'))
@@ -531,7 +531,7 @@
             @endif
         </div>
 
-        @include('partials.signature-modal')
+        <!-- @include('partials.signature-modal') -->
         
         <!-- Footer -->
         <div class="footer">
