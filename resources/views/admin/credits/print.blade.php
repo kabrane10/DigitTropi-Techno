@@ -502,7 +502,7 @@
                         @if($credit->beneficiaire_type === 'App\\Models\\Cooperative' || $credit->cooperative_id)
                             {{ $credit->cooperative->nom ?? 'N/A' }}
                         @else
-                            {{ $credit->producteur->nom_complet }}
+                            {{ $credit->producteur->nom_complet ?? 'N/A' }}
                         @endif
                     </p>
                 </div>
