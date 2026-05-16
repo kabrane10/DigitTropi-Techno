@@ -156,6 +156,12 @@ class CreditController extends Controller
         $beneficiaireType = 'App\\Models\\Cooperative';
         $beneficiaireId = $validated['cooperative_id'];
     }
+       // Initialisation des variables
+       $producteurId = null;
+       $cooperativeId = null;
+       $beneficiaireType = null;
+       $beneficiaireId = null;
+
         
         // Calculer le montant total avec intérêts
         $montantAvecInterets = $this->calculerMontantTotal(
@@ -173,26 +179,38 @@ class CreditController extends Controller
         $validated['montant_sans_interets'] = $validated['montant_total'];
         $validated['montant_interets'] = $montantAvecInterets - $validated['montant_total'];
         
-       $credit = CreditAgricole::create([
-        'code_credit' => 'CRD-' . str_pad(CreditAgricole::max('id') + 1, 6, '0', STR_PAD_LEFT),
-        'producteur_id' => $producteurId,      // ← Peut être NULL
-        'cooperative_id' => $cooperativeId,    // ← Peut être NULL
-        'beneficiaire_type' => $beneficiaireType,
-        'beneficiaire_id' => $beneficiaireId,
-        'montant_total' => $validated['montant_total'],
-        'type_intrant' => $validated['type_intrant'],
-        'quantite_intrant' => $validated['quantite_intrant'],
-        'unite_intrant' => $validated['unite_intrant'],
-        'montant_restant' => $montantAvecInterets,
-        'taux_interet' => $validated['taux_interet'],
-        'duree_mois' => $validated['duree_mois'],
-        'date_octroi' => $validated['date_octroi'],
-        'date_echeance' => date('Y-m-d', strtotime($validated['date_octroi'] . " + {$validated['duree_mois']} months")),
-        'statut' => 'actif',
-        'conditions' => $validated['conditions'],
-        'montant_sans_interets' => $validated['montant_total'],
-        'montant_interets' => $montantAvecInterets - $validated['montant_total']
-    ]);
+     DB::beginTransaction();
+    try {
+        $credit = CreditAgricole::create([
+            'code_credit' => 'CRD-' . str_pad(CreditAgricole::max('id') + 1, 6, '0', STR_PAD_LEFT),
+            'producteur_id' => $producteurId,
+            'cooperative_id' => $cooperativeId,
+            'beneficiaire_type' => $beneficiaireType,
+            'beneficiaire_id' => $beneficiaireId,
+            'montant_total' => $validated['montant_total'],
+            'type_intrant' => $validated['type_intrant'],
+            'quantite_intrant' => $validated['quantite_intrant'],
+            'unite_intrant' => $validated['unite_intrant'],
+            'montant_restant' => $montantAvecInterets,
+            'taux_interet' => $validated['taux_interet'],
+            'duree_mois' => $validated['duree_mois'],
+            'date_octroi' => $validated['date_octroi'],
+            'date_echeance' => date('Y-m-d', strtotime($validated['date_octroi'] . " + {$validated['duree_mois']} months")),
+            'statut' => 'actif',
+            'conditions' => $validated['conditions'] ?? null,
+            'montant_sans_interets' => $validated['montant_total'],
+            'montant_interets' => $montantAvecInterets - $validated['montant_total']
+        ]);
+
+        DB::commit();
+
+        return redirect()->route('admin.credits.index')
+            ->with('success', 'Crédit agricole accordé avec succès');
+
+    } catch (\Exception $e) {
+        DB::rollback();
+        return back()->with('error', 'Erreur lors de la création du crédit: ' . $e->getMessage());
+    }
 
     return redirect()->route('admin.credits.index')
         ->with('success', 'Crédit agricole accordé avec succès');
