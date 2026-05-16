@@ -201,6 +201,10 @@
                         </div>
                     </div>
                     <div class="space-y-2 text-sm">
+                    <div class="flex justify-between">
+                            <span class="text-gray-500">Responsable :</span>
+                            <span>{{ $credit->cooperative->nom_responsable ?? 'N/A' }}</span>
+                        </div>
                         <div class="flex justify-between">
                             <span class="text-gray-500">Contact :</span>
                             <span>{{ $credit->cooperative->contact ?? 'N/A' }}</span>

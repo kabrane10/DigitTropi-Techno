@@ -223,6 +223,16 @@ class CreditController extends Controller
     {
         $credit = CreditAgricole::with(['producteur', 'cooperative', 'remboursements'])->findOrFail($id);
         
+         // Debug temporaire (à supprimer après)
+    \Log::info('Credit chargé', [
+        'id' => $credit->id,
+        'producteur_id' => $credit->producteur_id,
+        'cooperative_id' => $credit->cooperative_id,
+        'producteur_loaded' => $credit->relationLoaded('producteur'),
+        'cooperative_loaded' => $credit->relationLoaded('cooperative'),
+        'has_producteur' => $credit->producteur ? 'oui' : 'non',
+        'has_cooperative' => $credit->cooperative ? 'oui' : 'non',
+    ]);
         // Calculer les montants réels avec intérêts
         $montantAvecInterets = $this->calculerMontantTotal(
             $credit->montant_total,
