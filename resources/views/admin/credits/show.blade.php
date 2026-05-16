@@ -227,22 +227,22 @@
                             <i class="fas fa-user text-green-600"></i>
                         </div>
                         <div>
-                            <p class="font-bold text-green-800">{{ $credit->producteur->nom_complet }}</p>
-                            <p class="text-xs text-green-600">Code: {{ $credit->producteur->code_producteur }}</p>
+                            <p class="font-bold text-green-800">{{ $credit->producteur->nom_complet ?? 'N/A' }}</p>
+                            <p class="text-xs text-green-600">Code: {{ $credit->producteur->code_producteur ?? 'N/A' }}</p>
                         </div>
                     </div>
                     <div class="space-y-2 text-sm">
                         <div class="flex justify-between">
                             <span class="text-gray-500">Contact :</span>
-                            <span>{{ $credit->producteur->contact }}</span>
+                            <span>{{ $credit->producteur->contact ?? 'N/A' }}</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-500">Région :</span>
-                            <span>{{ $credit->producteur->region }}</span>
+                            <span>{{ $credit->producteur->region ?? 'N/A' }}</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-500">Localisation :</span>
-                            <span>{{ $credit->producteur->localisation }}</span>
+                            <span>{{ $credit->producteur->localisation ?? 'N/A' }}</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-500">Culture :</span>
