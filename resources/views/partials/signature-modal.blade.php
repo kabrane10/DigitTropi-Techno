@@ -21,6 +21,88 @@
         </div>
     </div>
 </div>
+<style>
+     /* Styles pour les signatures */
+.signature-box {
+  text-align: center;
+  position: relative;
+}
+
+.signature-title {
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #374151;
+}
+
+.signature-area {
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  padding: 10px;
+  min-height: 100px;
+  background: #f8fafc;
+  transition: all 0.3s;
+}
+
+.signature-area:hover {
+  border-color: #2d6a4f;
+  background: #f0fdf4;
+}
+
+.signature-img {
+  max-height: 60px;
+  margin: 0 auto;
+}
+
+.signature-date, .signature-ip {
+  font-size: 10px;
+  color: #94a3b8;
+  margin-top: 5px;
+}
+
+.signature-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 80px;
+}
+
+.btn-signature {
+  background: #2d6a4f;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.3s;
+}
+
+.btn-signature:hover {
+  background: #52b788;
+  transform: scale(1.05);
+}
+
+/* Badge signature */
+.signature-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.signature-badge.signed {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.signature-badge.missing {
+  background: #fee2e2;
+  color: #991b1b;
+}
+</style>
 
 <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
 <script>
