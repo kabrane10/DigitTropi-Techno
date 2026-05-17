@@ -34,6 +34,7 @@ use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\DashboardAdminController;
 use App\Http\Controllers\Admin\ActualiteAdminController;
 use App\Http\Controllers\Admin\GalerieAdminController;
+use App\Http\Controllers\Admin\SignatureController;
 use App\Http\Controllers\Admin\AlbumAdminController;
 use App\Http\Controllers\Admin\ProducteurController;
 use App\Http\Controllers\Admin\CooperativeController;
@@ -299,7 +300,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/verifier/{hash}', [SignatureController::class, 'verifier'])->name('verifier');
     Route::get('/qr-code/{hash}', [SignatureController::class, 'qrCode'])->name('qr-code');
     Route::post('/store', [SignatureController::class, 'store'])->name('store');
-    Route::get('/document/{type}/{id}', [SignatureController::class, 'getSignatures'])->name('document');
+    Route::get('/document/{type}/{id}', [SignatureController::class, 'getSignatures'])->name('signatures.document');
 });
 
 // ========== ESPACE ANIMATEUR ==========
