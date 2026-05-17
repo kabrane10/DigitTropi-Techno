@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
+
 use App\Traits\NotifiableTrait;
 use App\Http\Controllers\Controller;
 use App\Models\CreditAgricole;
@@ -13,13 +14,14 @@ use Illuminate\Support\Facades\DB;
 class CreditController extends Controller
 {
     use NotifiableTrait;
+
     /**
      * Calculer la mensualité avec intérêts
      */
     private function calculerMensualite($montant, $tauxAnnuel, $dureeMois)
     {
-        if ($tauxAnnuel == 0) {
-            return $montant / $dureeMois;
+        if ($tauxAnnuel == 0 || $dureeMois == 0) {
+            return $dureeMois > 0 ? $montant / $dureeMois : 0;
         }
         
         $tauxMensuel = $tauxAnnuel / 12 / 100;
@@ -42,7 +44,7 @@ class CreditController extends Controller
     }
     
     /**
-     * Calculer le tableau d\'amortissement
+     * Calculer le tableau d'amortissement
      */
     private function calculerAmortissement($montant, $tauxAnnuel, $dureeMois)
     {
@@ -82,11 +84,19 @@ class CreditController extends Controller
         if ($request->filled('producteur_id')) {
             $query->where('producteur_id', $request->producteur_id);
         }
+        if ($request->filled('beneficiaire_type')) {
+            if ($request->beneficiaire_type == 'producteur') {
+                $query->whereNotNull('producteur_id');
+            } else {
+                $query->whereNotNull('cooperative_id');
+            }
+        }
         
         $credits = $query->orderBy('created_at', 'desc')->paginate(15);
         $producteurs = Producteur::where('statut', 'actif')->get();
+        $cooperatives = Cooperative::where('statut', 'active')->get();
         
-        return view('admin.credits.index', compact('credits', 'producteurs'));
+        return view('admin.credits.index', compact('credits', 'producteurs', 'cooperatives'));
     }
     
     /**
@@ -123,9 +133,8 @@ class CreditController extends Controller
         ));
     }
     
-    
     /**
-     * Enregistrer un nouveau crédit
+     * Enregistrer un nouveau crédit (CORRIGÉ)
      */
     public function store(Request $request)
     {
@@ -133,8 +142,6 @@ class CreditController extends Controller
             'beneficiaire_type' => 'required|in:producteur,cooperative',
             'producteur_id' => 'required_if:beneficiaire_type,producteur|nullable|exists:producteurs,id',
             'cooperative_id' => 'required_if:beneficiaire_type,cooperative|nullable|exists:cooperatives,id',
-            // 'producteur_id' => 'required|exists:producteurs,id',
-            // 'cooperative_id' => 'required|exists:cooperatives,id',
             'montant_total' => 'required|numeric|min:1000',
             'type_intrant' => 'required|string|max:255',  
             'quantite_intrant' => 'required|numeric|min:0',  
@@ -145,23 +152,18 @@ class CreditController extends Controller
             'conditions' => 'nullable|string'
         ]);
 
-         // Déterminer le bénéficiaire
-    if ($validated['beneficiaire_type'] === 'producteur') {
-        $validated['beneficiaire_type'] = 'App\\Models\\Producteur';
-        $validated['beneficiaire_id'] = $validated['producteur_id'];
-        $validated['cooperative_id'] = null;
-    } else {
-        $producteurId = null;
-        $cooperativeId = $validated['cooperative_id'];  
-        $beneficiaireType = 'App\\Models\\Cooperative';
-        $beneficiaireId = $validated['cooperative_id'];
-    }
-       // Initialisation des variables
-       $producteurId = null;
-       $cooperativeId = null;
-       $beneficiaireType = null;
-       $beneficiaireId = null;
-
+        // ✅ CORRIGÉ : Déterminer le bénéficiaire SANS écraser les variables
+        if ($validated['beneficiaire_type'] === 'producteur') {
+            $producteurId = $validated['producteur_id'];
+            $cooperativeId = null;
+            $beneficiaireType = 'App\\Models\\Producteur';
+            $beneficiaireId = $validated['producteur_id'];
+        } else {
+            $producteurId = null;
+            $cooperativeId = $validated['cooperative_id'];
+            $beneficiaireType = 'App\\Models\\Cooperative';
+            $beneficiaireId = $validated['cooperative_id'];
+        }
         
         // Calculer le montant total avec intérêts
         $montantAvecInterets = $this->calculerMontantTotal(
@@ -170,59 +172,47 @@ class CreditController extends Controller
             $validated['duree_mois']
         );
         
-        $validated['code_credit'] = 'CRD-' . str_pad(CreditAgricole::max('id') + 1, 6, '0', STR_PAD_LEFT);
-        $validated['montant_restant'] = $montantAvecInterets;
-        $validated['date_echeance'] = date('Y-m-d', strtotime($validated['date_octroi'] . ' + ' . $validated['duree_mois'] . ' months'));
-        $validated['statut'] = 'actif';
-        
-        // Sauvegarder également le montant sans intérêts pour référence
-        $validated['montant_sans_interets'] = $validated['montant_total'];
-        $validated['montant_interets'] = $montantAvecInterets - $validated['montant_total'];
-        
-     DB::beginTransaction();
-    try {
-        $credit = CreditAgricole::create([
-            'code_credit' => 'CRD-' . str_pad(CreditAgricole::max('id') + 1, 6, '0', STR_PAD_LEFT),
-            'producteur_id' => $producteurId,
-            'cooperative_id' => $cooperativeId,
-            'beneficiaire_type' => $beneficiaireType,
-            'beneficiaire_id' => $beneficiaireId,
-            'montant_total' => $validated['montant_total'],
-            'type_intrant' => $validated['type_intrant'],
-            'quantite_intrant' => $validated['quantite_intrant'],
-            'unite_intrant' => $validated['unite_intrant'],
-            'montant_restant' => $montantAvecInterets,
-            'taux_interet' => $validated['taux_interet'],
-            'duree_mois' => $validated['duree_mois'],
-            'date_octroi' => $validated['date_octroi'],
-            'date_echeance' => date('Y-m-d', strtotime($validated['date_octroi'] . " + {$validated['duree_mois']} months")),
-            'statut' => 'actif',
-            'conditions' => $validated['conditions'] ?? null,
-            'montant_sans_interets' => $validated['montant_total'],
-            'montant_interets' => $montantAvecInterets - $validated['montant_total']
-        ]);
+        DB::beginTransaction();
+        try {
+            $credit = CreditAgricole::create([
+                'code_credit' => 'CRD-' . str_pad(CreditAgricole::max('id') + 1, 6, '0', STR_PAD_LEFT),
+                'producteur_id' => $producteurId,
+                'cooperative_id' => $cooperativeId,
+                'beneficiaire_type' => $beneficiaireType,
+                'beneficiaire_id' => $beneficiaireId,
+                'montant_total' => $validated['montant_total'],
+                'type_intrant' => $validated['type_intrant'],
+                'quantite_intrant' => $validated['quantite_intrant'],
+                'unite_intrant' => $validated['unite_intrant'],
+                'montant_restant' => $montantAvecInterets,
+                'taux_interet' => $validated['taux_interet'],
+                'duree_mois' => $validated['duree_mois'],
+                'date_octroi' => $validated['date_octroi'],
+                'date_echeance' => date('Y-m-d', strtotime($validated['date_octroi'] . " + {$validated['duree_mois']} months")),
+                'statut' => 'actif',
+                'conditions' => $validated['conditions'] ?? null,
+                'montant_sans_interets' => $validated['montant_total'],
+                'montant_interets' => $montantAvecInterets - $validated['montant_total']
+            ]);
 
-        DB::commit();
+            DB::commit();
 
-        return redirect()->route('admin.credits.index')
-            ->with('success', 'Crédit agricole accordé avec succès');
+            return redirect()->route('admin.credits.index')
+                ->with('success', 'Crédit agricole accordé avec succès');
 
-    } catch (\Exception $e) {
-        DB::rollback();
-        return back()->with('error', 'Erreur lors de la création du crédit: ' . $e->getMessage());
-    }
-
-    return redirect()->route('admin.credits.index')
-        ->with('success', 'Crédit agricole accordé avec succès');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return back()->with('error', 'Erreur lors de la création du crédit: ' . $e->getMessage());
+        }
     }
     
     /**
-     * Afficher les détails d\'un crédit
+     * Afficher les détails d'un crédit
      */
     public function show($id)
     {
         $credit = CreditAgricole::with(['producteur', 'cooperative', 'remboursements'])
-        ->findOrFail($id);
+            ->findOrFail($id);
         
         // Calculer les montants réels avec intérêts
         $montantAvecInterets = $this->calculerMontantTotal(
@@ -235,7 +225,7 @@ class CreditController extends Controller
         $resteAPayer = $montantAvecInterets - $montantRembourse;
         $tauxRemboursement = $montantAvecInterets > 0 ? ($montantRembourse / $montantAvecInterets) * 100 : 0;
         
-        // Calculer le tableau d\'amortissement
+        // Calculer le tableau d'amortissement
         $amortissement = $this->calculerAmortissement(
             $credit->montant_total,
             $credit->taux_interet,
@@ -259,27 +249,30 @@ class CreditController extends Controller
             'montantAvecInterets'
         ));
     }
+    
     /**
-     * Show the form for editing the specified resource.
+     * Formulaire d'édition (CORRIGÉ)
      */
     public function edit($id)
     {
-        $credit = CreditAgricole::findOrFail($id);
+        $credit = CreditAgricole::with(['producteur', 'cooperative'])->findOrFail($id);
         $producteurs = Producteur::where('statut', 'actif')->get();
         $cooperatives = Cooperative::where('statut', 'active')->get();
+        
         return view('admin.credits.edit', compact('credit', 'producteurs', 'cooperatives'));
     }
 
     /**
-     * Update the specified resource in storage.
+     * Mettre à jour un crédit (CORRIGÉ)
      */
     public function update(Request $request, $id)
     {
         $credit = CreditAgricole::findOrFail($id);
 
         $validated = $request->validate([
-            'producteur_id' => 'required|exists:producteurs,id',
-            'cooperative_id' => 'required|exists:cooperatives,id',
+            'beneficiaire_type' => 'required|in:producteur,cooperative',
+            'producteur_id' => 'required_if:beneficiaire_type,producteur|nullable|exists:producteurs,id',
+            'cooperative_id' => 'required_if:beneficiaire_type,cooperative|nullable|exists:cooperatives,id',
             'montant_total' => 'required|numeric|min:1000',
             'type_intrant' => 'required|string|max:255',  
             'quantite_intrant' => 'required|numeric|min:0',  
@@ -291,7 +284,20 @@ class CreditController extends Controller
             'statut' => 'required|in:actif,rembourse,annule,retard',
         ]);
 
-        // Recalculate amounts if necessary
+        // ✅ CORRIGÉ : Déterminer le bénéficiaire
+        if ($validated['beneficiaire_type'] === 'producteur') {
+            $producteurId = $validated['producteur_id'];
+            $cooperativeId = null;
+            $beneficiaireType = 'App\\Models\\Producteur';
+            $beneficiaireId = $validated['producteur_id'];
+        } else {
+            $producteurId = null;
+            $cooperativeId = $validated['cooperative_id'];
+            $beneficiaireType = 'App\\Models\\Cooperative';
+            $beneficiaireId = $validated['cooperative_id'];
+        }
+
+        // Recalculer les montants
         $montantAvecInterets = $this->calculerMontantTotal(
             $validated['montant_total'],
             $validated['taux_interet'],
@@ -299,143 +305,144 @@ class CreditController extends Controller
         );
         
         $montantRembourse = $credit->remboursements->sum('montant');
-        $validated['montant_restant'] = $montantAvecInterets - $montantRembourse;
-        $validated['date_echeance'] = date('Y-m-d', strtotime($validated['date_octroi'] . ' + ' . $validated['duree_mois'] . ' months'));
-        $validated['montant_sans_interets'] = $validated['montant_total'];
-        $validated['montant_interets'] = $montantAvecInterets - $validated['montant_total'];
+        $montantRestant = $montantAvecInterets - $montantRembourse;
         
-        //  Si le montant restant est 0, statut = rembourse
-        if ($validated['montant_restant'] <= 0) {
-            $validated['statut'] = 'rembourse';
-        }
+        $updateData = [
+            'producteur_id' => $producteurId,
+            'cooperative_id' => $cooperativeId,
+            'beneficiaire_type' => $beneficiaireType,
+            'beneficiaire_id' => $beneficiaireId,
+            'montant_total' => $validated['montant_total'],
+            'type_intrant' => $validated['type_intrant'],
+            'quantite_intrant' => $validated['quantite_intrant'],
+            'unite_intrant' => $validated['unite_intrant'],
+            'montant_restant' => max(0, $montantRestant),
+            'taux_interet' => $validated['taux_interet'],
+            'duree_mois' => $validated['duree_mois'],
+            'date_octroi' => $validated['date_octroi'],
+            'date_echeance' => date('Y-m-d', strtotime($validated['date_octroi'] . ' + ' . $validated['duree_mois'] . ' months')),
+            'conditions' => $validated['conditions'] ?? null,
+            'statut' => $montantRestant <= 0 ? 'rembourse' : $validated['statut'],
+            'montant_sans_interets' => $validated['montant_total'],
+            'montant_interets' => $montantAvecInterets - $validated['montant_total']
+        ];
 
-        $credit->update($validated);
+        $credit->update($updateData);
 
-        return redirect()->route('admin.credits.index')->with('success', 'Crédit mis à jour avec succès.');
+        return redirect()->route('admin.credits.index')
+            ->with('success', 'Crédit mis à jour avec succès.');
     }
 
-  
     /**
- * Supprimer un crédit
- */
-public function destroy($id)
-{
-    $credit = CreditAgricole::findOrFail($id);
-    
-    // 🔴 CORRECTION : Vérifier le montant restant, pas seulement le statut
-    $montantTotalAvecInterets = $this->calculerMontantTotal(
-        $credit->montant_total,
-        $credit->taux_interet,
-        $credit->duree_mois
-    );
-    $montantRembourse = $credit->remboursements->sum('montant');
-    $resteAPayer = $montantTotalAvecInterets - $montantRembourse;
-    
-    // Si le montant restant est 0, forcer le statut à rembourse
-    if ($resteAPayer <= 0 && $credit->statut != 'rembourse') {
-        $credit->statut = 'rembourse';
-        $credit->save();
-    }
-    
-    // VÉRIFICATION : Le crédit est-il totalement remboursé ?
-    if ($resteAPayer > 0) {
-        return redirect()->route('admin.credits.index')
-            ->with('error', sprintf(
-                ' Suppression impossible ! Ce crédit n\'est pas encore entièrement remboursé.<br><br>
-                 Reste à payer : <strong>%s CFA</strong><br><br>
-                 Veuillez d\'abord compléter le remboursement.',
-                number_format($resteAPayer, 0, ',', ' ')
-            ));
-    }
-    
-    // Vérifier les autres dépendances
-    $hasRemboursements = $credit->remboursements()->count() > 0;
-    $hasCollectes = $credit->collectes()->count() > 0;
-    $hasDistributions = $credit->distributionsSemences()->count() > 0;
-    
-    if ($hasRemboursements || $hasCollectes || $hasDistributions) {
-        $dependances = [];
-        if ($hasRemboursements) $dependances[] = $credit->remboursements()->count() . " remboursement(s)";
-        if ($hasCollectes) $dependances[] = $credit->collectes()->count() . " collecte(s)";
-        if ($hasDistributions) $dependances[] = $credit->distributionsSemences()->count() . " distribution(s)";
+     * Supprimer un crédit
+     */
+    public function destroy($id)
+    {
+        $credit = CreditAgricole::findOrFail($id);
         
-        return redirect()->route('admin.credits.index')
-            ->with('error', ' Suppression impossible ! Ce crédit est lié à : ' . implode(', ', $dependances));
+        $montantTotalAvecInterets = $this->calculerMontantTotal(
+            $credit->montant_total,
+            $credit->taux_interet,
+            $credit->duree_mois
+        );
+        $montantRembourse = $credit->remboursements->sum('montant');
+        $resteAPayer = $montantTotalAvecInterets - $montantRembourse;
+        
+        if ($resteAPayer <= 0 && $credit->statut != 'rembourse') {
+            $credit->statut = 'rembourse';
+            $credit->save();
+        }
+        
+        if ($resteAPayer > 0) {
+            return redirect()->route('admin.credits.index')
+                ->with('error', sprintf(
+                    'Suppression impossible ! Ce crédit n\'est pas encore entièrement remboursé.<br><br>
+                     Reste à payer : <strong>%s CFA</strong>',
+                    number_format($resteAPayer, 0, ',', ' ')
+                ));
+        }
+        
+        $hasRemboursements = $credit->remboursements()->count() > 0;
+        $hasCollectes = $credit->collectes()->count() > 0;
+        $hasDistributions = $credit->distributionsSemences()->count() > 0;
+        
+        if ($hasRemboursements || $hasCollectes || $hasDistributions) {
+            $dependances = [];
+            if ($hasRemboursements) $dependances[] = $credit->remboursements()->count() . " remboursement(s)";
+            if ($hasCollectes) $dependances[] = $credit->collectes()->count() . " collecte(s)";
+            if ($hasDistributions) $dependances[] = $credit->distributionsSemences()->count() . " distribution(s)";
+            
+            return redirect()->route('admin.credits.index')
+                ->with('error', 'Suppression impossible ! Ce crédit est lié à : ' . implode(', ', $dependances));
+        }
+        
+        try {
+            $credit->delete();
+            return redirect()->route('admin.credits.index')
+                ->with('success', 'Crédit supprimé avec succès.');
+        } catch (\Exception $e) {
+            return redirect()->route('admin.credits.index')
+                ->with('error', 'Erreur technique lors de la suppression.');
+        }
     }
     
-    // Suppression
-    try {
-        $credit->delete();
-        return redirect()->route('admin.credits.index')
-            ->with('success', ' Crédit supprimé avec succès.');
-    } catch (\Exception $e) {
-        return redirect()->route('admin.credits.index')
-            ->with('error', ' Erreur technique lors de la suppression.');
-    }
-}
-   /**
- * Enregistrer un remboursement
- */
-public function remboursement(Request $request, $id)
-{
-    $credit = CreditAgricole::findOrFail($id);
-    
-    // Recalculer le montant total avec intérêts
-    $montantTotalAvecInterets = $this->calculerMontantTotal(
-        $credit->montant_total,
-        $credit->taux_interet,
-        $credit->duree_mois
-    );
-    
-    $montantDejaRembourse = $credit->remboursements->sum('montant');
-    $resteAPayer = $montantTotalAvecInterets - $montantDejaRembourse;
-    
-    $validated = $request->validate([
-        'montant' => 'required|numeric|min:100|max:' . $resteAPayer,
-        'mode_paiement' => 'required|in:especes,prelevement_sur_collecte,virement,mobile_money',
-        'reference' => 'nullable|string',
-        'notes' => 'nullable|string'
-    ]);
-    
-    DB::beginTransaction();
-    try {
-        // Créer le remboursement
-        Remboursement::create([
-            'code_remboursement' => 'RMB-' . str_pad(Remboursement::max('id') + 1, 6, '0', STR_PAD_LEFT),
-            'credit_id' => $credit->id,
-            'date_remboursement' => now(),
-            'montant' => $validated['montant'],
-            'type' => $validated['montant'] == $resteAPayer ? 'total' : 'mensuel',
-            'mode_paiement' => $validated['mode_paiement'],
-            'reference' => $validated['reference'] ?? null,
-            'notes' => $validated['notes'] ?? null
+    /**
+     * Enregistrer un remboursement
+     */
+    public function remboursement(Request $request, $id)
+    {
+        $credit = CreditAgricole::findOrFail($id);
+        
+        $montantTotalAvecInterets = $this->calculerMontantTotal(
+            $credit->montant_total,
+            $credit->taux_interet,
+            $credit->duree_mois
+        );
+        
+        $montantDejaRembourse = $credit->remboursements->sum('montant');
+        $resteAPayer = $montantTotalAvecInterets - $montantDejaRembourse;
+        
+        $validated = $request->validate([
+            'montant' => 'required|numeric|min:100|max:' . $resteAPayer,
+            'mode_paiement' => 'required|in:especes,prelevement_sur_collecte,virement,mobile_money',
+            'reference' => 'nullable|string',
+            'notes' => 'nullable|string'
         ]);
         
-        // Mettre à jour le montant restant
-        $nouveauMontantRestant = $resteAPayer - $validated['montant'];
-        $credit->montant_restant = max(0, $nouveauMontantRestant);
-        
-        // 🔴 CORRECTION IMPORTANTE : Mettre à jour le statut
-        if ($credit->montant_restant <= 0) {
-            $credit->statut = 'rembourse';
-        } elseif ($credit->montant_restant < $montantTotalAvecInterets && $credit->statut == 'actif') {
-            $credit->statut = 'actif'; // reste actif
+        DB::beginTransaction();
+        try {
+            Remboursement::create([
+                'code_remboursement' => 'RMB-' . str_pad(Remboursement::max('id') + 1, 6, '0', STR_PAD_LEFT),
+                'credit_id' => $credit->id,
+                'date_remboursement' => now(),
+                'montant' => $validated['montant'],
+                'type' => $validated['montant'] == $resteAPayer ? 'total' : 'mensuel',
+                'mode_paiement' => $validated['mode_paiement'],
+                'reference' => $validated['reference'] ?? null,
+                'notes' => $validated['notes'] ?? null
+            ]);
+            
+            $nouveauMontantRestant = $resteAPayer - $validated['montant'];
+            $credit->montant_restant = max(0, $nouveauMontantRestant);
+            
+            if ($credit->montant_restant <= 0) {
+                $credit->statut = 'rembourse';
+            }
+            
+            $credit->save();
+            DB::commit();
+            
+            $message = $credit->statut == 'rembourse' 
+                ? 'Crédit entièrement remboursé !' 
+                : 'Remboursement enregistré avec succès. Reste à payer : ' . number_format($credit->montant_restant, 0, ',', ' ') . ' CFA';
+            
+            return redirect()->route('admin.credits.show', $credit)
+                ->with('success', $message);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return back()->with('error', 'Erreur lors de l\'enregistrement du remboursement : ' . $e->getMessage());
         }
-        
-        $credit->save();
-        DB::commit();
-        
-        $message = $credit->statut == 'rembourse' 
-            ? ' Crédit entièrement remboursé !' 
-            : ' Remboursement enregistré avec succès. Reste à payer : ' . number_format($credit->montant_restant, 0, ',', ' ') . ' CFA';
-        
-        return redirect()->route('admin.credits.show', $credit)
-            ->with('success', $message);
-    } catch (\Exception $e) {
-        DB::rollback();
-        return back()->with('error', 'Erreur lors de l\'enregistrement du remboursement : ' . $e->getMessage());
     }
-}
     
     /**
      * Dashboard des crédits
@@ -471,68 +478,68 @@ public function remboursement(Request $request, $id)
     }
 
     /**
- * Imprimer la fiche de crédit
- */
-public function print($id)
-{
-    $credit = CreditAgricole::with(['producteur', 'cooperative', 'remboursements'])->findOrFail($id);
-    
-    // Recalculer les montants avec intérêts
-    $montantAvecInterets = $this->calculerMontantTotal(
-        $credit->montant_total,
-        $credit->taux_interet,
-        $credit->duree_mois
-    );
-    
-    $montantRembourse = $credit->remboursements->sum('montant');
-    $resteAPayer = $montantAvecInterets - $montantRembourse;
-    $tauxRemboursement = $montantAvecInterets > 0 ? ($montantRembourse / $montantAvecInterets) * 100 : 0;
-    $mensualite = $this->calculerMensualite(
-        $credit->montant_total,
-        $credit->taux_interet,
-        $credit->duree_mois
-    );
-    $amortissement = $this->calculerAmortissement(
-        $credit->montant_total,
-        $credit->taux_interet,
-        $credit->duree_mois
-    );
-    
-    return view('admin.credits.print', compact(
-        'credit', 
-        'montantRembourse', 
-        'resteAPayer', 
-        'tauxRemboursement',
-        'mensualite',
-        'montantAvecInterets',
-        'amortissement'
-    ));
-}
-/**
- * Corriger tous les statuts des crédits
- */
-public function fixAllStatus()
-{
-    $credits = CreditAgricole::all();
-    $count = 0;
-    
-    foreach ($credits as $credit) {
-        $montantTotalAvecInterets = $this->calculerMontantTotal(
+     * Imprimer la fiche de crédit
+     */
+    public function print($id)
+    {
+        $credit = CreditAgricole::with(['producteur', 'cooperative', 'remboursements'])->findOrFail($id);
+        
+        $montantAvecInterets = $this->calculerMontantTotal(
             $credit->montant_total,
             $credit->taux_interet,
             $credit->duree_mois
         );
-        $montantRembourse = $credit->remboursements->sum('montant');
-        $resteAPayer = $montantTotalAvecInterets - $montantRembourse;
         
-        if ($resteAPayer <= 0 && $credit->statut != 'rembourse') {
-            $credit->statut = 'rembourse';
-            $credit->save();
-            $count++;
-        }
+        $montantRembourse = $credit->remboursements->sum('montant');
+        $resteAPayer = $montantAvecInterets - $montantRembourse;
+        $tauxRemboursement = $montantAvecInterets > 0 ? ($montantRembourse / $montantAvecInterets) * 100 : 0;
+        $mensualite = $this->calculerMensualite(
+            $credit->montant_total,
+            $credit->taux_interet,
+            $credit->duree_mois
+        );
+        $amortissement = $this->calculerAmortissement(
+            $credit->montant_total,
+            $credit->taux_interet,
+            $credit->duree_mois
+        );
+        
+        return view('admin.credits.print', compact(
+            'credit', 
+            'montantRembourse', 
+            'resteAPayer', 
+            'tauxRemboursement',
+            'mensualite',
+            'montantAvecInterets',
+            'amortissement'
+        ));
     }
     
-    return redirect()->route('admin.credits.index')
-        ->with('success', "$count crédit(s) marqué(s) comme remboursé(s)");
-}
+    /**
+     * Corriger tous les statuts des crédits
+     */
+    public function fixAllStatus()
+    {
+        $credits = CreditAgricole::all();
+        $count = 0;
+        
+        foreach ($credits as $credit) {
+            $montantTotalAvecInterets = $this->calculerMontantTotal(
+                $credit->montant_total,
+                $credit->taux_interet,
+                $credit->duree_mois
+            );
+            $montantRembourse = $credit->remboursements->sum('montant');
+            $resteAPayer = $montantTotalAvecInterets - $montantRembourse;
+            
+            if ($resteAPayer <= 0 && $credit->statut != 'rembourse') {
+                $credit->statut = 'rembourse';
+                $credit->save();
+                $count++;
+            }
+        }
+        
+        return redirect()->route('admin.credits.index')
+            ->with('success', "$count crédit(s) marqué(s) comme remboursé(s)");
+    }
 }
