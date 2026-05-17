@@ -482,13 +482,7 @@
         transition: all 0.3s ease;
     }
 </style>
-{{-- Dans admin/credits/show.blade.php --}}
-
-@push('styles')
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-@endpush
-
-<!-- Section Signatures -->
+{{-- Section Signatures --}}
 <div class="bg-white rounded-xl shadow-sm p-6 mt-6">
     <h3 class="text-lg font-semibold mb-4 flex items-center">
         <i class="fas fa-signature text-primary mr-2"></i>
@@ -496,37 +490,36 @@
     </h3>
     
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- Signature Producteur / Coopérative -->
-        @include('admin.partials._signature_pad', [
-            'type' => 'beneficiaire',
-            'label' => $credit->cooperative_id ? 'Signature de la coopérative' : 'Signature du producteur'
-        ])
-        
-        <!-- Signature Agent -->
-        @include('admin.partials._signature_pad', [
-            'type' => 'agent',
-            'label' => 'Signature de l\'agent Tropi-Techno'
-        ])
+        @foreach($signatures_config as $config)
+            @include('admin.partials._signature_pad', [
+                'type' => $config['type'],
+                'label' => $config['label'],
+                'required' => $config['required'] ?? false
+            ])
+        @endforeach
     </div>
     
     <!-- Signatures existantes -->
-    <div class="mt-4 pt-4 border-t" id="signatures-historique">
-        <h4 class="font-semibold text-sm mb-3">Signatures apposées</h4>
-        <div class="space-y-2" id="signatures-list">
-            <!-- Les signatures existantes seront chargées ici -->
-        </div>
+    <div class="mt-4 pt-4 border-t">
+        <h4 class="font-semibold text-sm mb-3">Historique des signatures</h4>
+        <div id="signatures-list" class="space-y-2"></div>
     </div>
 </div>
 
 @push('scripts')
 <script>
-    // Charger les signatures existantes
     function chargerSignatures() {
-        fetch('{{ route("admin.signatures.document", ["credit", $credit->id]) }}')
+        const documentType = '{{ $documentType ?? $signature_document_type ?? "credit" }}';
+        const documentId = '{{ $credit->id ?? $collecte->id ?? $distribution->id ?? $estimation->id ?? 0 }}';
+        
+        fetch(`/admin/signatures/document/${documentType}/${documentId}`)
             .then(response => response.json())
             .then(signatures => {
                 const container = document.getElementById('signatures-list');
-                container.innerHTML = '';
+                if (!container) return;
+                
+                container.innerHTML = signatures.length === 0 ? 
+                    '<p class="text-gray-400 text-sm text-center py-4">Aucune signature enregistrée</p>' : '';
                 
                 signatures.forEach(sig => {
                     const div = document.createElement('div');
@@ -554,7 +547,7 @@
     }
     
     function voirSignature(hash) {
-        window.open('{{ url("admin/signatures/verifier") }}/' + hash, '_blank');
+        window.open('/admin/signatures/verifier/' + hash, '_blank');
     }
     
     function verifierSignature(hash) {
@@ -568,20 +561,18 @@
                     <p class="text-xs text-gray-500 mt-3">Hash: ${hash.substring(0, 20)}...</p>
                 </div>
             `,
-            showConfirmButton: true,
-            confirmButtonText: 'Fermer',
             didOpen: () => {
-                fetch('{{ url("admin/signatures/qr-code") }}/' + hash)
+                fetch('/admin/signatures/qr-code/' + hash)
                     .then(res => res.json())
                     .then(data => {
-                        const qrContainer = document.getElementById('qr-code-container');
-                        qrContainer.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(data.qr_data)}" class="mx-auto">`;
+                        document.getElementById('qr-code-container').innerHTML = 
+                            `<img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(data.qr_data)}" class="mx-auto">`;
                     });
             }
         });
     }
     
-    chargerSignatures();
+    document.addEventListener('DOMContentLoaded', chargerSignatures);
 </script>
 @endpush
 @endsection
