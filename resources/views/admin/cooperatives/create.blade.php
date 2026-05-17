@@ -92,34 +92,33 @@
                 <p class="text-xs text-gray-500 mt-1">Nom de la rue, quartier, lieu-dit, etc.</p>
             </div>
             
-            <!-- Latitude (position GPS) -->
-            <div>
-                <label class="block text-sm font-semibold mb-2">
-                    <i class="fas fa-globe text-primary mr-1"></i> Latitude (GPS)
+            {{-- GPS / Position exacte --}}
+            <div class="md:col-span-2 bg-gray-50 p-4 rounded-xl border border-dashed border-gray-300">
+                <label class="block text-sm font-bold mb-3 text-primary">
+                    <i class="fas fa-map-marker-alt mr-1"></i> Position exacte du producteur (GPS)
                 </label>
-                <div class="flex">
-                    <input type="number" step="any" name="latitude" value="{{ old('latitude') }}"
-                           class="w-full px-4 py-2 border rounded-l-lg focus:outline-none focus:border-primary"
-                           placeholder="Ex: 8.9833">
-                    <span class="px-3 py-2 bg-gray-100 border border-l-0 rounded-r-lg text-gray-500">°N</span>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 mb-1">Latitude</label>
+                        <input type="text" name="latitude" id="lat" required readonly
+                               class="w-full px-4 py-2 border rounded-lg bg-gray-100 focus:outline-none"
+                               placeholder="0.000000">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 mb-1">Longitude</label>
+                        <input type="text" name="longitude" id="lng" required readonly
+                               class="w-full px-4 py-2 border rounded-lg bg-gray-100 focus:outline-none"
+                               placeholder="0.000000">
+                    </div>
+                    <div class="flex items-end">
+                        <button type="button" onclick="getLocation()" 
+                                class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center justify-center">
+                            <i class="fas fa-crosshairs mr-2"></i> Me localiser ici
+                        </button>
+                    </div>
                 </div>
-                <p class="text-xs text-gray-500 mt-1">Coordonnées GPS pour localisation exacte</p>
+                <p class="text-xs text-gray-500 mt-2 italic">Note : Cliquez sur le bouton pour capturer les coordonnées GPS actuelles sur le terrain.</p>
             </div>
-            
-            <!-- Longitude (position GPS) -->
-            <div>
-                <label class="block text-sm font-semibold mb-2">
-                    <i class="fas fa-globe text-primary mr-1"></i> Longitude (GPS)
-                </label>
-                <div class="flex">
-                    <input type="number" step="any" name="longitude" value="{{ old('longitude') }}"
-                           class="w-full px-4 py-2 border rounded-l-lg focus:outline-none focus:border-primary"
-                           placeholder="Ex: 1.1333">
-                    <span class="px-3 py-2 bg-gray-100 border border-l-0 rounded-r-lg text-gray-500">°E</span>
-                </div>
-                <p class="text-xs text-gray-500 mt-1">Coordonnées GPS pour localisation exacte</p>
-            </div>
-            
             <!-- Date de création -->
             <div>
                 <label class="block text-sm font-semibold mb-2">

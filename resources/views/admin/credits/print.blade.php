@@ -493,46 +493,6 @@
             </div>
         </div>
         
-        <!-- Signatures -->
-        <!-- <div class="signatures">
-            <div class="signature-box">
-                <div class="signature-line">
-                    <p>Signature du bénéficiaire</p>
-                    <p style="font-size: 10px; color: #999; margin-top: 5px;">
-                        @if($credit->beneficiaire_type === 'App\\Models\\Cooperative' || $credit->cooperative_id)
-                            {{ $credit->cooperative->nom ?? 'N/A' }}
-                        @else
-                            {{ $credit->producteur->nom_complet ?? 'N/A' }}
-                        @endif
-                    </p>
-                </div>
-            </div>
-            <div class="signature-box">
-                <div class="signature-line">
-                    <p>Signature de l'agent</p>
-                    <p style="font-size: 10px; color: #999; margin-top: 5px;">Tropi-Techno Sarl</p>
-                </div>
-            </div>
-        </div> -->
-        <!-- Bouton de signature -->
-        <div class="no-print text-center mt-4">
-            @if(!$credit->hasSignatureFrom('producteur'))
-            <button onclick="openSignatureModal('producteur', {{ $credit->id }}, 'credit')" 
-                    class="bg-primary text-white px-4 py-2 rounded-lg mr-2">
-                <i class="fas fa-pen mr-2"></i>Signer en tant que producteur
-            </button>
-            @endif
-    
-            @if(!$credit->hasSignatureFrom('agent'))
-            <button onclick="openSignatureModal('agent', {{ $credit->id }}, 'credit')" 
-                    class="bg-secondary text-white px-4 py-2 rounded-lg">
-                <i class="fas fa-pen mr-2"></i>Signer en tant qu'agent
-            </button>
-            @endif
-        </div>
-
-        <!-- @include('partials.signature-modal') -->
-        
         <!-- Footer -->
         <div class="footer">
             <p>Document généré automatiquement - Tropi-Techno Sarl</p>

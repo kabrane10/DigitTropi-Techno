@@ -85,32 +85,32 @@
                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-primary">
             </div>
             
-            <!-- Latitude -->
-            <div>
-                <label class="block text-sm font-semibold mb-2">
-                    <i class="fas fa-globe text-primary mr-1"></i> Latitude (GPS)
+            {{-- GPS / Position exacte --}}
+            <div class="md:col-span-2 bg-gray-50 p-4 rounded-xl border border-dashed border-gray-300">
+                <label class="block text-sm font-bold mb-3 text-primary">
+                    <i class="fas fa-map-marker-alt mr-1"></i> Position exacte du producteur (GPS)
                 </label>
-                <div class="flex">
-                    <input type="number" step="any" name="latitude" value="{{ old('latitude', $cooperative->latitude) }}"
-                           class="w-full px-4 py-2 border rounded-l-lg focus:outline-none focus:border-primary"
-                           placeholder="Ex: 8.9833">
-                    <span class="px-3 py-2 bg-gray-100 border border-l-0 rounded-r-lg text-gray-500">°N</span>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 mb-1">Latitude</label>
+                        <input type="text" name="latitude" id="lat" required readonly
+                               value="{{ old('latitude', $producteur->latitude) }}"
+                               class="w-full px-4 py-2 border rounded-lg bg-gray-100 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 mb-1">Longitude</label>
+                        <input type="text" name="longitude" id="lng" required readonly
+                               value="{{ old('longitude', $producteur->longitude) }}"
+                               class="w-full px-4 py-2 border rounded-lg bg-gray-100 focus:outline-none">
+                    </div>
+                    <div class="flex items-end">
+                        <button type="button" onclick="getLocation()" 
+                                class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center justify-center">
+                            <i class="fas fa-crosshairs mr-2"></i> Actualiser la position
+                        </button>
+                    </div>
                 </div>
             </div>
-            
-            <!-- Longitude -->
-            <div>
-                <label class="block text-sm font-semibold mb-2">
-                    <i class="fas fa-globe text-primary mr-1"></i> Longitude (GPS)
-                </label>
-                <div class="flex">
-                    <input type="number" step="any" name="longitude" value="{{ old('longitude', $cooperative->longitude) }}"
-                           class="w-full px-4 py-2 border rounded-l-lg focus:outline-none focus:border-primary"
-                           placeholder="Ex: 1.1333">
-                    <span class="px-3 py-2 bg-gray-100 border border-l-0 rounded-r-lg text-gray-500">°E</span>
-                </div>
-            </div>
-            
             <!-- Date de création -->
             <div>
                 <label class="block text-sm font-semibold mb-2">

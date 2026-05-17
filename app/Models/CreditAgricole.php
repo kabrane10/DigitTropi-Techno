@@ -30,12 +30,13 @@ class CreditAgricole extends Model
 
     public function producteur()
     {
-        return $this->belongsTo(Producteur::class);
+    // Si la clé étrangère s'appelle bien producteur_id
+    return $this->belongsTo(Producteur::class, 'producteur_id');
     }
 
     public function cooperative()
     {
-        return $this->belongsTo(Cooperative::class);
+    return $this->belongsTo(Cooperative::class, 'cooperative_id');
     }
 
     public function remboursements()

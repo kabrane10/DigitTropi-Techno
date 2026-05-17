@@ -56,6 +56,7 @@ public function index(Request $request)
     {
         $validated = $request->validate([
             'nom' => 'required|string|max:255|unique:cooperatives',
+            'nom_responsable' => 'required|string|max:255',
             'contact' => 'required|string|max:20',
             'email' => 'nullable|email|unique:cooperatives',
             'adresse' => 'required|string',
@@ -112,6 +113,7 @@ public function index(Request $request)
 
         $validated = $request->validate([
             'nom' => 'required|string|max:255|unique:cooperatives,nom,' . $id,
+            'nom_responsable' => 'required|string|max:255',
             'contact' => 'required|string|max:20',
             'email' => 'nullable|email|unique:cooperatives,email,' . $id,
             'adresse' => 'required|string',

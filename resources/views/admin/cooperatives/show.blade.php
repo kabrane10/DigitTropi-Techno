@@ -124,7 +124,7 @@
                     <span><i class="fas fa-seedling mr-2"></i> Distribuer semences</span>
                     <i class="fas fa-chevron-right text-xs"></i>
                 </a>
-                <a href="{{ route('admin.cooperatives.operations.distribution-intrant.create', $cooperative) }}" 
+                <a href="{{ route('admin.distributions-intrants.create', ['cooperative_id' => $cooperative->id]) }}" 
                    class="flex items-center justify-between w-full px-3 py-2 bg-white/10 rounded-lg hover:bg-white/20 transition">
                     <span><i class="fas fa-flask mr-2"></i> Distribuer intrants</span>
                     <i class="fas fa-chevron-right text-xs"></i>

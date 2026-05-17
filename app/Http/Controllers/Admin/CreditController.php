@@ -221,7 +221,8 @@ class CreditController extends Controller
      */
     public function show($id)
     {
-        $credit = CreditAgricole::with(['producteur', 'cooperative', 'remboursements'])->findOrFail($id);
+        $credit = CreditAgricole::with(['producteur', 'cooperative', 'remboursements'])
+        ->findOrFail($id);
         
         // Calculer les montants réels avec intérêts
         $montantAvecInterets = $this->calculerMontantTotal(
@@ -533,47 +534,5 @@ public function fixAllStatus()
     
     return redirect()->route('admin.credits.index')
         ->with('success', "$count crédit(s) marqué(s) comme remboursé(s)");
-}
-    // app/Models/CreditAgricole.php
-
-public function getBeneficiaireNomAttribute()
-{
-    // Vérifier d'abord le producteur
-    if ($this->producteur_id) {
-        // Forcer le chargement si nécessaire
-        if (!$this->relationLoaded('producteur')) {
-            $this->load('producteur');
-        }
-        return $this->producteur?->nom_complet ?? 'Producteur introuvable (ID: ' . $this->producteur_id . ')';
-    }
-    
-    // Vérifier la coopérative
-    if ($this->cooperative_id) {
-        if (!$this->relationLoaded('cooperative')) {
-            $this->load('cooperative');
-        }
-        return $this->cooperative?->nom ?? 'Coopérative introuvable (ID: ' . $this->cooperative_id . ')';
-    }
-    
-    return 'Bénéficiaire non défini';
-}
-
-public function getBeneficiaireCodeAttribute()
-{
-    if ($this->producteur_id) {
-        if (!$this->relationLoaded('producteur')) {
-            $this->load('producteur');
-        }
-        return $this->producteur?->code_producteur ?? 'N/A';
-    }
-    
-    if ($this->cooperative_id) {
-        if (!$this->relationLoaded('cooperative')) {
-            $this->load('cooperative');
-        }
-        return $this->cooperative?->code_cooperative ?? 'N/A';
-    }
-    
-    return 'N/A';
 }
 }
