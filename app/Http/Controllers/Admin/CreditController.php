@@ -245,16 +245,19 @@ class CreditController extends Controller
         
         // ✅ CONFIGURER LES SIGNATURES
         $signatureData = $this->configureSignatures('credit', $credit);
+
+        $data = array_merge([
+            'credit' => $credit,
+            'montantAvecInterets' => $montantAvecInterets,
+            'montantRembourse' => $montantRembourse,
+            'resteAPayer' => $resteAPayer,
+            'tauxRemboursement' => $tauxRemboursement,
+            'mensualite' => $mensualite,
+            'amortissement' => $amortissement,
+        ], $signatureData);
         
-        return view('admin.credits.show', array_merge([
-            'credit', 
-            'montantRembourse', 
-            'resteAPayer', 
-            'tauxRemboursement',
-            'amortissement',
-            'mensualite',
-            'montantAvecInterets'
-        ], $signatureData));
+        return view('admin.credits.show', $data);
+      
     }
     
     /**
