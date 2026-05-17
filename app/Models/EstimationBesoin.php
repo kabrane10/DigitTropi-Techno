@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class EstimationBesoin extends Model
 {
     use HasFactory;
-    use SignableTrait;
+    
 
     protected $table = 'estimation_besoins';
 

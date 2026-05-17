@@ -9,12 +9,16 @@ use App\Models\Stock;
 use App\Models\Producteur;
 use App\Models\Semence;
 use App\Models\EstimationBesoin;
+use App\Traits\SignatureTrait; 
 use App\Traits\DatabaseCompatibility;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class EstimationBesoinController extends Controller
 {
+    use SignatureTrait;
+    use DatabaseCompatibility;
+
     public function index()
     {
         $estimations = EstimationBesoin::with(['producteur', 'semence'])
@@ -61,6 +65,9 @@ class EstimationBesoinController extends Controller
         
         EstimationBesoin::create($validated);
 
+         // ✅ SAUVEGARDER LES SIGNATURES
+         $this->saveSignatures($request, 'estimation', $estimation);
+
         return redirect()->route('admin.estimations.index')
             ->with('success', 'Estimation de besoin enregistrée avec succès');
     }
@@ -68,7 +75,14 @@ class EstimationBesoinController extends Controller
     public function show($id)
     {
         $estimation = EstimationBesoin::with(['producteur', 'semence'])->findOrFail($id);
-        return view('admin.estimations.show', compact('estimation'));
+       
+          
+        // ✅ CONFIGURER LES SIGNATURES
+        $signatureData = $this->configureSignatures('estimation', $estimation);
+        
+        return view('admin.estimations.show', array_merge([
+            'estimation'
+        ], $signatureData));
     }
 
     public function edit($id)

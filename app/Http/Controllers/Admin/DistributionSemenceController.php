@@ -9,12 +9,14 @@ use App\Models\Cooperative;
 use App\Models\CooperativeOperation;
 use App\Models\Semence;
 use App\Models\CreditAgricole;
+use App\Traits\SignatureTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class DistributionSemenceController extends Controller
 {
+    use SignatureTrait;
     /**
      * Liste des distributions
      */
@@ -91,6 +93,9 @@ class DistributionSemenceController extends Controller
             $validated['code_distribution'] = 'DIST-' . str_pad(DistributionSemence::max('id') + 1, 6, '0', STR_PAD_LEFT);
             
             DistributionSemence::create($validated);
+
+            // ✅ SAUVEGARDER LES SIGNATURES
+            $this->saveSignatures($request, 'distribution_semence', $distribution);
             
             // Mettre à jour le stock
             $semence->stock_disponible -= $validated['quantite'];
@@ -112,7 +117,13 @@ class DistributionSemenceController extends Controller
     public function show($id)
     {
         $distribution = DistributionSemence::with(['producteur', 'semence', 'credit'])->findOrFail($id);
-        return view('admin.distributions.show', compact('distribution'));
+         
+        // ✅ CONFIGURER LES SIGNATURES
+         $signatureData = $this->configureSignatures('distribution_semence', $distribution);
+        
+         return view('admin.distributions.show', array_merge([
+             'distribution'
+         ], $signatureData));
     }
 
     /**

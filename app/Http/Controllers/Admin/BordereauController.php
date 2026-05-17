@@ -7,11 +7,13 @@ use App\Models\Bordereau;
 use App\Models\Collecte;
 use App\Models\Achat;
 use App\Models\Producteur;
+use App\Traits\SignatureTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class BordereauController extends Controller
 {
+    use SignatureTrait;
     /**
      * Liste des bordereaux
      */

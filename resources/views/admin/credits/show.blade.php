@@ -482,4 +482,106 @@
         transition: all 0.3s ease;
     }
 </style>
+{{-- Dans admin/credits/show.blade.php --}}
+
+@push('styles')
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+@endpush
+
+<!-- Section Signatures -->
+<div class="bg-white rounded-xl shadow-sm p-6 mt-6">
+    <h3 class="text-lg font-semibold mb-4 flex items-center">
+        <i class="fas fa-signature text-primary mr-2"></i>
+        Signatures numériques
+    </h3>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Signature Producteur / Coopérative -->
+        @include('admin.partials._signature_pad', [
+            'type' => 'beneficiaire',
+            'label' => $credit->cooperative_id ? 'Signature de la coopérative' : 'Signature du producteur'
+        ])
+        
+        <!-- Signature Agent -->
+        @include('admin.partials._signature_pad', [
+            'type' => 'agent',
+            'label' => 'Signature de l\'agent Tropi-Techno'
+        ])
+    </div>
+    
+    <!-- Signatures existantes -->
+    <div class="mt-4 pt-4 border-t" id="signatures-historique">
+        <h4 class="font-semibold text-sm mb-3">Signatures apposées</h4>
+        <div class="space-y-2" id="signatures-list">
+            <!-- Les signatures existantes seront chargées ici -->
+        </div>
+    </div>
+</div>
+
+@push('scripts')
+<script>
+    // Charger les signatures existantes
+    function chargerSignatures() {
+        fetch('{{ route("admin.signatures.document", ["credit", $credit->id]) }}')
+            .then(response => response.json())
+            .then(signatures => {
+                const container = document.getElementById('signatures-list');
+                container.innerHTML = '';
+                
+                signatures.forEach(sig => {
+                    const div = document.createElement('div');
+                    div.className = 'flex items-center justify-between p-3 bg-gray-50 rounded-lg';
+                    div.innerHTML = `
+                        <div class="flex items-center">
+                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                            <div>
+                                <p class="text-sm font-semibold">${sig.signataire_nom}</p>
+                                <p class="text-xs text-gray-500">Signé le ${new Date(sig.signed_at).toLocaleString('fr-FR')}</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="voirSignature('${sig.hash_unique}')" class="text-primary text-sm hover:underline">
+                                <i class="fas fa-eye mr-1"></i>Voir
+                            </button>
+                            <button onclick="verifierSignature('${sig.hash_unique}')" class="text-blue-500 text-sm hover:underline">
+                                <i class="fas fa-qrcode mr-1"></i>Vérifier
+                            </button>
+                        </div>
+                    `;
+                    container.appendChild(div);
+                });
+            });
+    }
+    
+    function voirSignature(hash) {
+        window.open('{{ url("admin/signatures/verifier") }}/' + hash, '_blank');
+    }
+    
+    function verifierSignature(hash) {
+        Swal.fire({
+            title: 'Vérification de signature',
+            html: `
+                <div class="text-center">
+                    <i class="fas fa-qrcode text-6xl text-primary mb-3"></i>
+                    <p>Scannez ce QR code pour vérifier l'authenticité</p>
+                    <div id="qr-code-container" class="mt-3"></div>
+                    <p class="text-xs text-gray-500 mt-3">Hash: ${hash.substring(0, 20)}...</p>
+                </div>
+            `,
+            showConfirmButton: true,
+            confirmButtonText: 'Fermer',
+            didOpen: () => {
+                fetch('{{ url("admin/signatures/qr-code") }}/' + hash)
+                    .then(res => res.json())
+                    .then(data => {
+                        const qrContainer = document.getElementById('qr-code-container');
+                        qrContainer.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(data.qr_data)}" class="mx-auto">`;
+                    });
+            }
+        });
+    }
+    
+    chargerSignatures();
+</script>
+@endpush
 @endsection

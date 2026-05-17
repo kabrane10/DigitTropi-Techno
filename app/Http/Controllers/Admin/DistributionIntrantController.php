@@ -10,11 +10,13 @@ use App\Models\Intrant;
 use App\Models\CreditAgricole;
 use App\Models\IntrantStock;
 use App\Models\IntrantMouvement;
+use App\Traits\SignatureTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class DistributionIntrantController extends Controller
 {
+    use SignatureTrait;
     /**
      * Liste des distributions
      */
@@ -143,6 +145,9 @@ class DistributionIntrantController extends Controller
                 'zone' => $validated['zone'],
                 'notes' => $validated['notes'] ?? null
             ]);
+
+              // ✅ SAUVEGARDER LES SIGNATURES
+              $this->saveSignatures($request, 'distribution_intrant', $distribution);
             
             // Mettre à jour le stock
             $stock->stock_actuel -= $validated['quantite'];
@@ -300,7 +305,13 @@ class DistributionIntrantController extends Controller
     public function show($id)
     {
         $distribution = DistributionIntrant::with(['beneficiaire', 'intrant', 'credit'])->findOrFail($id);
-        return view('admin.distributions-intrants.show', compact('distribution'));
+        
+        // ✅ CONFIGURER LES SIGNATURES
+        $signatureData = $this->configureSignatures('distribution_intrant', $distribution);
+        
+        return view('admin.distributions-intrants.show', array_merge([
+            'distribution'
+        ], $signatureData));
     }
     
     /**

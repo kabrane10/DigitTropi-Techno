@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Model;
 class DistributionIntrant extends Model
 {
     use HasFactory;
-    use SignableTrait;
 
     protected $table = 'distributions_intrants';
 

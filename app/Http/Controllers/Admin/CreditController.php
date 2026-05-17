@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\CreditAgricole;
 use App\Models\Producteur;
 use App\Models\Cooperative;
+use App\Traits\SignatureTrait;
 use App\Models\Remboursement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -14,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 class CreditController extends Controller
 {
     use NotifiableTrait;
+    use SignatureTrait;
 
     /**
      * Calculer la mensualité avec intérêts
@@ -194,6 +196,8 @@ class CreditController extends Controller
                 'montant_sans_interets' => $validated['montant_total'],
                 'montant_interets' => $montantAvecInterets - $validated['montant_total']
             ]);
+            // ✅ SAUVEGARDER LES SIGNATURES APRÈS CRÉATION
+            $this->saveSignatures($request, 'credit', $credit);
 
             DB::commit();
 
@@ -239,7 +243,10 @@ class CreditController extends Controller
             $credit->duree_mois
         );
         
-        return view('admin.credits.show', compact(
+        // ✅ CONFIGURER LES SIGNATURES
+        $signatureData = $this->configureSignatures('credit', $credit);
+        
+        return view('admin.credits.show', array_merge([
             'credit', 
             'montantRembourse', 
             'resteAPayer', 
@@ -247,7 +254,7 @@ class CreditController extends Controller
             'amortissement',
             'mensualite',
             'montantAvecInterets'
-        ));
+        ], $signatureData));
     }
     
     /**
@@ -328,6 +335,9 @@ class CreditController extends Controller
         ];
 
         $credit->update($updateData);
+        
+        // ✅ SAUVEGARDER LES SIGNATURES SI NOUVELLES
+        $this->saveSignatures($request, 'credit', $credit);
 
         return redirect()->route('admin.credits.index')
             ->with('success', 'Crédit mis à jour avec succès.');

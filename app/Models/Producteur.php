@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Model;
 class Producteur extends Model
 {
     use HasFactory;
-    use SignableTrait;
 
     protected $table = 'producteurs';
 

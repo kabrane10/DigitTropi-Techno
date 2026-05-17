@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Model;
 class Cooperative extends Model
 {
     use HasFactory;
-    use SignableTrait;
 
     protected $fillable = [
         'nom', 'code_cooperative', 'nom_responsable', 'contact', 'email', 'region',

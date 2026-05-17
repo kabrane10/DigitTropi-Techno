@@ -8,6 +8,7 @@ use App\Models\Producteur;
 use App\Models\Cooperative;
 use App\Models\CreditAgricole;
 use App\Models\Stock;
+use App\Traits\SignatureTrait; 
 use App\Traits\DatabaseCompatibility;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -15,6 +16,7 @@ use Illuminate\Support\Facades\DB;
 class CollecteController extends Controller
 {
     use DatabaseCompatibility;
+    use SignatureTrait;
     /**
      * Afficher la liste des collectes
      */
@@ -157,6 +159,9 @@ class CollecteController extends Controller
                 'observations' => $validated['observations'] ?? null
             ]);
 
+             // ✅ SAUVEGARDER LES SIGNATURES
+             $this->saveSignatures($request, 'collecte', $collecte);
+
             // Mettre à jour le stock
             $this->mettreAJourStock($validated['produit'], $validated['quantite_nette'], $validated['zone_collecte']);
 
@@ -221,7 +226,14 @@ class CollecteController extends Controller
     public function show($id)
     {
         $collecte = Collecte::with(['producteur', 'credit'])->findOrFail($id);
-        return view('admin.collectes.show', compact('collecte'));
+
+         // ✅ CONFIGURER LES SIGNATURES
+         $signatureData = $this->configureSignatures('collecte', $collecte);
+        
+         return view('admin.collectes.show', array_merge([
+             'collecte'
+         ], $signatureData));
+        
     }
 
     /**

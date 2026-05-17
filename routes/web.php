@@ -296,8 +296,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
     });
 
     //Routes pour la signature
-    Route::post('/signatures/save', [SignatureController::class, 'save'])->name('signatures.save');
-    Route::get('/signatures/{id}/{type}', [SignatureController::class, 'get'])->name('signatures.get');
+    Route::get('/verifier/{hash}', [SignatureController::class, 'verifier'])->name('verifier');
+    Route::get('/qr-code/{hash}', [SignatureController::class, 'qrCode'])->name('qr-code');
+    Route::post('/store', [SignatureController::class, 'store'])->name('store');
+    Route::get('/document/{type}/{id}', [SignatureController::class, 'getSignatures'])->name('document');
 });
 
 // ========== ESPACE ANIMATEUR ==========
