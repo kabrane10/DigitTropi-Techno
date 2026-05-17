@@ -94,13 +94,13 @@
                     <div>
                         <label class="block text-xs font-semibold text-gray-500 mb-1">Latitude</label>
                         <input type="text" name="latitude" id="lat" required readonly
-                               value="{{ old('latitude', $producteur->latitude) }}"
+                               value="{{ old('latitude', $cooperative->latitude) }}"
                                class="w-full px-4 py-2 border rounded-lg bg-gray-100 focus:outline-none">
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-gray-500 mb-1">Longitude</label>
                         <input type="text" name="longitude" id="lng" required readonly
-                               value="{{ old('longitude', $producteur->longitude) }}"
+                               value="{{ old('longitude', $cooperative->longitude) }}"
                                class="w-full px-4 py-2 border rounded-lg bg-gray-100 focus:outline-none">
                     </div>
                     <div class="flex items-end">
