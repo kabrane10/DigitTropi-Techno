@@ -150,4 +150,38 @@
         </div>
     </form>
 </div>
+<script>
+    function getLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(showPosition, showError, {
+                enableHighAccuracy: true,
+                timeout: 5000,
+                maximumAge: 0
+            });
+        } else {
+            alert("La géolocalisation n'est pas supportée par ce navigateur.");
+        }
+    }
+
+    function showPosition(position) {
+        document.getElementById("lat").value = position.coords.latitude;
+        document.getElementById("lng").value = position.coords.longitude;
+    }
+
+    function showError(error) {
+        switch(error.code) {
+            case error.PERMISSION_DENIED:
+                alert("Accès GPS refusé.");
+                break;
+            case error.POSITION_UNAVAILABLE:
+                alert("Position indisponible.");
+                break;
+            case error.TIMEOUT:
+                alert("Délai d'attente expiré.");
+                break;
+            default:
+                alert("Une erreur est survenue.");
+        }
+    }
+</script>
 @endsection

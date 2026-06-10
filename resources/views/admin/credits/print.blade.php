@@ -170,23 +170,51 @@
         .badge-impaye { background: #fee2e2; color: #991b1b; }
         
         /* Signatures */
-        .signatures {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 40px;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #ddd;
+        .signatures-section {
+            margin-top: 20px;
         }
-        
+
+        .signatures-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
         .signature-box {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
             text-align: center;
         }
-        
-        .signature-line {
-            border-top: 1px solid #333;
-            margin-top: 40px;
-            padding-top: 10px;
+
+        .signature-img-container {
+            height: 80px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .signature-img {
+            max-height: 100%;
+            max-width: 100%;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+
+        .signature-details p {
+            margin: 2px 0;
+            font-size: 10px;
+        }
+
+        .signature-qr {
+            margin-top: 10px;
+        }
+
+        .signature-qr img {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto;
         }
         
         /* Footer */
@@ -492,6 +520,37 @@
                 </div>
             </div>
         </div>
+
+        <!-- Section Signatures -->
+        @if(!empty($signatures_existantes))
+        <div class="section signatures-section">
+            <div class="section-title">SIGNATURES ÉLECTRONIQUES</div>
+            <div class="section-content">
+                <div class="signatures-grid">
+                    @foreach($signatures_config as $config)
+                        @if(isset($signatures_existantes[$config['type']]))
+                            @php
+                                $signature = $signatures_existantes[$config['type']];
+                            @endphp
+                            <div class="signature-box">
+                                <div class="signature-img-container">
+                                    <img src="{{ $signature['signature_data'] }}" alt="Signature" class="signature-img">
+                                </div>
+                                <div class="signature-details">
+                                    <p><strong>{{ $signature['signataire_nom'] }}</strong></p>
+                                    <p>({{ $config['label'] }})</p>
+                                    <p>Signé le: {{ $signature['signed_at'] }}</p>
+                                </div>
+                                <div class="signature-qr">
+                                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data={{ urlencode(route('admin.signatures.verifier', $signature['hash'])) }}" alt="QR Code de Vérification">
+                                </div>
+                            </div>
+                        @endif
+                    @endforeach
+                </div>
+            </div>
+        </div>
+        @endif
         
         <!-- Footer -->
         <div class="footer">

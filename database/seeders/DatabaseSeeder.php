@@ -66,5 +66,8 @@ class DatabaseSeeder extends Seeder
                 'role_id' => $roleAgent->id,
             ]
         );
+
+        // 6. Création des zones
+        $this->call(ZoneSeeder::class);
     }
 }

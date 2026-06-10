@@ -53,6 +53,10 @@ class ProducteurController extends Controller
             'contact' => 'required|string|unique:producteurs',
             'email' => 'nullable|email|unique:producteurs',
             'localisation' => 'required|string',
+            'commune' => 'required|string|max:255',           // ✅ NOUVEAU
+            'region' => 'required|in:Centrale,Kara,Savanes',
+            'latitude' => 'nullable|numeric|between:-90,90',   // ✅ NOUVEAU
+            'longitude' => 'nullable|numeric|between:-180,180',
             'region' => 'required|in:Centrale,Kara,Savanes',
             'culture_pratiquee' => 'required|string',
             'superficie_totale' => 'required|numeric|min:0',
@@ -92,10 +96,18 @@ class ProducteurController extends Controller
             ->where('agent_terrain_id', $agent->id)
             ->firstOrFail();
         
+        // Statistiques
+        $stats = [
+            'nb_credits' => $producteur->credits()->count(),
+            'total_credits' => $producteur->credits()->sum('montant_total'),
+            'nb_collectes' => $producteur->collectes()->count(),
+            'total_production' => $producteur->collectes()->sum('quantite_nette'),
+        ];
+
         $credits = $producteur->credits()->orderBy('created_at', 'desc')->get();
         $collectes = $producteur->collectes()->orderBy('date_collecte', 'desc')->limit(10)->get();
         
-        return view('agent.producteurs.show', compact('producteur', 'credits', 'collectes'));
+        return view('agent.producteurs.show', compact('producteur', 'credits', 'collectes', 'stats'));
     }
 
     public function edit($id)
@@ -124,6 +136,10 @@ class ProducteurController extends Controller
             'contact' => 'required|string|unique:producteurs,contact,' . $id,
             'email' => 'nullable|email|unique:producteurs,email,' . $id,
             'localisation' => 'required|string',
+            'commune' => 'required|string|max:255',           // ✅ NOUVEAU
+            'region' => 'required|in:Centrale,Kara,Savanes',
+            'latitude' => 'nullable|numeric|between:-90,90',   // ✅ NOUVEAU
+            'longitude' => 'nullable|numeric|between:-180,180',
             'region' => 'required|in:Centrale,Kara,Savanes',
             'culture_pratiquee' => 'required|string',
             'superficie_totale' => 'required|numeric|min:0',

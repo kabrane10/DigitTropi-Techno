@@ -516,16 +516,21 @@ class CreditController extends Controller
             $credit->taux_interet,
             $credit->duree_mois
         );
+
+        // ✅ CONFIGURER LES SIGNATURES POUR L'IMPRESSION
+        $signatureData = $this->configureSignatures('credit', $credit);
         
-        return view('admin.credits.print', compact(
-            'credit', 
-            'montantRembourse', 
-            'resteAPayer', 
-            'tauxRemboursement',
-            'mensualite',
-            'montantAvecInterets',
-            'amortissement'
-        ));
+        $data = array_merge([
+            'credit' => $credit, 
+            'montantRembourse' => $montantRembourse, 
+            'resteAPayer' => $resteAPayer, 
+            'tauxRemboursement' => $tauxRemboursement,
+            'mensualite' => $mensualite,
+            'montantAvecInterets' => $montantAvecInterets,
+            'amortissement' => $amortissement
+        ], $signatureData);
+        
+        return view('admin.credits.print', $data);
     }
     
     /**

@@ -121,7 +121,7 @@ class CollecteController extends Controller
             'observations' => 'nullable|string'
         ]);
 
-        DB::transaction(function () use ($validated) {
+        DB::transaction(function () use ($validated, $request) {
             // Déterminer le bénéficiaire
             if ($validated['beneficiaire_type'] === 'producteur') {
                 $beneficiaireType = 'App\\Models\\Producteur';
@@ -225,13 +225,13 @@ class CollecteController extends Controller
      */
     public function show($id)
     {
-        $collecte = Collecte::with(['producteur', 'credit'])->findOrFail($id);
+        $collecte = Collecte::with(['producteur', 'cooperative', 'credit'])->findOrFail($id);
 
          // ✅ CONFIGURER LES SIGNATURES
          $signatureData = $this->configureSignatures('collecte', $collecte);
         
          return view('admin.collectes.show', array_merge([
-             'collecte'
+             'collecte' => $collecte
          ], $signatureData));
         
     }

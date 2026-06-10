@@ -8,18 +8,6 @@
     <!-- Navigation des opérations -->
     <div class="bg-white rounded-xl shadow-sm p-4">
         <div class="flex flex-wrap gap-3">
-            <!-- <a href="{{ route('admin.cooperatives.operations.distribution-semence.create', $cooperative) }}" 
-               class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
-                <i class="fas fa-seedling mr-2"></i>Distribuer semences
-            </a> -->
-            <!-- <a href="{{ route('admin.cooperatives.operations.distribution-intrant.create', $cooperative) }}" 
-               class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-                <i class="fas fa-flask mr-2"></i>Distribuer intrants
-            </a> -->
-            <!-- <a href="{{ route('admin.cooperatives.operations.collecte.create', $cooperative) }}" 
-               class="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700">
-                <i class="fas fa-truck mr-2"></i>Nouvelle collecte
-            </a> -->
             <a href="{{ route('admin.credits.create', ['cooperative_id' => $cooperative->id]) }}" 
                class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700">
                 <i class="fas fa-hand-holding-usd mr-2"></i>Octroyer crédit

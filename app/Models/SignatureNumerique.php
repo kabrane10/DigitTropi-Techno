@@ -43,7 +43,8 @@ class SignatureNumerique extends Model
      */
     public static function genererHash($documentType, $documentId, $signataireId, $signatureData)
     {
-        return hash('sha256', $documentType . $documentId . $signataireId . $signatureData . now()->timestamp);
+        // Suppression de l'horodatage pour permettre la vérification
+        return hash('sha256', $documentType . $documentId . $signataireId . $signatureData);
     }
 
     /**

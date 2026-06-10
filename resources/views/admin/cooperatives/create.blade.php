@@ -163,32 +163,39 @@
 </div>
 
 <script>
-    // Optionnel: Auto-remplissage des coordonnées GPS à partir de l'adresse (geocoding)
-    // Fonction utilitaire pour obtenir les coordonnées à partir de l'adresse
-    async function geocodeAddress() {
-        const adresse = document.querySelector('input[name="adresse"]').value;
-        const commune = document.querySelector('input[name="commune"]').value;
-        const region = document.querySelector('select[name="region"]').value;
-        
-        if (!adresse) return;
-        
-        const adresseComplete = `${adresse}, ${commune}, ${region}, Togo`;
-        
-        // Note: Vous pouvez intégrer une API de géocodage ici (Google Maps, OpenStreetMap Nominatim)
-        // Exemple avec Nominatim (OpenStreetMap) - à utiliser avec modération
-        try {
-            const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(adresseComplete)}&limit=1`);
-            const data = await response.json();
-            if (data && data.length > 0) {
-                document.querySelector('input[name="latitude"]').value = parseFloat(data[0].lat).toFixed(6);
-                document.querySelector('input[name="longitude"]').value = parseFloat(data[0].lon).toFixed(6);
-            }
-        } catch (error) {
-            console.error('Erreur de géocodage:', error);
+    function getLocation() {
+        if (navigator.geolocation) {
+            // Afficher un message de chargement sur le bouton si nécessaire
+            navigator.geolocation.getCurrentPosition(showPosition, showError, {
+                enableHighAccuracy: true,
+                timeout: 5000,
+                maximumAge: 0
+            });
+        } else {
+            alert("La géolocalisation n'est pas supportée par ce navigateur.");
         }
     }
-    
-    // Écouter le blur sur l'adresse pour auto-remplir les coordonnées
-    // document.querySelector('input[name="adresse"]')?.addEventListener('blur', geocodeAddress);
+
+    function showPosition(position) {
+        document.getElementById("lat").value = position.coords.latitude;
+        document.getElementById("lng").value = position.coords.longitude;
+    }
+
+    function showError(error) {
+        switch(error.code) {
+            case error.PERMISSION_DENIED:
+                alert("Vous devez autoriser l'accès GPS pour utiliser cette fonction.");
+                break;
+            case error.POSITION_UNAVAILABLE:
+                alert("Informations de localisation indisponibles.");
+                break;
+            case error.TIMEOUT:
+                alert("La demande de localisation a expiré.");
+                break;
+            case error.UNKNOWN_ERROR:
+                alert("Une erreur inconnue est survenue.");
+                break;
+        }
+    }
 </script>
 @endsection

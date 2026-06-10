@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Intrant;
 use App\Models\IntrantStock;
 use App\Models\IntrantMouvement;
+use App\Models\Zone;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -38,14 +39,14 @@ class IntrantController extends Controller
 
         $intrant = Intrant::create($validated);
 
-        // Créer le stock initial pour les 3 zones
-        $zones = ['Centrale', 'Kara', 'Savanes'];
+        // Créer le stock initial pour toutes les zones dynamiques
+        $zones = Zone::all();
         foreach ($zones as $zone) {
             IntrantStock::create([
                 'intrant_id' => $intrant->id,
-                'zone' => $zone,
+                'zone' => $zone->name,
                 'stock_actuel' => 0,
-                'seuil_alerte' => 50,
+                'seuil_alerte' => 50, // Seuil par défaut
                 'unite' => $validated['unite']
             ]);
         }

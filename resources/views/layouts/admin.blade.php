@@ -11,6 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    @stack('styles') {{-- Pour les styles spécifiques à la page --}}
     <style>
         /* Styles pour le menu responsive */
         .sidebar {
@@ -77,6 +78,15 @@
                     <i class="fas fa-chart-line w-5"></i>
                     <span>Dashboard</span>
                 </a>
+
+                <!-- ========== CONFIGURATION ========== -->
+                <div class="pt-4">
+                    <p class="text-white/50 text-xs uppercase px-4 mb-2">Configuration</p>
+                    <a href="{{ route('admin.zones.index') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg transition {{ request()->routeIs('admin.zones.*') ? 'bg-primary text-white' : 'text-white/80 hover:bg-white/10' }}">
+                        <i class="fas fa-map-marked-alt w-5"></i>
+                        <span>Gestion des zones</span>
+                    </a>
+                </div>
                 
                 <!-- ========== GESTION DES PRODUCTEURS ========== -->
                 <div class="pt-4">
@@ -379,6 +389,11 @@
                             <i class="fas fa-bell text-gray-500 cursor-pointer hover:text-primary text-sm sm:text-base"></i>
                             <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-3 h-3 sm:w-4 sm:h-4 flex items-center justify-center">3</span>
                         </div> -->
+
+                         <!-- Statut connexion hors-ligne -->
+                         <div id="online-status" class="text-sm px-3 py-1 rounded-full bg-green-100 text-green-800">
+                            <i class="fas fa-wifi"></i> En ligne
+                        </div>
                          <!-- Notifications -->
                         <div class="relative">
                             <button id="notificationBtn" class="relative focus:outline-none">
@@ -613,5 +628,33 @@ document.addEventListener('DOMContentLoaded', function() {
     
 });
 </script>
+
+<script>
+     // Mettre à jour l'affichage du statut
+     function updateOnlineStatus() {
+            const status = document.getElementById('online-status');
+            const warning = document.getElementById('offline-warning');
+            const badge = document.getElementById('offline-badge');
+            
+            if (navigator.onLine) {
+                if (status) {
+                    status.innerHTML = '<i class="fas fa-wifi"></i> En ligne';
+                    status.className = 'text-sm px-3 py-1 rounded-full bg-green-100 text-green-800';
+                }
+                if (warning) warning.classList.add('hidden');
+            } else {
+                if (status) {
+                    status.innerHTML = '<i class="fas fa-wifi-slash"></i> Hors ligne';
+                    status.className = 'text-sm px-3 py-1 rounded-full bg-orange-100 text-orange-800 offline-pulse';
+                }
+                if (warning) warning.classList.remove('hidden');
+            }
+        }
+        
+        window.addEventListener('online', updateOnlineStatus);
+        window.addEventListener('offline', updateOnlineStatus);
+        updateOnlineStatus();
+</script>
+@stack('scripts') {{-- Emplacement pour les scripts spécifiques à la page --}}
 </body>
 </html>

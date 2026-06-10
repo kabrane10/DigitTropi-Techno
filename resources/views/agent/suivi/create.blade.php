@@ -5,7 +5,7 @@
 
 @section('content')
 <div class="bg-white rounded-xl shadow-sm p-6">
-    <form action="{{ route('agent.suivi.store') }}" method="POST">
+    <form action="{{ route('agent.suivi.store') }}" method="POST" class="offline-form">
         @csrf
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

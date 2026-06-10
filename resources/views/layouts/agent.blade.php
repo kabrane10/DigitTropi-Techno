@@ -3,9 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="agent-id" content="{{ Auth::guard('agent')->user()->id ?? '' }}">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Agent Terrain - Tropi-Techno</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="icon" href="{{ asset('images/favicon.png') }}">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#2d6a4f">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Tropi-Techno">
+    <link rel="apple-touch-icon" href="/images/icons/icon-192x192.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -39,6 +47,15 @@
             background: rgba(255,255,255,0.3);
             border-radius: 5px;
         }
+        
+        /* Animation pour le mode hors-ligne */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        .offline-pulse {
+            animation: pulse 2s ease-in-out infinite;
+        }
     </style>
 </head>
 <body class="bg-gray-100 font-inter">
@@ -53,7 +70,7 @@
     
     <div class="flex h-screen">
         <!-- Sidebar (responsive) -->
-        <div id="sidebar" class="sidebar sidebar-mobile fixed md:relative w-64 bg-gradient-to-b from-primary to-secondary h-full font-bold overflow-y-auto shadow-xl z-50 transition-transform duration-300">
+        <div id="sidebar" class="sidebar sidebar-mobile fixed md:relative w-64 bg-gray-900  h-full overflow-y-auto shadow-xl z-50 transition-transform duration-300">
             <div class="p-5 border-b border-white/10">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-3">
@@ -94,7 +111,7 @@
                         <i class="fas fa-users w-5"></i>
                         <span>Mes producteurs</span>
                     </a>
-                    <a href="{{ route('agent.producteurs.create') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg transition text-white/80 hover:bg-white/10">
+                    <a href="{{ route('agent.producteurs.create') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg transition text-white/80 hover:bg-white/10 offline-form">
                         <i class="fas fa-user-plus w-5"></i>
                         <span>Nouveau producteur</span>
                     </a>
@@ -107,7 +124,7 @@
                         <i class="fas fa-truck-loading w-5"></i>
                         <span>Mes collectes</span>
                     </a>
-                    <a href="{{ route('agent.collectes.create') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg transition text-white/80 hover:bg-white/10">
+                    <a href="{{ route('agent.collectes.create') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg transition text-white/80 hover:bg-white/10 offline-form">
                         <i class="fas fa-plus-circle w-5"></i>
                         <span>Nouvelle collecte</span>
                     </a>
@@ -120,7 +137,7 @@
                         <i class="fas fa-clipboard-list w-5"></i>
                         <span>Mes suivis</span>
                     </a>
-                    <a href="{{ route('agent.suivi.create') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg transition text-white/80 hover:bg-white/10">
+                    <a href="{{ route('agent.suivi.create') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg transition text-white/80 hover:bg-white/10 offline-form">
                         <i class="fas fa-plus-circle w-5"></i>
                         <span>Nouveau suivi</span>
                     </a>
@@ -146,7 +163,18 @@
                 <div class="px-4 sm:px-6 py-3 sm:py-4 flex justify-between items-center">
                     <h1 class="text-lg sm:text-2xl font-bold text-dark pl-10 md:pl-0">@yield('header')</h1>
                     <div class="flex items-center space-x-2 sm:space-x-4">
-                        <!-- Admin user -->
+                        <!-- Statut connexion hors-ligne -->
+                        <div id="online-status" class="text-sm px-3 py-1 rounded-full bg-green-100 text-green-800">
+                            <i class="fas fa-wifi"></i> En ligne
+                        </div>
+                        
+                        <!-- Badge éléments en attente -->
+                        <div id="offline-badge" class="relative hidden">
+                            <i class="fas fa-cloud-upload-alt text-gray-500 text-lg"></i>
+                            <span class="absolute -top-2 -right-2 bg-orange-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">0</span>
+                        </div>
+                        
+                        <!-- Agent user -->
                         <div class="flex items-center space-x-2 sm:space-x-3">
                             <div class="text-right hidden sm:block">
                                 <p class="text-xs sm:text-sm font-semibold text-dark">{{ Auth::guard('agent')->user()->nom_complet ?? 'Agent' }}</p>
@@ -179,6 +207,14 @@
                         </div>
                     </div>
                 @endif
+                
+                <!-- Avertissement mode hors-ligne -->
+                <div id="offline-warning" class="hidden bg-orange-50 border-l-4 border-orange-500 text-orange-700 p-3 mb-4 rounded shadow-sm">
+                    <div class="flex items-center">
+                        <i class="fas fa-wifi-slash mr-2"></i>
+                        <span>Mode hors-ligne actif. Les données seront sauvegardées localement et synchronisées automatiquement.</span>
+                    </div>
+                </div>
                 
                 @yield('content')
             </div>
@@ -236,5 +272,75 @@
             }
         });
     </script>
+    
+    <!-- Scripts offline -->
+    <script src="{{ asset('js/offline-manager.js') }}"></script>
+    <script>
+        // Passer le token au gestionnaire offline
+        @auth('agent')
+        if (typeof offlineManager !== 'undefined') {
+            offlineManager.setToken('{{ $token ?? '' }}');
+        }
+        @endauth
+        
+        // Mettre à jour l'affichage du statut
+        function updateOnlineStatus() {
+            const status = document.getElementById('online-status');
+            const warning = document.getElementById('offline-warning');
+            const badge = document.getElementById('offline-badge');
+            
+            if (navigator.onLine) {
+                if (status) {
+                    status.innerHTML = '<i class="fas fa-wifi"></i> En ligne';
+                    status.className = 'text-sm px-3 py-1 rounded-full bg-green-100 text-green-800';
+                }
+                if (warning) warning.classList.add('hidden');
+            } else {
+                if (status) {
+                    status.innerHTML = '<i class="fas fa-wifi-slash"></i> Hors ligne';
+                    status.className = 'text-sm px-3 py-1 rounded-full bg-orange-100 text-orange-800 offline-pulse';
+                }
+                if (warning) warning.classList.remove('hidden');
+            }
+        }
+        
+        window.addEventListener('online', updateOnlineStatus);
+        window.addEventListener('offline', updateOnlineStatus);
+        updateOnlineStatus();
+        
+        // Marquer les formulaires pour sauvegarde hors-ligne
+        document.querySelectorAll('form').forEach(form => {
+            if (!form.classList.contains('delete-confirm') && !form.action.includes('logout')) {
+                form.classList.add('offline-form');
+            }
+        });
+    </script>
+    
+    <script>
+    // Installation de la PWA
+    let deferredPrompt;
+    
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        
+        // Afficher un bouton d'installation
+        const installBtn = document.createElement('button');
+        installBtn.innerHTML = '<i class="fas fa-download mr-2"></i>Installer l\'application';
+        installBtn.className = 'fixed bottom-20 right-4 z-50 bg-primary text-white px-4 py-2 rounded-lg shadow-lg hover:bg-secondary transition z-50';
+        installBtn.onclick = async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    console.log('Application installée');
+                }
+                deferredPrompt = null;
+                installBtn.remove();
+            }
+        };
+        document.body.appendChild(installBtn);
+    });
+</script>
 </body>
 </html>

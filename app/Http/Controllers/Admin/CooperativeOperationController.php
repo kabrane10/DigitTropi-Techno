@@ -42,8 +42,12 @@ class CooperativeOperationController extends Controller
         ];
         
         // Graphiques : évolution des collectes (6 derniers mois)
+        $dateFormat = DB::connection()->getDriverName() === 'sqlite'
+            ? 'strftime("%Y-%m", date_collecte)'
+            : 'DATE_FORMAT(date_collecte, "%Y-%m")';
+
         $collectesParMois = CollecteCooperative::where('cooperative_id', $id)
-            ->selectRaw('DATE_FORMAT(date_collecte, "%Y-%m") as mois, SUM(quantite_nette) as total')
+            ->selectRaw("$dateFormat as mois, SUM(quantite_nette) as total")
             ->where('date_collecte', '>=', now()->subMonths(6))
             ->groupBy('mois')
             ->orderBy('mois')

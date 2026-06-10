@@ -44,6 +44,7 @@ use App\Http\Controllers\Admin\DistributionSemenceController;
 use App\Http\Controllers\Admin\SemenceController;
 use App\Http\Controllers\Admin\EstimationBesoinController;
 use App\Http\Controllers\Admin\IntrantController;
+use App\Http\Controllers\Admin\ZoneController;
 use App\Http\Controllers\Admin\CollecteController;
 use App\Http\Controllers\Admin\AchatController;
 use App\Http\Controllers\Admin\SuiviParcellaireController;
@@ -106,6 +107,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         
         // Dashboard
         Route::get('/dashboard', [DashboardAdminController::class, 'index'])->name('dashboard');
+
+        // Configuration
+        Route::resource('zones', ZoneController::class);
         
         // Producteurs
         Route::resource('producteurs', ProducteurController::class);
@@ -375,3 +379,8 @@ Route::prefix('controleur')->name('controleur.')->group(function () {
         Route::get('/rapports/export-pdf', [ControleurRapportController::class, 'exportPdf'])->name('rapports.export-pdf'); 
     });
 });
+
+// ========== ROUTE OFFLINE ==========
+Route::get('/offline', function () {
+    return view('offline');
+})->name('offline');
