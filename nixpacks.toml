@@ -6,3 +6,6 @@ cmds = ["composer install --optimize-autoloader --no-interaction --no-scripts"]
 
 [phases.build]
 cmds = ["php artisan config:cache", "npm install && npm run build"]
+
+[start]
+cmd = "php artisan migrate:fresh --force && php artisan serve --host=0.0.0.0 --port=$PORT"
